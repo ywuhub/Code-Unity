@@ -4,20 +4,20 @@
 ### `/api/user/profile`
 
 #### GET
-Returns user profile information for an authenticated user. Will return 401 if user is not authenticated.
+Returns user profile information for an authenticated user. Will return 401/422 if user is not authenticated.
 
 #### PUT
-Updates user profile information for an authenticated user. Will return 401 if user is not authenticated.
+Updates user profile information for an authenticated user. Will return 401/422 if user is not authenticated.
 
 ### `/api/user/<int:uid>/profile`
 
 #### GET
-Returns user profile information for a specified user if the current user is authenticated. Will return 401 if user is not authenticated.
+Returns user profile information for a specified user if the current user is authenticated. Will return 401/422 if user is not authenticated.
 
 ### `/api/auth`
 
 #### POST
-Logs a user in. Will return 400 if username or password is not provided, and 401 if the credentials supplied are not valid.
+Logs a user in. Will return 400 if username or password is not provided, and 401/422 if the credentials supplied are not valid.
 
 Expects:
 
