@@ -1,4 +1,35 @@
 # COMP4920 Project: Code Unity
+
+## Deploying
+```bash
+git remote add heroku https://git.heroku.com/code-unity.git
+git push heroku master
+# or git push heroku testbranch:master if deploying from
+# non-master branch, testbranch
+```
+
+## API Endpoints
+
+### `/api/user`
+Methods: [GET, PUT]
+Auth required. Get/update user information.
+
+### `/api/auth`
+Methods: [POST, PUT]
+Login/register
+
+### `/api/project`
+Methods: POST
+Auth required. Post a project listing.
+
+### `/api/project/<int:project_id>`
+Methods: GET, PUT, DELETE
+Get, update, delete a listing. PUT, DELETE requires auth.
+
+### `/api/project/list`
+Methods: GET
+List projects.
+
 ## Background
 COMP project courses often require students to form groups to create a product together. However, finding the right people to work with to achieve one’s goals can be time consuming or even hard or impossible if groups are confined within a fixed tutorial group. Impromptu creations of groups in tutorials are often chaotic and and the compatibility of the team is often left to luck. Additionally, there isn’t any platform for UNSW students to get together and create something as a team which would be both useful as a extra-curricular experience, something interesting to show on their github/resume, and as a way to forge friendships by working together on a project.
 ## Project Aim
