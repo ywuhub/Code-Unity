@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 
-class User(Resource):
+class Profile(Resource):
     def get(self):
         return "user profile information"
 
