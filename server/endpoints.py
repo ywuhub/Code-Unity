@@ -1,8 +1,6 @@
-"""
-This module provides API endpoint routing.
-"""
 from server import api
-from server.models import User, Auth, Project, NewProject, ProjectList
+from server.resource import User, Auth, Project, NewProject, ProjectList
+
 
 api.prefix = "/api"
 api.add_resource(User, "/user")
