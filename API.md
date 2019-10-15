@@ -59,3 +59,16 @@ Allows an authenticated user to delete a project listing they own.
 
 #### GET
 List projects.
+
+
+### `/api/course_list`
+#### GET
+Lists all the COMP courses available in UNSW.
+```json
+[
+    {
+        "code": string,
+        "name": string,
+    }
+]
+```

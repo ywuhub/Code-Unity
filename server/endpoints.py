@@ -6,6 +6,7 @@ from server.resource import (
     NewProject,
     ProjectList,
     OtherProfile,
+    CourseList,
 )
 
 
@@ -16,3 +17,4 @@ api.add_resource(Auth, "/auth")
 api.add_resource(NewProject, "/project")
 api.add_resource(Project, "/project/<int:project_id>")
 api.add_resource(ProjectList, "/project/list")
+api.add_resource(CourseList, "/course_list")
