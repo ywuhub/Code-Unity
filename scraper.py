@@ -68,6 +68,7 @@ if __name__ == "__main__":
     db = client['code-unity-database']             # selecting the database
     collection = db['comp_courses']                # getting the right collection (if it doesn't exist, it will create it) 
                                                    # to store the documents
+                                                   
     # scrape the COMP courses from UNSW timetable in the current year
     curr_year = datetime.now().year
     courses_url = "http://timetable.unsw.edu.au/" + str(curr_year) + "/COMPKENS.html"
