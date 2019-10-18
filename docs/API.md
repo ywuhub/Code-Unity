@@ -17,7 +17,7 @@ Returns user profile information for a specified user if the current user is aut
 ### `/api/auth`
 
 #### POST
-Logs a user in. Will return 400 if username or password is not provided, and 401/422 if the credentials supplied are not valid.
+Logs a user in. Will return 400 if username or password is not provided, and 401 if the credentials supplied are not valid.
 
 Expects:
 
@@ -37,7 +37,26 @@ On success, returns:
 }
 ```
 #### PUT
-Registers a user and then logs them in.
+Registers a user and then logs them in. Will return 400 if required fields are missing. 422 if a registered user already owns that username or email.
+
+Expects:
+
+```json
+{
+    "username": string, # required
+    "email": string,    # required
+    "password": string, # required
+}
+```
+
+On success, returns:
+
+```json
+{
+    "uid":   number,
+    "token": string,
+}
+```
 
 ### `/api/project`
 

@@ -1,0 +1,66 @@
+// Database Markup
+// For reference and to generate visualizations on w/ dbdiagram.io
+
+// Dummy type
+enum StringArray {
+  _
+}
+// Dummy type
+enum IntArray {
+  _
+}
+
+Table users {
+  id int [primary key, unique]
+  username string
+  password string
+  email string
+}
+
+// Two different notification types supported
+enum NotificationType {
+  join_request
+  project_invitation
+}
+
+table notifications {
+  id int [primary key, ref: > users.id] // one to one relation
+  type NotificationType
+  project int [ref: > projects.id]
+}
+
+
+Table profiles {
+  id int [primary key, ref: - users.id] // one to one relation
+  name string
+  visible bool // if false, will only leak username on profile page. wont show up in searches.
+  description string
+  technologies StringArray // array of strings
+  languages StringArray // spoken language
+  github string // github url profile URL
+
+}
+
+Table involvedIn {
+  user int [primary key, ref: > users.id]
+  projects IntArray [ref: > projects.id] // array of ints, each referencing a users.id
+}
+
+
+Table profileImages {
+  id int [primary key, ref: - users.id]
+  image binary
+}
+
+Table projects {
+  id int [primary key]
+  title string
+  description string
+  course int // e.g.: COMP____
+  leader int [ref: > users.id]
+  max_people int
+  tags StringArray // array of tags, e.g. machine learning, distributed system, web application 
+  technologies StringArray // array of strings describing the tech stack, e.g. python, flask,  mongodb
+  language StringArray // spoken language, e.g., english, chinese
+  members IntArray [ref: > users.id] // array of ints, each referencing a users.id
+}
