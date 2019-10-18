@@ -2,12 +2,14 @@ import os
 
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from server.utils import init_db
 
 # create and configure the app
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 jwt = JWTManager(app)
 db = init_db()
 

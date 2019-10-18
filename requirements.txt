@@ -5,9 +5,11 @@ attrs==19.2.0
 beautifulsoup4==4.8.1
 black==19.3b0
 bs4==0.0.1
+certifi==2019.9.11
 cffi==1.12.3
 Click==7.0
 Flask==1.1.1
+Flask-Cors==3.0.8
 Flask-JWT-Extended==3.24.0
 Flask-RESTful==0.3.7
 gunicorn==19.9.0
@@ -22,3 +24,4 @@ six==1.12.0
 soupsieve==1.9.4
 toml==0.10.0
 Werkzeug==0.16.0
+wincertstore==0.2
