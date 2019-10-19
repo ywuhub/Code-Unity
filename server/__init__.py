@@ -3,7 +3,9 @@ import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
+
 from server.db import init_db
+from server.managers.project_manager import ProjectManager
 from server.managers.user_manager import UserManager
 
 # create and configure the app
@@ -12,6 +14,7 @@ api = Api(app)
 jwt = JWTManager(app)
 db = init_db()
 user_manager = UserManager(app, db)
+project_manager = ProjectManager(app, db)
 
 app.config.from_mapping(
     SECRET_KEY=b"\xb6\x07\x03a[(\xaaj\x13'\xc8X\xd5%}\x9f",
