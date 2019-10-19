@@ -1,51 +1,150 @@
-from flask_restful import reqparse, Resource
-from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError
-from flask_jwt_extended import create_access_token
+from flask_restful import Resource, reqparse
 
-ph = PasswordHasher(time_cost=1, memory_cost=51200, parallelism=2)
-
-# Hash of "password"
-TEST_HASH = (
-    "$argon2id$v=19$m=51200,t=1,p=2$tBXOVm60xvGteaLOvYIxpg$3JzlTz3pf1hGkpInpBsm5Q"
-)
+from server import user_manager
+from server.managers.user_manager import ValueExistsError
 
 
 class Auth(Resource):
-    post_parser = reqparse.RequestParser()
-    post_parser.add_argument(
-        "username", type=str, required=True, help="Username required"
-    )
-    post_parser.add_argument(
-        "password", type=str, required=True, help="Password required"
-    )
-
-    # Example test:
-    # curl -v -d '{"username":"user","password":"pass"}' -H "Content-Type: application/json" -X POST localhost:8080/api/auth
     def post(self):
-        args = self.post_parser.parse_args(strict=True)
-        username = args["username"]
-        pwd = args["password"]
+        """
+        Logs a user in. Will return 400 if username or password is not provided, and 401 if the credentials supplied are not valid.
+
+        Expects:
+
+        ```json
+        {
+            "username": string, # required
+            "password": string, # required
+        }
+        ```
+
+        On success, returns:
+
+        ```json
+        {
+            "uid":   number,
+            "token": string,
+        }
+        ```
+
+        Examples:
+        ```
+        POST ->
+            {
+                "username": "testuser",
+                "password": "test"
+            }
+        (200 OK) <-
+            {
+                "uid": "5daa7be538fcf92a17e6e8d1",
+                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzE0NTM5MjUsIm5iZiI6MTU3MTQ1MzkyNSwianRpIjoiY2NmMDU1OWEtNzE3NS00Yzg5LTg2N2ItOGMzYjE1N2MxMjE5IiwiZXhwIjoxNTcxNDU0ODI1LCJpZGVudGl0eSI6IjVkYWE3YmU1MzhmY2Y5MmExN2U2ZThkMSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.DPmOF4-XRS4gdzLMewMiTDtKE7zdnFB_9AGKlfepuaA"
+            }
+        # If missing params
+        (400 BAD REQUEST) <-
+            {
+                "message": {
+                    "username": "Username required",
+                    "password": "Password required"
+                }
+            }
+        # If incorrect username/password
+        (401 UNAUTHORIZED) <-
+            {
+                "message": "incorrect username or password"
+            }
+        ```
+        """
+        post_parser = reqparse.RequestParser(bundle_errors=True)
+        post_parser.add_argument(
+            "username", type=str, required=True, help="Username required"
+        )
+        post_parser.add_argument(
+            "password", type=str, required=True, help="Password required"
+        )
+        args = post_parser.parse_args(strict=True)
 
         try:
-            ph.verify(TEST_HASH, pwd)
-        except VerificationError:
-            return f"incorrect username or password", 401
+            username = args["username"]
+            pwd = args["password"]
+            uid, token = user_manager.log_in_user(username, pwd)
+        except (VerificationError, ValueError):
+            return {"message": "incorrect username or password"}, 401
 
-        # The identity of the user should be a uid once the database is set up.
-        token = create_access_token(identity=1)
-        return {"uid": 1, "token": token}
-
-    put_parser = reqparse.RequestParser()
-    put_parser.add_argument(
-        "username", type=str, required=True, help="Username required"
-    )
-    put_parser.add_argument(
-        "password", type=str, required=True, help="Password required"
-    )
+        return {"uid": uid, "token": token}
 
     def put(self):
-        args = self.put_parser.parse_args(strict=True)
+        """
+        Registers a user and then logs them in. Will return 400 if required fields are missing. 422 if a registered user already owns that username or email.
+
+        Expects:
+
+        ```json
+        {
+            "username": string, # required
+            "email": string,    # required
+            "password": string, # required
+        }
+        ```
+
+        On success, returns:
+
+        ```json
+        {
+            "uid":   number,
+            "token": string,
+        }
+        ```
+
+        Examples:
+        ```
+        PUT ->
+            {
+                "username": "testuser",
+                "email": "test@user.com",
+                "password": "test"
+            }
+        (200 OK) <-
+            {
+                "uid": "5daa7be538fcf92a17e6e8d1",
+                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzE0NTM5MjUsIm5iZiI6MTU3MTQ1MzkyNSwianRpIjoiY2NmMDU1OWEtNzE3NS00Yzg5LTg2N2ItOGMzYjE1N2MxMjE5IiwiZXhwIjoxNTcxNDU0ODI1LCJpZGVudGl0eSI6IjVkYWE3YmU1MzhmY2Y5MmExN2U2ZThkMSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.DPmOF4-XRS4gdzLMewMiTDtKE7zdnFB_9AGKlfepuaA"
+            }
+        # If the email "test@user.com" or username "testuser" is already in use.
+        (422 UNPROCESSABLE ENTITY) <-
+            {
+                "message": {
+                    "username": "Specified username is in use",
+                    "email": "Specified email is in use"
+                }
+            }
+        # If missing parameters
+        PUT -> {}
+        (400 BAD REQUEST) <-
+            {
+                "message": {
+                    "username": "Username required",
+                    "password": "Password required",
+                    "email": "Email required"
+                }
+            }
+        ```
+        """
+        put_parser = reqparse.RequestParser(bundle_errors=True)
+        put_parser.add_argument(
+            "username", type=str, required=True, help="Username required"
+        )
+        put_parser.add_argument(
+            "password", type=str, required=True, help="Password required"
+        )
+        put_parser.add_argument("email", type=str, required=True, help="Email required")
+        args = put_parser.parse_args(strict=True)
+
         username = args["username"]
-        password = ph.hash(args["password"])
-        return f"registered user {username} with pwd hash {password}"
+        email = args["email"]
+        password = args["password"]
+
+        try:
+            uid, token = user_manager.register_user(username, email, password)
+            return {"uid": uid, "token": token}
+        except ValueExistsError as err:
+            return {"message": err.errors}, 422

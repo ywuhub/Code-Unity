@@ -36,6 +36,35 @@ On success, returns:
     "token": string,
 }
 ```
+
+Examples:
+
+```
+POST ->
+    {
+        "username": "testuser",
+        "password": "test"
+    }
+(200 OK) <-
+    {
+        "uid": "5daa7be538fcf92a17e6e8d1",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzE0NTM5MjUsIm5iZiI6MTU3MTQ1MzkyNSwianRpIjoiY2NmMDU1OWEtNzE3NS00Yzg5LTg2N2ItOGMzYjE1N2MxMjE5IiwiZXhwIjoxNTcxNDU0ODI1LCJpZGVudGl0eSI6IjVkYWE3YmU1MzhmY2Y5MmExN2U2ZThkMSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.DPmOF4-XRS4gdzLMewMiTDtKE7zdnFB_9AGKlfepuaA"
+    }
+# If missing params
+(400 BAD REQUEST) <-
+    {
+        "message": {
+            "username": "Username required",
+            "password": "Password required"
+        }
+    }
+# If incorrect username/password
+(401 UNAUTHORIZED) <-
+    {
+        "message": "incorrect username or password"
+    }
+```
+
 #### PUT
 Registers a user and then logs them in. Will return 400 if required fields are missing. 422 if a registered user already owns that username or email.
 
@@ -56,6 +85,39 @@ On success, returns:
     "uid":   number,
     "token": string,
 }
+```
+
+Examples:
+```
+PUT ->
+    {
+        "username": "testuser",
+        "email": "test@user.com",
+        "password": "test"
+    }
+(200 OK) <-
+    {
+        "uid": "5daa7be538fcf92a17e6e8d1",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzE0NTM5MjUsIm5iZiI6MTU3MTQ1MzkyNSwianRpIjoiY2NmMDU1OWEtNzE3NS00Yzg5LTg2N2ItOGMzYjE1N2MxMjE5IiwiZXhwIjoxNTcxNDU0ODI1LCJpZGVudGl0eSI6IjVkYWE3YmU1MzhmY2Y5MmExN2U2ZThkMSIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.DPmOF4-XRS4gdzLMewMiTDtKE7zdnFB_9AGKlfepuaA"
+    }
+# If the email "test@user.com" or username "testuser" is already in use.
+(422 UNPROCESSABLE ENTITY) <-
+    {
+        "message": {
+            "username": "Specified username is in use",
+            "email": "Specified email is in use"
+        }
+    }
+# If missing parameters
+PUT -> {}
+(400 BAD REQUEST) <-
+    {
+        "message": {
+            "username": "Username required",
+            "password": "Password required",
+            "email": "Email required"
+        }
+    }
 ```
 
 ### `/api/project`
