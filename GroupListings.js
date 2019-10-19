@@ -110,20 +110,34 @@ class FilterListings extends React.Component {
         });
     }
 
+    /**
+     * Filter posts by tags
+     */
     filterPosts() {
-        
-        let posts = this.state.initialPosts;
+        // checked -> filter already filtered posts  unchecked -> filter all posts 
+        const inclusive_search = document.getElementById('inclusive-search').checked;
+        let posts = (inclusive_search) ? (this.props.tags.length !== 0) ? this.state.filteredPosts : this.state.initialPosts : this.state.initialPosts;    
         let tags = this.props.tags;
 
         if (tags.length !== 0) {
             posts = posts.filter((post) => {
-                return tags.some((tag) => {
-                    return post['title'].toLowerCase().indexOf(tag) !== -1 ||
+                if (inclusive_search) {
+                    return tags.every((tag) => {
+                        return post['title'].toLowerCase().indexOf(tag) !== -1 ||
                         post['description'].toLowerCase().indexOf(tag) !== -1 ||
                         post['course'].toLowerCase().indexOf(tag) !== -1 ||
                         post['technologies'].toLowerCase().indexOf(tag) !== -1 ||
                         post['languages'].toLowerCase().indexOf(tag) !== -1;
-                });
+                    });
+                } else {
+                    return tags.some((tag) => {
+                        return post['title'].toLowerCase().indexOf(tag) !== -1 ||
+                        post['description'].toLowerCase().indexOf(tag) !== -1 ||
+                        post['course'].toLowerCase().indexOf(tag) !== -1 ||
+                        post['technologies'].toLowerCase().indexOf(tag) !== -1 ||
+                        post['languages'].toLowerCase().indexOf(tag) !== -1;
+                    });
+                }
             });
         }
         this.setState({ filteredPosts: posts });
@@ -142,60 +156,73 @@ class FilterListings extends React.Component {
         this.filterPosts();
     }
 
+    inclusiveSearch(e) {
+        this.filterPosts();
+    }
+
     /**
      * Shows component
      */
     render() {
         return (
-            <div>
-                {/* search bar */}
-                <div className="input-group bg-dark shadow-sm" style={{'borderRadius':'5px'}}>
-                    <input type="text" id="search-bar" className="form-control bg-transparent p-4 pr-5 border" style={{'borderRadius':'5px', 'color':'white', 'borderTopRightRadius':'0px', 'borderBottomRightRadius':'0px'}} placeholder="Search" onKeyPress={this.onKeyPress.bind(this)}></input>
-                    <div className="input-group-append">
-                        <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
-                    </div>
-                    <button type="button" className="btn btn-dark border" data-toggle="collapse" data-target="#advancedSearch" style={{'borderTopLeftRadius':'0px', 'borderBottomLeftRadius':'0px', 'fontSize':'70%'}}>&#x25BC;</button> 
+            <div className="row">
+                <div className="col-sm-7">
+                    <ShowPosts posts={this.state.filteredPosts} />
                 </div>
 
-                {/* advanced search */}
-                <div id="advancedSearch" className="collapse card border shadow">
-                    <div className="card-body bg-light">
-                        <h5 className="card-title text-muted p-2"> Advanced Search </h5>
-                        <AdvancedSearch />  
-                    </div>
-                </div>
-                <br/>
-
-                {/* tags */}
-                <div className="card-footer rounded mb-5 border bg-light shadow-sm"> 
-                    <div className="clearfix">
-                        <div className="float-left">
-                            <span className="mr-2 p-2 text-muted">
-                                <i>Search Tags:</i>
-                            </span>
+                <div className="col-sm-5">
+                    {/* search bar */}
+                    <div className="input-group bg-dark shadow-sm" style={{'borderRadius':'5px'}}>
+                        <input type="text" id="search-bar" className="form-control bg-transparent p-4 pr-5 border" style={{'borderRadius':'5px', 'color':'white', 'borderTopRightRadius':'0px', 'borderBottomRightRadius':'0px'}} placeholder="Search" onKeyPress={this.onKeyPress.bind(this)}></input>
+                        <div className="input-group-append">
+                            <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
                         </div>
-                        <div className="float-right">
-                            <div className="custom-control custom-switch">
-                                <input type="checkbox" className="custom-control-input" value="false" id="inclusive-search"></input>
-                                <label className="custom-control-label" htmlFor="inclusive-search">Inclusive</label>
+                        <button type="button" className="btn btn-dark border fa fa-caret-down" data-toggle="collapse" data-target="#advancedSearch" style={{'borderTopLeftRadius':'0px', 'borderBottomLeftRadius':'0px'}} onClick={collapseChange.bind(this)}></button> 
+                    </div>
+
+                    <AdvancedSearch /> <br/>
+
+                    {/* tags */}
+                    <div className="card-footer rounded mb-5 border bg-light shadow-sm"> 
+                        <div className="clearfix">
+                            <div className="float-left">
+                                <span className="mr-2 p-2 text-muted">
+                                    <i>Search Tags:</i>
+                                </span>
+                            </div>
+                            <div className="float-right">
+                                <div className="custom-control custom-switch">
+                                    <input type="checkbox" className="custom-control-input" value="false" id="inclusive-search" onClick={this.inclusiveSearch.bind(this)}></input>
+                                    <label className="custom-control-label" htmlFor="inclusive-search">Inclusive</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="tags">
-                    {
-                        this.props.tags.map((tag) => {
-                            return (
-                                <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{'outline':'none'}} onClick={this.removeTag.bind(this)}></button></span>
-                            );
-                        })
-                    }
+                        <div id="tags">
+                        {
+                            this.props.tags.map((tag) => {
+                                return (
+                                    <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{'outline':'none'}} onClick={this.removeTag.bind(this)}></button></span>
+                                );
+                            })
+                        }
+                        </div>
                     </div>
                 </div>
-                
-                <ShowPosts posts={this.state.filteredPosts} />
             </div>
         );
+    }
+}
+
+/**
+ * Change collapse component icon on click
+ * @param {*} e event
+ */
+function collapseChange(e) {
+    if (e.target.className.indexOf('down') !== -1) {
+        e.target.className = "btn btn-dark border fa fa-caret-up";
+    } else {
+        e.target.className = "btn btn-dark border fa fa-caret-down";
     }
 }
 

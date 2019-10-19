@@ -2,9 +2,46 @@ import React from 'react';
 const API_URL = 'http://localhost:8080'
 
 /**
- * Search bar to filter and show courses
+ * Shows tag search filter in advanced search component
+ * @param {*} props 
  */
-class CourseSearch extends React.Component {
+function TagComponent(props) {
+    return (
+        <div className="input-group mb-3">
+            <div className="input-group-prepend" style={{'width':'30%'}}>
+                <span className="input-group-text bg-transparent border-0 p-0 pr-3 text-muted">{ props.tagName }</span>
+            </div>
+            { props.content }
+        </div>
+    );
+}
+
+/**
+ * Advanced Search component
+ */
+class AdvancedSearch extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <div id="advancedSearch" className="collapse card border shadow">
+                <div className="card-body bg-light">
+                    <h3 className="card-title text-muted p-2 mb-4"> Advanced Search </h3>
+                    <h5 className="">Tags</h5>
+                    <TagComponent tagName={'Course'} content={<TagSearch />} />
+                </div>
+            </div>
+        );   
+    }
+}
+
+// parent class
+/**
+ * Search bar to filter and show a list of possible tags (courses, programming languages, project details e.g. mahcine learning, etc)
+ */
+class TagSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,7 +93,7 @@ class CourseSearch extends React.Component {
      */
     onCourseSelect(e) {
         this.setState({ filteredCourses: [] });
-        document.getElementById('courseSearch').value = e.target.innerHTML;
+        document.getElementById('courseSearch').value = e.target.innerHTML; // add tag
     }
 
     /**
@@ -66,7 +103,7 @@ class CourseSearch extends React.Component {
      */
     onKeyPress(e) {
         if (e.key === 'Enter' && this.state.filteredCourses.length > 0) {
-            document.getElementById('courseSearch').value = this.state.filteredCourses[0]['code'] + ' ' + this.state.filteredCourses[0]['name'];
+            document.getElementById('courseSearch').value = this.state.filteredCourses[0]['code'] + ' ' + this.state.filteredCourses[0]['name'];    // add tag
             this.setState({ filteredCourses: [] });
         }
     }
@@ -83,16 +120,17 @@ class CourseSearch extends React.Component {
             'borderColor': '#aaa',
             'overflowX':'hidden'
         };
+
         return (
-            <div style={{ 'position': 'relative' }}>
-                <div className="input-group bg-dark shadow-sm" style={{'borderRadius':'5px'}}>
-                    <input type="text" id="courseSearch" className="form-control bg-transparent p-4 pr-5 border-0" style={{'borderRadius':'5px', 'color':'white'}} placeholder="Search Courses" onChange={this.filterCourses.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
+            <div className="form-control p-0 border-0" style={{ 'position': 'relative'}}>
+                <div className="input-group bg-dark shadow-sm" style={{'borderRadius':'5px', 'width':'100%'}}>
+                    <input type="text" id="courseSearch" className="form-control bg-transparent border-0" style={{'borderRadius':'5px', 'color':'white'}} placeholder="Search Courses" onChange={this.filterCourses.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
                     <div className="input-group-append">
-                        <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search"></b></div>
+                        <div className="input-group-text bg-transparent border-0"><b className="fa fa-search"></b></div>
                     </div>
                 </div>
 
-                <div className="btn-group-vertical" style={{ 'borderRadius': '0px', 'width': '100%', 'position': 'absolute', 'zIndex': '1' }}>
+                <div className="btn-group-vertical" style={{ 'borderRadius': '0px', 'position': 'absolute', 'zIndex': '1', 'width':'100%' }}>
                 {
                     courses.map((course) => {
                         return <button type="button" className="btn btn-primary" style={buttonStyle} key={course['code']} onClick={this.onCourseSelect.bind(this)}>{course['code']} {course['name']}</button>
@@ -105,5 +143,4 @@ class CourseSearch extends React.Component {
 }
 
 
-
-export default CourseSearch;
+export default AdvancedSearch;
