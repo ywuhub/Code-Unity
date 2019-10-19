@@ -65,6 +65,11 @@ POST ->
     }
 ```
 
+### `/api/auth/logout`
+
+#### POST
+Logs out an authenticated user. Requires no body. Will return a 200 response if successfully logged out, or a 422 if the current user is not logged in.
+
 #### PUT
 Registers a user and then logs them in. Will return 400 if required fields are missing. 422 if a registered user already owns that username or email.
 
