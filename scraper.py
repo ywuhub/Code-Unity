@@ -47,7 +47,8 @@ def scrape_courses(base_url):
         for i in range(0, len(tr), 2): # fetch pairwise items (course_code, course_name)
             course_code = tr[i].text 
             course_name = tr[i+1].text
-            doc = { 'code': course_code, 
+            doc = { '_id' : course_code,
+                    'code': course_code, 
                     'name': course_name }
             add_course(doc) # add document to collection (if it does not exist)
 
@@ -72,8 +73,8 @@ if __name__ == "__main__":
     # scrape the COMP courses from UNSW timetable in the current year
     curr_year = datetime.now().year
     courses_url = "http://timetable.unsw.edu.au/" + str(curr_year) + "/COMPKENS.html"
-    #scrape_courses(courses_url) # comment this out if DEBUGGING below
+    scrape_courses(courses_url) # comment this out if DEBUGGING below
 
     # DEBUGGING ONLY (Displays all COMP courses in the database - comment out the other functions called above)
-    display_db()
+    #display_db()
                  
