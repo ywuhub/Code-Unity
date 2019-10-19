@@ -7,6 +7,27 @@ from server.managers.user_manager import ValueExistsError
 
 class Auth(Resource):
     def post(self):
+        """
+        Logs a user in. Will return 400 if username or password is not provided, and 401 if the credentials supplied are not valid.
+
+        Expects:
+
+        ```json
+        {
+            "username": string, # required
+            "password": string, # required
+        }
+        ```
+
+        On success, returns:
+
+        ```json
+        {
+            "uid":   number,
+            "token": string,
+        }
+        ```
+        """
         post_parser = reqparse.RequestParser()
         post_parser.add_argument(
             "username", type=str, required=True, help="Username required"
@@ -16,12 +37,12 @@ class Auth(Resource):
         )
         args = post_parser.parse_args(strict=True)
 
-        username = args["username"]
-        pwd = args["password"]
         try:
+            username = args["username"]
+            pwd = args["password"]
             uid, token = user_manager.log_in_user(username, pwd)
         except (VerificationError, ValueError):
-            return f"incorrect username or password", 401
+            return {"message": "incorrect username or password"}, 401
 
         return {"uid": uid, "token": token}
 
