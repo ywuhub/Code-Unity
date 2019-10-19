@@ -14,7 +14,7 @@ api = Api(app)
 jwt = JWTManager(app)
 db = init_db()
 user_manager = UserManager(app, db)
-project_manager = ProjectManager(app, db)
+# project_manager = ProjectManager(app, db)
 
 app.config.from_mapping(
     SECRET_KEY=b"\xb6\x07\x03a[(\xaaj\x13'\xc8X\xd5%}\x9f",
