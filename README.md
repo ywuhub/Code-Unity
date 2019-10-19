@@ -1,6 +1,6 @@
 # COMP4920 Project: Code Unity
 
-## Deploying
+## App Deployment
 `heroku-cli` required.
 
 ```bash
