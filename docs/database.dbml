@@ -1,5 +1,6 @@
 // Database Markup
 // For reference and to generate visualizations on w/ dbdiagram.io
+// Unique values must be enforced in mongodb by creating an index.
 
 // Dummy type
 enum StringArray {
@@ -12,9 +13,9 @@ enum IntArray {
 
 Table users {
   id int [primary key, unique]
-  username string
+  username string [unique]
   password string
-  email string
+  email string [unique]
 }
 
 // Two different notification types supported
