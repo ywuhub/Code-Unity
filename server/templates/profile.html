@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+</head>
+
+<script>
+    var profile = document.getElementById("profile")
+</script>
+
+<body>
+<h2>Member Profile</h2>
+<table style="width:100%">
+    <tr> 
+        <th>Member ID:</th> 
+        <th>Name:</th>
+        <th>Visibility:</th>
+        <th>Description:</th>
+        <th>Interests:</th>
+        <th>Programming Languages:</th>
+        <th>Languages Spoken:</th>
+        <th>Github Profile:</th>
+    </tr>
+
+    <tr>
+        <td>{{profile._id}}</td>
+        <td>{{profile.name}}</td>
+        <td>{{profile.visibility}}</td>
+        <td>{{profile.description}}</td>
+        <td>{{profile.interest}}</td>
+        <td>{{profile.programming}}</td>
+        <td>{{profile.languages}}</td>
+        <td>{{profile.github}}</td>
+    </tr>
+</table>
+</body>
+
+</html>
