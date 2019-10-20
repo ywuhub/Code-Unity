@@ -14,16 +14,24 @@ class Project:
     tags: List[str]
     technologies: List[str]
     languages: List[str]
-    # multi_valued_keys and single_valued_keys are used for endpoint request
-    # parsing.
+
+    # multi_valued_keys and single_valued_keys are used for endpoint request parsing.
     multi_valued_keys = frozenset(("tags", "technologies", "languages"))
     single_valued_keys = frozenset(("description", "course"))
     # project_fields may contain additional fields for system use only, e.g., members
     project_fields = frozenset.union(
-        multi_valued_keys, single_valued_keys, frozenset(("members"))
+        multi_valued_keys, single_valued_keys, frozenset(("members", "cur_people"))
     )
 
-    def __init__(self, leader: ObjectId, title: str, max_people: int, **kwargs):
+    def __init__(
+        self,
+        leader: ObjectId,
+        title: str,
+        max_people: int,
+        cur_people=1,
+        members: List[ObjectId] = None,
+        **kwargs
+    ):
         # Set mandatory fields
         self.title = title
         self.leader = leader
@@ -31,6 +39,11 @@ class Project:
 
         project_fields = Project.project_fields
         # Update the rest of the optional args
+        self.cur_people = cur_people
+        if members is not None:
+            self.members = members
+        else:
+            self.members = [leader]
         for k, v in kwargs.items():
             # Skip stuff that aren't whitelisted for unpacking
             if k not in project_fields:

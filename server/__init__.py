@@ -5,7 +5,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 
-from server.db import init_db
+from server.database import init_db
 from server.managers.project_manager import ProjectManager
 from server.managers.user_manager import UserManager
 
