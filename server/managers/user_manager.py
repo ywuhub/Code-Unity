@@ -1,11 +1,19 @@
 import re
-from typing import Dict
+from typing import Dict, Set
 
 from argon2 import PasswordHasher
+from bson import ObjectId
 from flask import Flask
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    get_raw_jwt,
+    jwt_required,
+)
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
+
+from server.models.user import User
 
 ph = PasswordHasher(time_cost=1, memory_cost=51200, parallelism=2)
 
@@ -35,8 +43,22 @@ class ValueExistsError(Exception):
 
 
 class UserManager:
-    def __init__(self, app: Flask, db: Database):
+    def __init__(self, app: Flask, db: Database, jwt: JWTManager):
         self.users = db.get_collection("users")
+        # In memory store of revoked tokens. WARNING: will allow logged out users to
+        # log back in if app is restarted.
+        self.revoked_tokens: Set[str] = set()
+
+        # Overrides the default function of jwt.current_user to return a User object.
+        @jwt.user_loader_callback_loader
+        def user_loader_callback(id: str):
+            return User(ObjectId(id))
+
+        # Check for revoked tokens.
+        @jwt.token_in_blacklist_loader
+        def check_if_token_in_blacklist(decrypted_token: Dict[str, str]):
+            jti = decrypted_token["jti"]
+            return jti in self.revoked_tokens
 
     def register_user(self, username: str, email: str, password: str):
         """
@@ -80,13 +102,13 @@ class UserManager:
         # Successfully registered user, logging them in.
         return self.log_in_user(username, password)
 
-    # Raises ValueError if username is not found, Verification Error if it does
-    # not match up.
     def log_in_user(self, username: str, password: str):
         """
         log_in_user attempts to log in a user given their username and password.
         
-        Raises: [ValueError, Verification]
+        Raises: [ValueError, VerificationError]
+        - ValueError if username is not found.
+        - VerificationError if it does not match up.
         """
         user = self.users.find_one({"username": username})
         if user is None:
@@ -97,3 +119,11 @@ class UserManager:
         uid = str(user["_id"])
         token: str = create_access_token(identity=uid)
         return str(user["_id"]), token
+
+    @jwt_required
+    def log_out_user(self):
+        """
+        Logs out a currently logged in user.
+        """
+        jti: str = get_raw_jwt()["jti"]
+        self.revoked_tokens.add(jti)
