@@ -8,8 +8,19 @@ from server.models.project import Project
 
 
 class ProjectManager:
+    __instance = None
+
     def __init__(self, app: Flask, db: Database):
-        raise NotImplementedError
+        self.app = app
+        self.db = db.get_collection("projects")
+        ProjectManager.__instance = self
+
+    @staticmethod
+    def get_instance():
+        instance = ProjectManager.__instance
+        if instance is None:
+            raise LookupError("ProjectManager instance requested before initialization")
+        return instance
 
     def get_project(self, id: ObjectId) -> Project:
         raise NotImplementedError
