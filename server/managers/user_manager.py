@@ -43,11 +43,14 @@ class ValueExistsError(Exception):
 
 
 class UserManager:
+    __instance = None
+
     def __init__(self, app: Flask, db: Database, jwt: JWTManager):
         self.users = db.get_collection("users")
         # In memory store of revoked tokens. WARNING: will allow logged out users to
         # log back in if app is restarted.
         self.revoked_tokens: Set[str] = set()
+        UserManager.__instance = self
 
         # Overrides the default function of jwt.current_user to return a User object.
         @jwt.user_loader_callback_loader
@@ -59,6 +62,13 @@ class UserManager:
         def check_if_token_in_blacklist(decrypted_token: Dict[str, str]):
             jti = decrypted_token["jti"]
             return jti in self.revoked_tokens
+
+    @staticmethod
+    def get_instance():
+        instance = UserManager.__instance
+        if instance is None:
+            raise LookupError("UserManager instance requested before initialization")
+        return instance
 
     def register_user(self, username: str, email: str, password: str):
         """
