@@ -18,19 +18,11 @@ class NewProject(Resource):
             parser.add_argument(k, action="append")
         args = parser.parse_args(strict=True)
 
-        if args["course"] is not None:
-            # TODO: course validation
-            pass
-
-        if args["technologies"] is not None:
-            # TODO: ech validation
-            pass
-
-        if args["tags"] is not None:
-            # TODO: tag validation
-            pass
-
         title = args.pop("title")
         max_people = args.pop("max_people")
-        project_id = current_user.create_project(title, max_people, **args)
+        try:
+            project_id = current_user.create_project(title, max_people, **args)
+        except ValueError as err:
+            return {"message": str(err)}, 400
+
         return {"project_id": str(project_id)}

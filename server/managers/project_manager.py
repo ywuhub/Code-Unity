@@ -40,8 +40,5 @@ class ProjectManager:
     def delete_project(self, project: Project):
         self.db.delete_one({"_id": project._id})
 
-    def list_projects(self) -> List[Project]:
-        raise NotImplementedError
-
-    def modify_project(self, project: Project):
-        raise NotImplementedError
+    def replace_project(self, old_project: Project, new_project: Project):
+        self.db.replace_one({"_id": old_project._id}, new_project.to_dict())

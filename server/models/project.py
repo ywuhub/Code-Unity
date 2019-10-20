@@ -6,12 +6,13 @@ from flask_restful import fields
 from server.utils.json import ObjectId as ObjectIdUnmarshaller
 
 project_fields = {
+    "title": fields.String(),
     "leader": ObjectIdUnmarshaller,
     "max_people": fields.Integer,
     "cur_people": fields.Integer,
     "members": fields.List(ObjectIdUnmarshaller),
     "description": fields.String,
-    "course": fields.Integer,
+    "course": fields.Integer(default=None),
     "technologies": fields.List(fields.String),
     "languages": fields.List(fields.String),
     "tags": fields.List(fields.String),
@@ -35,7 +36,9 @@ class Project:
     single_valued_keys = frozenset(("description", "course"))
     # project_fields may contain additional fields for system use only, e.g., members
     project_fields = frozenset.union(
-        multi_valued_keys, single_valued_keys, frozenset(("members", "cur_people", "_id"))
+        multi_valued_keys,
+        single_valued_keys,
+        frozenset(("members", "cur_people", "_id")),
     )
 
     def __init__(
@@ -47,6 +50,19 @@ class Project:
         members: List[ObjectId] = None,
         **kwargs
     ):
+        # Validate arguments
+        if "course" in kwargs:
+            # TODO: course validation
+            pass
+
+        if "technologies" in kwargs:
+            # TODO: technologies validation
+            pass
+
+        if "tags" in kwargs:
+            # TODO: tag validation
+            pass
+
         # Set mandatory fields
         self.title = title
         self.leader = leader
