@@ -2,10 +2,11 @@
 This file provides routing for static and server generated files.
 """
 from server import app, db
-from flask import render_template, request
+from flask import jsonify, render_template, request
 from pymongo.database import Database
 from bson.objectid import ObjectId
-
+from bson.json_util import dumps
+import json
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -18,10 +19,14 @@ def new_project():
 
 @app.route("/profile/<user_id>", methods=["GET"])
 def user_profile(user_id):
-    if db['profiles'].count_documents({"_id": ObjectId(user_id)}, limit = 1) == 0: # check if user exists
-        return render_template('404.html') # return 404 error if user does not exists
-                                           # WE HAVE TO PLACE THIS LATER (need to return error)
-    else:
-        data = db['profiles'].find_one({"_id": ObjectId(user_id)}) # get the user's profile information
-        return render_template('profile.html', profile = data) # WE HAVE TO PLACE THIS LATER (need to return json data)
-        
+    try:
+        # check if user exists - if not then return 404 error, else continue to fetch user details
+        if db['profiles'].count_documents({"_id": ObjectId(user_id)}, limit = 1) == 0: 
+            return render_template('404.html'), 404 # we will need a better 404 error page
+        else:
+            data = db['profiles'].find_one({"_id": ObjectId(user_id)}) # get the user's profile information
+            json_data = json.loads(dumps(data))
+            return json_data, 200
+    except:
+        # goes here if user_id is not a valid ObjectId object
+        return render_template('404.html'), 404 # we will need a better 404 error page        
