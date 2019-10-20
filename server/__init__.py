@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import timedelta
 
 from flask import Flask
 from flask_jwt_extended import JWTManager
@@ -23,7 +23,7 @@ app.config.from_mapping(
     JWT_BLACKLIST_ENABLED=True,
     JWT_BLACKLIST_TOKEN_CHECKS=["access", "refresh"],
     # Access tokens to expire in 1 day
-    JWT_ACCESS_TOKEN_EXPIRES=datetime(0, 0, 1),
+    JWT_ACCESS_TOKEN_EXPIRES=timedelta(1, 0, 0),
 )
 
 
