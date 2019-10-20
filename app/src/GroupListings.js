@@ -199,6 +199,8 @@ class FilterListings extends React.Component {
         }
     }
 
+    // addTags(tags)    forEach   ...   pass to advanced    
+
     removeTag(e) {
         let tags = this.state.tags;
         const tagIndex = tags.indexOf(e.target.value);
@@ -213,8 +215,9 @@ class FilterListings extends React.Component {
      * Shows component
      */
     render() {
+        let tag_id = 0;
         return (
-            <div>
+            <div id="page-start">
 
             <div className="jumbotron jumbotron-fluid">
                 <div className="container">
@@ -241,18 +244,12 @@ class FilterListings extends React.Component {
                     <AdvancedSearch addTag={this.addTag} removeTag={this.removeTag}/> <br/>
 
                     {/* tags */}
-                    <div className="card-footer rounded mb-5 border bg-light shadow-sm"> 
-                        <div className="clearfix">
-                            <div className="float-left">
-                                <span className="mr-2 p-2 text-muted">
-                                    <i>Search Tags:</i>
-                                </span>
-                            </div>
-                            <div className="float-right">
-                                <div className="custom-control custom-switch">
-                                    <input type="checkbox" className="custom-control-input" value="false" id="inclusive-search" onClick={this.inclusiveSearch.bind(this)}></input>
-                                    <label className="custom-control-label text-muted" htmlFor="inclusive-search">Inclusive</label>
-                                </div>
+                    <div className="card-footer rounded mb-5 border shadow-sm"> 
+                        <div className="d-flex justify-content-between">
+                            <i className="mr-4 p-2 text-muted"> Search Tags:</i>
+                            <div className="custom-control custom-switch p-2">
+                                <input type="checkbox" className="custom-control-input" value="false" id="inclusive-search" onClick={this.inclusiveSearch.bind(this)}></input>
+                                <label className="custom-control-label text-muted" htmlFor="inclusive-search">Inclusive</label>
                             </div>
                         </div>
 
@@ -260,14 +257,14 @@ class FilterListings extends React.Component {
                         {
                             this.state.tags.map((tag) => {
                                 return (
-                                    <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{'outline':'none'}} onClick={this.removeTag.bind(this)}></button></span>
+                                    <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{'outline':'none'}} onClick={this.removeTag.bind(this)}></button></span>
                                 );
                             })
                         }
                         </div>
                     </div>
 
-                    <div className="card h-100" style={{'textAlign':'center'}}>
+                    <div className="card h-80" style={{'textAlign':'center'}}>
                         <div className="card-body">
                         <h1 className="card-title">Ads c:</h1>
                         <p>
@@ -325,6 +322,10 @@ class FilterListings extends React.Component {
                         </div>
 
                     </div>
+
+                    <div className="d-flex">
+                        <a href="#page-start" className="ml-auto bg-transparent border-0" style={{'fontSize':'5vw', 'outline':'none'}}><i className="fas fa-angle-up"></i></a>
+                    </div>
                 </div>
             </div>
             </div>
@@ -349,13 +350,15 @@ function collapseChange(e) {
  * @param {*} props 
  */
 function ShowPosts(props) {
-    let count = 0;
+    let post_id = 0;
     return (
+        <div>
+
         <ul className="list-group">
         {
             props.posts.map((post) => {
                 return (
-                    <li className="list-group-item card post mb-3 bg-light" key={post['title'] + ' ' + count++}>
+                    <li className="list-group-item card post mb-3 bg-light" key={post['title'] + ' ' + post_id++}>
                         <div className="card-body">
                             <h4 className="card-title"> {post['title']} </h4>
                             <p className="card-text"> Description: {post['description']}<br/> Course: {post['course']}<br/> Programming Languages: {post['languages']}<br/> Technologies: {post['technologies']} </p>
@@ -365,6 +368,7 @@ function ShowPosts(props) {
             })
         }
         </ul>
+        </div>
     );
 }
 
