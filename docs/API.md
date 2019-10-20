@@ -75,7 +75,7 @@ Logs out an authenticated user. Requires no body. Will return a 200 response if 
 #### POST
 Allows an authenticated user to post a project listing.
 
-### `/api/project/<int:project_id>`
+### `/api/project/<str:project_id>`
 
 #### GET
 Gets information about a specific project given its project_id. Returns 422 if
