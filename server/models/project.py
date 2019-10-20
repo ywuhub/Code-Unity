@@ -1,6 +1,21 @@
 from typing import Any, Dict, List
 
 from bson import ObjectId
+from flask_restful import fields
+
+from server.utils.json import ObjectId as ObjectIdUnmarshaller
+
+project_fields = {
+    "leader": ObjectIdUnmarshaller,
+    "max_people": fields.Integer,
+    "cur_people": fields.Integer,
+    "members": fields.List(ObjectIdUnmarshaller),
+    "description": fields.String,
+    "course": fields.Integer,
+    "technologies": fields.List(fields.String),
+    "languages": fields.List(fields.String),
+    "tags": fields.List(fields.String),
+}
 
 
 class Project:
@@ -69,4 +84,11 @@ class Project:
 
     @staticmethod
     def from_dict(d: Dict[str, Any]):
-        raise NotImplementedError
+        leader = d.pop("leader")
+        title = d.pop("title")
+        max_people = d.pop("max_people")
+        cur_people = d.pop("cur_people")
+        members = d.pop("members")
+
+        new = Project(leader, title, max_people, cur_people, members, **d)
+        return new

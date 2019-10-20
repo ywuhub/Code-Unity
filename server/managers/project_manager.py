@@ -23,7 +23,16 @@ class ProjectManager:
         return instance
 
     def get_project(self, id: ObjectId) -> Project:
-        raise NotImplementedError
+        doc = self.db.find_one({"_id": id})
+        if doc is None:
+            return doc
+        return Project.from_dict(doc)
+
+    def get_project_listing(self):
+        ret = []
+        for doc in self.db.find(projection=["title"]):
+            ret.append(doc)
+        return ret
 
     def add_project(self, project: Project) -> ObjectId:
         return self.db.insert_one(project.to_dict()).inserted_id
