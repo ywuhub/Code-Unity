@@ -29,11 +29,12 @@ class Project(Resource):
             id = ObjectId(project_id)
         except InvalidId as err:
             return {"message": f"invalid project_id: {project_id}"}, 422
-
-        doc = ProjectManager.get_instance().get_project(id)
-        if doc is None:
+        pm = ProjectManager.get_instance()
+        project = pm.get_project(id)
+        if project is None:
             return {"message": f"project_id {project_id} not found"}, 404
-        if current_user._id != doc.leader:
-            return {"message": "only the owner may delete a project"}, 402
+        if current_user._id != project.leader:
+            return {"message": "only the owner may delete a project"}, 401
 
+        pm.delete_project(project)
         return {"message": "successfully deleted the project"}

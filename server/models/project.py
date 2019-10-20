@@ -35,7 +35,7 @@ class Project:
     single_valued_keys = frozenset(("description", "course"))
     # project_fields may contain additional fields for system use only, e.g., members
     project_fields = frozenset.union(
-        multi_valued_keys, single_valued_keys, frozenset(("members", "cur_people"))
+        multi_valued_keys, single_valued_keys, frozenset(("members", "cur_people", "_id"))
     )
 
     def __init__(
