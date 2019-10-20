@@ -7,6 +7,31 @@ from server.models.project import Project
 class NewProject(Resource):
     @jwt_required
     def post(self):
+        """
+        Posts a new project listing. Will return 400 if required fields are missing.
+
+        Expects:
+
+        ```json
+            {
+                "title":        string, # required
+                "max_people":   number, # required
+                "description":  string,
+                "course":       number,
+                "tags":         string[],
+                "technologies": string[],
+                "languages":    string[],
+            }
+        ```
+
+        On success, returns:
+
+        ```json
+            {
+                "project_id": string
+            }
+        ```
+        """
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument("title", required=True)
         parser.add_argument("max_people", type=int, required=True)

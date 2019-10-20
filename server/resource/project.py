@@ -10,6 +10,55 @@ from server.utils.json import marshal
 
 class ProjectResource(Resource):
     def get(self, project_id: str):
+        """
+        Gets information about a specific project given its project_id. Returns 422 if
+        the project_id is not in the correct format. 404 if project_id is not found.
+
+        Example:
+        ```
+        GET /api/project/5dac029b8b819e584ff36f8d ->
+        (200 OK) <-
+            {
+                "title": "Code Unity",
+                "leader": "5dabfe830ddd57902efd2fa3",
+                "max_people": 5,
+                "cur_people": 1,
+                "members": [
+                    "5dabfe830ddd57902efd2fa3"
+                ],
+                "description": "Nice.",
+                "course": 4920,
+                "technologies": [
+                    "assembly",
+                    "python",
+                    "mongoDB",
+                    "react"
+                ],
+                "languages": [
+                    "中文",
+                    "english"
+                ],
+                "tags": [
+                    "wam booster",
+                    "free hd",
+                    "machine learning",
+                    "blockchain"
+                ]
+            }
+        # If project not found
+        GET /api//project/ffffffffffffffffffffffff ->
+        (404 NOT FOUND) <-
+            {
+                "message": "project_id ffffffffffffffffffffffff not found"
+            }
+        # If project_id isn't in the right format
+        GET /api//project/ohno ->
+        (422 UNPROCESSABLE ENTITY) <-
+            {
+                "message": "invalid project_id: ohno"
+            }
+        ```
+        """
         try:
             id = ObjectId(project_id)
         except InvalidId:
@@ -22,6 +71,14 @@ class ProjectResource(Resource):
 
     @jwt_required
     def put(self, project_id: str):
+        """
+        Updates a project that is owned by the logged in user by replacing it
+        with the data passed in. Returns 422 if the project_id is invalid, 404 if
+        the project_id is not found, and 401 if the logged in user does not owned
+        the specified project.
+
+        Expects the same JSON format as POST /api/project.
+        """
         try:
             id = ObjectId(project_id)
         except InvalidId:
@@ -57,6 +114,11 @@ class ProjectResource(Resource):
 
     @jwt_required
     def delete(self, project_id: str):
+        """
+        Deletes a project that is owned by the logged in user. Returns 422 if the
+        project_id is invalid, 404 if the project_id is not found, and 401 if the
+        logged in user does not own the specified project.
+        """
         try:
             id = ObjectId(project_id)
         except InvalidId:
