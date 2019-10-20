@@ -25,8 +25,8 @@ class ProjectManager:
     def get_project(self, id: ObjectId) -> Project:
         raise NotImplementedError
 
-    def add_project(self, project: Project):
-        raise NotImplementedError
+    def add_project(self, project: Project) -> ObjectId:
+        return self.db.insert_one(project.to_dict()).inserted_id
 
     def list_projects(self) -> List[Project]:
         raise NotImplementedError

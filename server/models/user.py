@@ -1,6 +1,8 @@
+from server.models.project import Project
 from typing import List
 
 from bson import ObjectId
+from server.managers.project_manager import ProjectManager
 
 
 class Profile:
@@ -20,6 +22,11 @@ class User:
 
     def __init__(self, id: ObjectId):
         self._id = id
+
+    def create_project(self, title: str, max_people: int, **kwargs):
+        new_project = Project(self._id, title, max_people, **kwargs)
+        project_manager = ProjectManager.get_instance()
+        return project_manager.add_project(new_project)
 
     @property
     def profile(self) -> Profile:
