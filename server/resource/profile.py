@@ -1,13 +1,12 @@
+from flask_jwt_extended import current_user, get_jwt_identity, jwt_required
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 class Profile(Resource):
     @jwt_required
     def get(self):
-
-        return f"user profile information for {get_jwt_identity()}"
+        return f"user profile information for {current_user}"
 
     @jwt_required
     def put(self):
-        return f"update user information for {get_jwt_identity()}"
+        return f"update user information for {current_user}"

@@ -2,6 +2,7 @@
 .vscode
 
 venv/
+winvenv/
 
 *.pyc
 __pycache__/

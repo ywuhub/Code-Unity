@@ -20,12 +20,15 @@ class TagSearch extends React.Component {
      */
     componentDidMount() {
         this.setState({ isLoading: true });
-        fetch(API_URL + this.props.apiEndpoint)
+        if (this.props.apiEndpoint !== '') {
+
+            fetch(API_URL + this.props.apiEndpoint)
             .then(response => { return response.json(); })
             .then(json => {
                 this.setState({ tags: json });
             })
             .catch(err => { console.log(err); });
+        }
     }
 
     /**
@@ -33,6 +36,7 @@ class TagSearch extends React.Component {
      * @param {*} e event
      */
     filter(e) {
+        if (this.props.filter === '') return;
         let tags = this.state.tags;
         let filter = e.target.value.toLowerCase();
 
@@ -42,10 +46,10 @@ class TagSearch extends React.Component {
     }
 
     /**
-     * Sets search bar to selected course and Clears dropdown course options
+     * Sets search bar to selected course and Clears dropdown tag options
      * @param {*} e event
      */
-    onCourseSelect(e) {
+    onTagSelect(e) {
         this.setState({ filteredTags: [] });
         const tag = (this.props.parent === 'course') ? e.target.innerHTML.split(' ')[0] : e.target.innerHTML;
         this.props.addTag(tag);
@@ -54,7 +58,7 @@ class TagSearch extends React.Component {
 
     /**
      * Listens for course searchbar key press
-     *  sets text in search bar to the first selectable course when enter is pressed
+     *  sets text in search bar to the first selectable tag when enter is pressed
      * @param {*} e event
      */
     onKeyPress(e) {
@@ -77,8 +81,8 @@ class TagSearch extends React.Component {
         return (
             <div className="form-control p-0 border-0" style={{ 'position': 'relative' }}>
                 {/* search bar */}
-                <div className="input-group bg-dark shadow-sm" style={{ 'borderRadius': '5px' }}>
-                    <input type="text" id={this.props.searchID} className="form-control bg-transparent border-0" style={{ 'borderRadius': '5px', 'color': 'white', 'fontSize': '14px' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
+                <div className="input-group bg-dark shadow-sm rounded">
+                    <input type="text" id={this.props.searchID} className="form-control bg-dark border-0 shadow-sm rounded" style={{ 'color': 'white' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
                     <div className="input-group-append">
                         <div className="input-group-text bg-transparent border-0"><b className="fa fa-search"></b></div>
                     </div>
@@ -88,7 +92,7 @@ class TagSearch extends React.Component {
                 <div className="btn-group-vertical" style={{ 'borderRadius': '0px', 'position': 'absolute', 'zIndex': '1', 'width': '100%' }}>
                     {
                         tags.map((tag) => {
-                            return <button type="button" className="btn btn-primary" style={buttonStyle} key={this.props.tagValue(tag) + ' ' + count++} onClick={this.onCourseSelect.bind(this)}>{this.props.tagValue(tag)}</button>
+                            return <button type="button" className="btn btn-primary" style={buttonStyle} key={this.props.tagValue(tag) + ' ' + count++} onClick={this.onTagSelect.bind(this)}>{this.props.tagValue(tag)}</button>
                         })
                     }
                 </div>
