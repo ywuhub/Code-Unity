@@ -5,14 +5,14 @@ from server.resource import (
     LogOut,
     NewProject,
     OtherProfile,
-    Profile,
+    ProfileResource,
     ProjectResource,
     ProgrammingLanguages,
     ProjectList,
 )
 
 api.prefix = "/api"
-api.add_resource(Profile, "/user/profile")
+api.add_resource(ProfileResource, "/user/profile")
 api.add_resource(OtherProfile, "/user/<string:username>/profile")
 api.add_resource(ProgrammingLanguages, "/programming_languages")
 api.add_resource(Auth, "/auth")

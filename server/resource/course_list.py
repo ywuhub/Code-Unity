@@ -3,6 +3,7 @@ from server import db
 
 _cache = []
 
+
 class CourseList(Resource):
     def get(self):
         """
