@@ -8,9 +8,11 @@ from flask_restful import Api
 from server.database import init_db
 from server.managers.project_manager import ProjectManager
 from server.managers.user_manager import UserManager
+from flask_cors import CORS
 
 # create and configure the app
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 api = Api(app)
 jwt = JWTManager(app)
 db = init_db()
