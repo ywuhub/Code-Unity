@@ -143,19 +143,50 @@ class FilterListings extends React.Component {
     filterPosts(e) {
         //let posts = this.state.initialPosts;
         let filter = e.target.value.toLowerCase();
-        let posts = (filter === '') ? this.state.initialPosts : this.state.filteredPosts;
-        
-        if (filter !== '') {
-            posts = posts.filter((post) => {
-                return this.containsFilter(post, filter);
-            });
-            this.setState({ filteredPosts: posts });
+        if (this.state.tags.length !== 0) {
+            // filter/user input empty and tags not empty  then filter by tag   (if already fitlered by projec title/leader -> reset/ignores b/c too complex)
+            if (/^(\s+|)$/.test(filter)) this.filterByTag();
+            
+            // filter not empty and there are tags      
+            else {
+                // filter the filtered posts (filtered from tags)
+                let posts = this.state.filteredPosts;   // fitlered not initial  for when filtered by title/leader already      if want ignore altogether -> initialposts
+                posts = posts.filter((post) => {
+                    return this.containsFilter(post, filter);
+                });
+                this.setState({ filteredPosts: posts });    
+            }
+            
+        } else {
+            // filter empty and there are no tags
+            if (/^(\s+|)$/.test(filter)) {
+                let posts = this.state.initialPosts;
+                this.setState({ filteredPosts: posts });
+            } 
 
-        } else if (filter === '') {
-            if (this.state.tags.length !== 0) this.filterByTag();
-            else this.setState({ filteredPosts: posts });
+            // filter not empty and there are no tags
+            else {
+                let posts = this.state.initialPosts; 
+                posts = posts.filter((post) => {
+                    return this.containsFilter(post, filter);
+                });
+                this.setState({ filteredPosts: posts });    
+            }
         }
+        
+        
+        // let posts = (filter === '') ? this.state.initialPosts : this.state.filteredPosts;
+        // if (filter !== '') {
+        //     posts = posts.filter((post) => {
+        //         return this.containsFilter(post, filter);
+        //     });
+        //     this.setState({ filteredPosts: posts });
 
+        // } else if (filter === '') {
+        //     if (this.state.tags.length !== 0) this.filterByTag();
+        //     else this.setState({ filteredPosts: posts });
+
+        // }
     }
 
     /**
@@ -166,6 +197,16 @@ class FilterListings extends React.Component {
         const inclusive_search = document.getElementById('inclusive-search').checked;  // checked -> filter filtered posts  unchecked -> filter all posts 
         let posts = (inclusive_search) ? ((this.state.tags.length !== 0 && !tagRemoved) || onFilteredTags) ? this.state.filteredPosts : this.state.initialPosts : this.state.initialPosts;
         let tags = this.state.tags;
+
+        //if all tag removed  and still have value in search bar -> 
+        const search_filter = document.getElementById('search-bar').value;
+
+        // nonempty search bar filter posts
+        if (!(/^(\s+|)$/.test(search_filter))) {
+            posts = posts.filter((post) => {
+                return this.containsFilter(post, search_filter);
+            });
+        }
 
         if (tags.length !== 0) {
             posts = posts.filter((post) => {
@@ -217,7 +258,7 @@ class FilterListings extends React.Component {
                     if (!append || tags.indexOf(tag) !== -1) this.state.tags.push(tag);
                 });
 
-                this.filterByTag(false, true);
+                this.filterByTag(false, false);
             })
             .catch(error => { console.log(error) });
     }
