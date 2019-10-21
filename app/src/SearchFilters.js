@@ -16,7 +16,7 @@ class TagSearch extends React.Component {
 
     /**
      * Initialisation when this component is first loaded into the page
-     *  Fetches all courses 
+     *  Fetches all options for users to filter through
      */
     componentDidMount() {
         this.setState({ isLoading: true });
@@ -32,40 +32,42 @@ class TagSearch extends React.Component {
     }
 
     /**
-     * Filters all courses based on user input
+     * Filters all options based on user input
      * @param {*} e event
      */
     filter(e) {
-        if (this.props.filter === '') return;
+        if (/^(\s+|)$/.test(this.props.filter)) return;
+
         let tags = this.state.tags;
         let filter = e.target.value.toLowerCase();
 
-        tags = this.props.filter(tags, filter);
+        tags = this.props.filter(tags, filter); // uses child's filter method
 
         this.setState({ filteredTags: tags });
     }
 
     /**
-     * Sets search bar to selected course and Clears dropdown tag options
+     * Selects option clicked by the user
+     *  Child method passed in process the value chosen
      * @param {*} e event
      */
     onTagSelect(e) {
         this.setState({ filteredTags: [] });
         const tag = (this.props.parent === 'course') ? e.target.innerHTML.split(' ')[0] : e.target.innerHTML;
-        this.props.addTag(tag);
+        this.props.addTag(tag); // child processes selection option
         document.getElementById(this.props.searchID).value = '';
     }
 
     /**
-     * Listens for course searchbar key press
-     *  sets text in search bar to the first selectable tag when enter is pressed
+     * Selected first selectable option when user presses enter
+     *  Child method passed in processes the value chosen
      * @param {*} e event
      */
     onKeyPress(e) {
         if (e.key === 'Enter' && this.state.filteredTags.length > 0) {
             this.setState({ filteredTags: [] });
             const tag = (this.props.parent === 'course') ? this.props.tagValue(this.state.filteredTags[0]).split(' ')[0] : this.props.tagValue(this.state.filteredTags[0]);
-            this.props.addTag(tag);
+            this.props.addTag(tag); // child processes selected option
             document.getElementById(this.props.searchID).value = '';
         }
     }
@@ -112,11 +114,12 @@ function CourseSearch(props) {
      * @param {*} filter    user search input
      */
     function filterCourses(tags, filter) {
-        // no courses shown for whitespace/empty, input length < 3, input starts with COM/COMP
         let tags_ = tags;
+        // whitespace/empty input, input length < 3, input starts with COM/COMP     show no options
         if (/^(\s+|)$/.test(filter) || filter.length < 3 || /^(COM|COMP)$/i.test(filter)) {
             tags_ = [];
 
+        // filter through course options based on user input
         } else {
             tags_ = tags_.filter((tag) => {
                 let course = tag['code'].toLowerCase() + ' ' + tag['name'].toLowerCase();
@@ -137,6 +140,7 @@ function CourseSearch(props) {
 
 /**
  * Language Search Component
+ * @requires addTag function passed in to process selected language tag
  * @param {*} props 
  */
 function LanguageSearch(props) {
@@ -146,6 +150,7 @@ function LanguageSearch(props) {
         if (/^(\s+|)$/.test(filter)) {
             tags_ = [];
 
+        // filter through programming lagnuage options based on user input
         } else {
             tags_ = tags_.filter((tag) => {
                 let language = tag.toLowerCase();

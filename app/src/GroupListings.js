@@ -121,6 +121,11 @@ class FilterListings extends React.Component {
             .catch(err => { console.log(err); });
     }
 
+    /**
+     * Checks if a post contains a string
+     * @param {*} post      
+     * @param {*} filter    string to find
+     */
     containsFilter(post, filter) {
         return post['title'].toLowerCase().indexOf(filter) !== -1 ||
             post['description'].toLowerCase().indexOf(filter) !== -1 ||
@@ -135,9 +140,10 @@ class FilterListings extends React.Component {
         //     post['languages'].toLowerCase().indexOf(filter) !== -1 ||
         //     post['technologies'].toLowerCase().indexOf(filter) !== -1;
     }
+
     /**
      * Filters all posts by the user input
-     *  filters as users type
+     *  filters as user types
      * @param {*} e event
      */
     filterPosts(e) {
@@ -190,27 +196,25 @@ class FilterListings extends React.Component {
     }
 
     /**
-     * Filter posts by tags
-     *  filters once users hits enter
+     * Filter posts by currently selected tags
      */
     filterByTag(tagRemoved = false, onFilteredTags = false) {
         const inclusive_search = document.getElementById('inclusive-search').checked;  // checked -> filter filtered posts  unchecked -> filter all posts 
         let posts = (inclusive_search) ? ((this.state.tags.length !== 0 && !tagRemoved) || onFilteredTags) ? this.state.filteredPosts : this.state.initialPosts : this.state.initialPosts;
         let tags = this.state.tags;
 
-        //if all tag removed  and still have value in search bar -> 
-        const search_filter = document.getElementById('search-bar').value;
-
         // nonempty search bar filter posts
+        const search_filter = document.getElementById('search-bar').value;
         if (!(/^(\s+|)$/.test(search_filter))) {
             posts = posts.filter((post) => {
                 return this.containsFilter(post, search_filter);
             });
         }
 
+        // filter posts by all tags selected
         if (tags.length !== 0) {
             posts = posts.filter((post) => {
-                // get posts containing all tags || get posts containing at least one tag  
+                // get posts containing all tags if 'contains all' option selected else get posts containing at least one tag  
                 return (inclusive_search) ? tags.every((tag) => { return this.containsFilter(post, tag); }) : tags.some((tag) => { return this.containsFilter(post, tag); });;
             });
         }
@@ -218,10 +222,16 @@ class FilterListings extends React.Component {
         this.setState({ filteredPosts: posts });
     }
 
+    /**
+     * Filters based on specific key/part of post e.g. title, leader, course, etc
+     * @param {*} key   
+     * @param {*} name 
+     */
     filterByKey(key, name) {
         // let posts = this.state.initialPosts;
         let posts = this.state.filteredPosts;
         name = name.toLowerCase();
+
         posts = posts.filter((post) => {
             return post[key].toLowerCase().indexOf(name) !== -1;
         });
@@ -229,14 +239,24 @@ class FilterListings extends React.Component {
         this.setState({ filteredPosts: posts });
     }
 
+    /**
+     * Filters posts when on new user input
+     *  Called when user presses enter in search bar
+     * @param {*} e event
+     */
     onKeyPress(e) {
         if (e.key === 'Enter') {
+            // check empty string ?
             this.addTag(e.target.value);
             document.getElementById('search-bar').value = '';
             this.filterByTag();
         }
     }
 
+    /**
+     * Add tag to currently selected search tags
+     * @param {*} tag 
+     */
     addTag(tag) {
         let tags = this.state.tags;
         tag = tag.toLowerCase();
@@ -248,6 +268,11 @@ class FilterListings extends React.Component {
 
     }
 
+    /**
+     * Adds a list of tags to currently selected tags
+     * @param {*} tags 
+     * @param {*} append 
+     */
     addTags(tags, append = false) {
         new Promise((resolve, reject) => {
             if (!append) this.setState({ tags: [] });
@@ -263,6 +288,10 @@ class FilterListings extends React.Component {
             .catch(error => { console.log(error) });
     }
 
+    /**
+     * Removes tag selected
+     * @param {*} e event
+     */
     removeTag(e) {
         let tags = this.state.tags;
         const tagIndex = tags.indexOf(e.target.value);
@@ -271,11 +300,10 @@ class FilterListings extends React.Component {
             this.setState({ tags: tags });
             this.filterByTag(true);
         }
-
     }
 
     /**
-     * Shows component
+     * Shows group listing page
      */
     render() {
         let tag_id = 0;
@@ -288,15 +316,10 @@ class FilterListings extends React.Component {
                 </div>
 
                 <div className="row">
-
                     <div className="col-sm-7">
                         <ShowPosts posts={this.state.filteredPosts} />
                     </div>
-
-
                     <div className="col-sm-5">
-
-
                         {/* search bar */}
                         <div className="input-group bg-dark shadow-sm mb-1" style={{ 'borderRadius': '5px' }}>
                             <input type="text" id="search-bar" className="form-control bg-transparent p-4 pr-5 border" style={{ 'borderRadius': '5px', 'color': 'white', 'borderTopRightRadius': '0px', 'borderBottomRightRadius': '0px' }} placeholder="Search" onKeyPress={this.onKeyPress.bind(this)} onChange={this.filterPosts.bind(this)}></input>
@@ -308,7 +331,7 @@ class FilterListings extends React.Component {
 
                         <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} /> <br />
 
-                        {/* tags */}
+                        {/* shows tags */}
                         <div className="card-footer rounded mb-5 border shadow-sm">
                             <div className="d-flex justify-content-between">
                                 <i className="mr-4 p-2 text-muted"> Search Tags:</i>
@@ -328,8 +351,6 @@ class FilterListings extends React.Component {
                                 }
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>
