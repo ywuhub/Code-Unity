@@ -54,7 +54,7 @@ class TagSearch extends React.Component {
     onTagSelect(e) {
         this.setState({ filteredTags: [] });
         const tag = (this.props.parent === 'course') ? e.target.innerHTML.split(' ')[0] : e.target.innerHTML;
-        this.props.addTag(tag); // child processes selection option
+        this.props.processTag(tag); // child processes selection option
         document.getElementById(this.props.searchID).value = '';
     }
 
@@ -67,7 +67,7 @@ class TagSearch extends React.Component {
         if (e.key === 'Enter' && this.state.filteredTags.length > 0) {
             this.setState({ filteredTags: [] });
             const tag = (this.props.parent === 'course') ? this.props.tagValue(this.state.filteredTags[0]).split(' ')[0] : this.props.tagValue(this.state.filteredTags[0]);
-            this.props.addTag(tag); // child processes selected option
+            this.props.processTag(tag); // child processes selected option
             document.getElementById(this.props.searchID).value = '';
         }
     }
@@ -84,7 +84,7 @@ class TagSearch extends React.Component {
             <div className="form-control p-0 border-0" style={{ 'position': 'relative' }}>
                 {/* search bar */}
                 <div className="input-group bg-dark shadow-sm rounded">
-                    <input type="text" id={this.props.searchID} className="form-control bg-dark border-0 shadow-sm rounded" style={{ 'color': 'white' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
+                    <input type="text" id={this.props.searchID} className="form-control bg-dark border-0 shadow-sm rounded advanced-input" style={{ 'color': 'white' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
                     <div className="input-group-append">
                         <div className="input-group-text bg-transparent border-0"><b className="fa fa-search"></b></div>
                     </div>
@@ -105,6 +105,7 @@ class TagSearch extends React.Component {
 
 /**
  * Course Search Component
+ * @requires function processTag(tag) to be passed in to get/process selected course tag
  * @param {*} props 
  */
 function CourseSearch(props) {
@@ -134,13 +135,13 @@ function CourseSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/course_list' filter={filterCourses} addTag={props.addTag} tagValue={toString} searchID='course-search' parent='course' searchPlaceholder='Search Course' />
+        <TagSearch apiEndpoint='/api/course_list' filter={filterCourses} processTag={props.processTag} tagValue={toString} searchID='course-search' parent='course' searchPlaceholder='Search Course' />
     );
 }
 
 /**
  * Language Search Component
- * @requires addTag function passed in to process selected language tag
+ * @requires function processTag(tag) to be passed in to get/process selected language tag
  * @param {*} props 
  */
 function LanguageSearch(props) {
@@ -165,7 +166,7 @@ function LanguageSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} addTag={props.addTag} tagValue={toString} searchID='language-search' parent='p-lang' searchPlaceholder='Search Language' />
+        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID='language-search' parent='p-lang' searchPlaceholder='Search Language' />
     );
 }
 

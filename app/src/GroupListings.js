@@ -15,7 +15,8 @@ class FilterListings extends React.Component {
         this.state = {
             initialPosts: [],
             filteredPosts: [],
-            tags: []
+            tags: [],
+            isLoading: false
         };
     }
 
@@ -24,6 +25,7 @@ class FilterListings extends React.Component {
      *  Fetches all posts
      */
     componentDidMount() {
+        this.setState({ isLoading: true });
         fetch(API_URL + '/api/project/list')
             .then(response => {return response.json()})
             .then(json => {
@@ -115,7 +117,8 @@ class FilterListings extends React.Component {
                             "technologies": "poof",
                             "languages": "C++, javascript"
                         }
-                    ]
+                    ],
+                    isLoading: false
                 });
             })
             .catch(err => { console.log(err); });
@@ -127,18 +130,14 @@ class FilterListings extends React.Component {
      * @param {*} filter    string to find
      */
     containsFilter(post, filter) {
-        return post['title'].toLowerCase().indexOf(filter) !== -1 ||
-            post['description'].toLowerCase().indexOf(filter) !== -1 ||
-            post['course'].toLowerCase().indexOf(filter) !== -1 ||
-            post['languages'].toLowerCase().indexOf(filter) !== -1 ||
-            post['technologies'].toLowerCase().indexOf(filter) !== -1;
-        // return post['leader'].toLowerCase().indexOf(filter) !== -1 ||
-        //     post['title'].toLowerCase().indexOf(filter) !== -1 ||
-        //     post['description'].toLowerCase().indexOf(filter) !== -1 ||
-        //     post['course'].toLowerCase().indexOf(filter) !== -1 ||
-        //     post['tags'].toLowerCase().indexOf(filter) !== -1 ||
-        //     post['languages'].toLowerCase().indexOf(filter) !== -1 ||
-        //     post['technologies'].toLowerCase().indexOf(filter) !== -1;
+        let contains = false;
+        for (let key of Object.keys(post)) {
+            if (post[key].toLowerCase().indexOf(filter) !== -1) {
+                contains = !contains;
+                break;
+            }
+        }
+        return contains;
     }
 
     /**
@@ -147,52 +146,21 @@ class FilterListings extends React.Component {
      * @param {*} e event
      */
     filterPosts(e) {
-        //let posts = this.state.initialPosts;
+        let posts = (this.state.tags.length !== 0) ? this.state.filteredPosts : this.state.initialPosts;
         let filter = e.target.value.toLowerCase();
-        if (this.state.tags.length !== 0) {
-            // filter/user input empty and tags not empty  then filter by tag   (if already fitlered by projec title/leader -> reset/ignores b/c too complex)
-            if (/^(\s+|)$/.test(filter)) this.filterByTag();
-            
-            // filter not empty and there are tags      
-            else {
-                // filter the filtered posts (filtered from tags)
-                let posts = this.state.filteredPosts;   // fitlered not initial  for when filtered by title/leader already      if want ignore altogether -> initialposts
-                posts = posts.filter((post) => {
-                    return this.containsFilter(post, filter);
-                });
-                this.setState({ filteredPosts: posts });    
-            }
-            
+
+        // filtering posts when input filter is empty
+        if (/^(\s+|)$/.test(filter)) {
+            if (this.state.tags.length !== 0) this.filterByTag();
+            else this.setState({ filteredPosts: posts });
+
+        // filter posts acorrding to input filter
         } else {
-            // filter empty and there are no tags
-            if (/^(\s+|)$/.test(filter)) {
-                let posts = this.state.initialPosts;
-                this.setState({ filteredPosts: posts });
-            } 
-
-            // filter not empty and there are no tags
-            else {
-                let posts = this.state.initialPosts; 
-                posts = posts.filter((post) => {
-                    return this.containsFilter(post, filter);
-                });
-                this.setState({ filteredPosts: posts });    
-            }
+            posts = posts.filter((post) => {
+                return this.containsFilter(post, filter);
+            });
+            this.setState({ filteredPosts: posts });  
         }
-        
-        
-        // let posts = (filter === '') ? this.state.initialPosts : this.state.filteredPosts;
-        // if (filter !== '') {
-        //     posts = posts.filter((post) => {
-        //         return this.containsFilter(post, filter);
-        //     });
-        //     this.setState({ filteredPosts: posts });
-
-        // } else if (filter === '') {
-        //     if (this.state.tags.length !== 0) this.filterByTag();
-        //     else this.setState({ filteredPosts: posts });
-
-        // }
     }
 
     /**
@@ -316,9 +284,12 @@ class FilterListings extends React.Component {
                 </div>
 
                 <div className="row">
+                    {/* Shows the filtered post */}
                     <div className="col-sm-7">
-                        <ShowPosts posts={this.state.filteredPosts} />
+                        { this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-4"></div> }
+                        <ShowPosts posts={this.state.filteredPosts} />  {/* react component that takes in list of posts in json form and shows on page*/}
                     </div>
+
                     <div className="col-sm-5">
                         {/* search bar */}
                         <div className="input-group bg-dark shadow-sm mb-1" style={{ 'borderRadius': '5px' }}>
