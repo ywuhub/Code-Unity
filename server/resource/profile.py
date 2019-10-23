@@ -8,11 +8,49 @@ from server.models.user import profile_fields
 class ProfileResource(Resource):
     @jwt_required
     def get(self):
+        """
+        Returns user profile information for an authenticated user.
+        Will return 401/422 if user is not authenticated.
+
+        Returns:
+        ```json
+            {
+                "_id": string,
+                "name": string,
+                "email": string,
+                "visibility": string,
+                "description": string,
+                "interests": string[],
+                "programming_languages": string[],
+                "languages": string[],
+                "github": string
+            }
+        ```
+        """
         profile = UserManager.get_instance().get_user_profile(current_user)
         return marshal(profile, profile_fields)
 
     @jwt_required
     def put(self):
+        """
+        Replaces the information of the currently loggedin user's profile with
+        the supplied information. All fields are optional.
+        Will return 401/422 if user is not authenticated.
+
+        Expects:
+        ```json
+            {
+                "name": string,
+                "email": string,
+                "visibility": string, // "public" or "private
+                "description": string,
+                "interests": string[],
+                "programming_languages": string[],
+                "languages": string[],
+                "github": string
+            }
+        ```
+        """
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument("name", store_missing=False)
         parser.add_argument("email", store_missing=False)

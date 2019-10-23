@@ -6,8 +6,40 @@
 #### GET
 Returns user profile information for an authenticated user. Will return 401/422 if user is not authenticated.
 
+
+Returns:
+```json
+    {
+        "_id": string,
+        "name": string,
+        "email": string,
+        "visibility": string,
+        "description": string,
+        "interests": string[],
+        "programming_languages": string[],
+        "languages": string[],
+        "github": string
+    }
+```
+
 #### PUT
-Updates user profile information for an authenticated user. Will return 401/422 if user is not authenticated.
+Replaces the information of the currently logged in user's profile with the supplied  information.
+All fields are optional. Will return 401/422 if user is not authenticated. 400 if there are invalid fields in the JSON.
+
+
+Expects:
+```json
+    {
+        "name": string,
+        "email": string,
+        "visibility": string, // "public" or "private
+        "description": string,
+        "interests": string[],
+        "programming_languages": string[],
+        "languages": string[],
+        "github": string
+    }
+```
 
 ### `/api/user/<int:uid>/profile`
 
