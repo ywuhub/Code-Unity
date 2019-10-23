@@ -1,9 +1,13 @@
 from flask_restful import Resource
-from server import db
+from pymongo.database import Database
 
 _cache = []
 
+
 class CourseList(Resource):
+    def __init__(self, db: Database):
+        self.db = db
+
     def get(self):
         """
         Lists all the COMP courses available in UNSW.
@@ -33,6 +37,6 @@ class CourseList(Resource):
         ```
         """
         if len(_cache) == 0:
-            for doc in db["comp_courses"].find({}).sort("code", 1):
+            for doc in self.db["comp_courses"].find({}).sort("code", 1):
                 _cache.append({"code": doc["code"], "name": doc["name"]})
         return _cache

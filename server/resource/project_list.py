@@ -7,6 +7,9 @@ fields = {"title": fields.String, "project_id": ObjectId(attribute="_id")}
 
 
 class ProjectList(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+
     def get(self):
         """
         Returns a list of every project's title and their project_id.
@@ -27,4 +30,4 @@ class ProjectList(Resource):
             ]
         ```
         """
-        return marshal(ProjectManager.get_instance().get_project_listing(), fields)
+        return marshal(self.project_manager.get_project_listing(), fields)

@@ -9,6 +9,9 @@ from server.utils.json import marshal
 
 
 class ProjectResource(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+
     def get(self, project_id: str):
         """
         Gets information about a specific project given its project_id. Returns 422 if
@@ -64,7 +67,7 @@ class ProjectResource(Resource):
         except InvalidId:
             return {"message": f"invalid project_id: {project_id}"}, 422
 
-        doc = ProjectManager.get_instance().get_project(id)
+        doc = self.project_manager.get_project(id)
         if doc is None:
             return {"message": f"project_id {project_id} not found"}, 404
         return marshal(doc, project_fields)
@@ -84,8 +87,7 @@ class ProjectResource(Resource):
         except InvalidId:
             return {"message": f"invalid project_id: {project_id}"}, 422
 
-        pm = ProjectManager.get_instance()
-        project = pm.get_project(id)
+        project = self.project_manager.get_project(id)
 
         if project is None:
             return {"message": f"project_id {project_id} not found"}, 404
@@ -109,7 +111,7 @@ class ProjectResource(Resource):
         except ValueError as err:
             return {"message": str(err)}, 400
 
-        pm.replace_project(project, new_project)
+        self.project_manager.replace_project(project, new_project)
         return {"message": "successfully replaced project"}
 
     @jwt_required
@@ -124,13 +126,12 @@ class ProjectResource(Resource):
         except InvalidId:
             return {"message": f"invalid project_id: {project_id}"}, 422
 
-        pm = ProjectManager.get_instance()
-        project = pm.get_project(id)
+        project = self.project_manager.get_project(id)
 
         if project is None:
             return {"message": f"project_id {project_id} not found"}, 404
         if current_user._id != project.leader:
             return {"message": "only the owner may delete a project"}, 401
 
-        pm.delete_project(project)
+        self.project_manager.delete_project(project)
         return {"message": "successfully deleted the project"}

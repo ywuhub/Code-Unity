@@ -1,11 +1,13 @@
-from bson import ObjectId
-from flask_jwt_extended import get_current_user, jwt_required
+from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 
-from server import user_manager
+from server.managers.user_manager import UserManager
 
 
 class LogOut(Resource):
+    def __init__(self, user_manager: UserManager):
+        self.user_manager = user_manager
+
     @jwt_required
     def post(self):
         """
@@ -13,5 +15,5 @@ class LogOut(Resource):
         Will return a 200 response if successfully logged out,
         or a 401 if the current user is not logged in.
         """
-        user_manager.log_out_user()
+        self.user_manager.log_out_user()
         return {"msg": "Successfully logged out"}
