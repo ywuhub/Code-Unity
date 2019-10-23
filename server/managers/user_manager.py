@@ -56,7 +56,7 @@ class UserManager:
         # Overrides the default function of jwt.current_user to return a User object.
         @jwt.user_loader_callback_loader
         def user_loader_callback(id: str):
-            return User(ObjectId(id))
+            return User(ObjectId(id), db)
 
         # Check for revoked tokens.
         @jwt.token_in_blacklist_loader

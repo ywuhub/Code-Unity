@@ -1,11 +1,13 @@
 from argon2.exceptions import VerificationError
 from flask_restful import Resource, reqparse
 
-from server import user_manager
-from server.managers.user_manager import ValueExistsError
+from server.managers.user_manager import UserManager, ValueExistsError
 
 
 class Auth(Resource):
+    def __init__(self, user_manager: UserManager):
+        self.user_manager = user_manager
+
     def post(self):
         """
         Logs a user in. Will return 400 if username or password is not provided, and 401 if the credentials supplied are not valid.
@@ -67,7 +69,7 @@ class Auth(Resource):
         try:
             username = args["username"]
             pwd = args["password"]
-            uid, token = user_manager.log_in_user(username, pwd)
+            uid, token = self.user_manager.log_in_user(username, pwd)
         except (VerificationError, ValueError):
             return {"message": "incorrect username or password"}, 401
 
@@ -144,7 +146,7 @@ class Auth(Resource):
         password = args["password"]
 
         try:
-            uid, token = user_manager.register_user(username, email, password)
+            uid, token = self.user_manager.register_user(username, email, password)
             return {"uid": uid, "token": token}
         except ValueExistsError as err:
             return {"message": err.errors}, 422
