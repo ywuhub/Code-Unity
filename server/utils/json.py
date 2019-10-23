@@ -2,6 +2,7 @@ from flask_restful import fields
 
 from collections import OrderedDict
 
+
 class ObjectId(fields.Raw):
     """
     Unmarshalling helper class for bson.ObjecId
@@ -22,8 +23,11 @@ def marshal(data, fields, envelope=None):
         return cls.output(k, data)
 
     if isinstance(data, (list, tuple)):
-        return (OrderedDict([(envelope, [marshal(d, fields) for d in data])])
-                if envelope else [marshal(d, fields) for d in data])
+        return (
+            OrderedDict([(envelope, [marshal(d, fields) for d in data])])
+            if envelope
+            else [marshal(d, fields) for d in data]
+        )
 
     items = OrderedDict()
 

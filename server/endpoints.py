@@ -10,7 +10,7 @@ from server.resource import (
     LogOut,
     NewProject,
     OtherProfile,
-    Profile,
+    ProfileResource,
     ProgrammingLanguages,
     ProjectList,
     ProjectResource,
@@ -24,7 +24,7 @@ def register_endpoints(
 
     # Inject resource dependencies with the `resource_class_args` kwarg.
     api.prefix = "/api"
-    api.add_resource(Profile, "/user/profile")
+    api.add_resource(ProfileResource, "/user/profile")
     api.add_resource(OtherProfile, "/user/<string:username>/profile")
     api.add_resource(
         ProgrammingLanguages, "/programming_languages", resource_class_args=[db]

@@ -3,7 +3,7 @@ from .course_list import CourseList
 from .logout import LogOut
 from .new_project import NewProject
 from .other_profile import OtherProfile
-from .profile import Profile
+from .profile import ProfileResource
 from .programming_languages import ProgrammingLanguages
 from .project import ProjectResource
 from .project_list import ProjectList
