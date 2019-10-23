@@ -113,13 +113,13 @@ class AdvancedSearch extends React.Component {
             <div id="advancedSearch" className="collapse card border shadow">
                 <div className="card-body bg-light">
                     <h3 className="card-title text-muted p-1 mb-4"> Advanced Search </h3>
-                    
+                    <h5 className="mb-3">Search Posts By {'<Under Construction>'} </h5> 
                     {/* project title and leader search */}
                     <SearchBy />
 
                     {/* search filers for courses and progamming languages, and input box for user specified keyword tags*/}
                     <div className="d-flex justify-content-between mb-3">
-                        <h5 className="my-auto">Tags</h5> 
+                        <h5 className="my-auto">Then Filter By Tags</h5> 
                         <div className="custom-control custom-switch">
                             <input type="checkbox" className="custom-control-input my-auto" value="false" id="append-switch"></input>
                             <label className="custom-control-label text-muted mb-2 my-auto" htmlFor="append-switch">Append</label>
@@ -149,7 +149,7 @@ class AdvancedSearch extends React.Component {
                         </div>
                     </div>
                     <div className="card-footer rounded mt-4 mb-5 border shadow-sm">
-                        <i className="mr-4 p-1 text-muted"> Excluded Tags:</i>
+                        <i className="mr-4 p-1 text-muted"> Excluded Tags: {'<Under Construction>'}</i>
                         <div id="tags">
                             {
                                 this.state.selected_tags.map((tag) => {

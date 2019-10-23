@@ -1,5 +1,5 @@
 import React from 'react';
-const API_URL = 'http://localhost:8080'
+const API_URL = 'http://localhost:4000'
 
 /**
  * Search bar to filter and show a list of possible tags (courses, programming languages, project classification e.g. mahcine learning, etc)

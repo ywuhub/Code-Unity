@@ -13,7 +13,7 @@ from flask_jwt_extended import (
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
 
-from server.models.user import User
+from server.models.user import User, Profile
 
 ph = PasswordHasher(time_cost=1, memory_cost=51200, parallelism=2)
 
@@ -47,6 +47,7 @@ class UserManager:
 
     def __init__(self, app: Flask, db: Database, jwt: JWTManager):
         self.users = db.get_collection("users")
+        self.profiles = db.get_collection("profiles")
         # In memory store of revoked tokens. WARNING: will allow logged out users to
         # log back in if app is restarted.
         self.revoked_tokens: Set[str] = set()
@@ -55,7 +56,7 @@ class UserManager:
         # Overrides the default function of jwt.current_user to return a User object.
         @jwt.user_loader_callback_loader
         def user_loader_callback(id: str):
-            return User(ObjectId(id))
+            return User(ObjectId(id), db)
 
         # Check for revoked tokens.
         @jwt.token_in_blacklist_loader
@@ -137,3 +138,12 @@ class UserManager:
         """
         jti: str = get_raw_jwt()["jti"]
         self.revoked_tokens.add(jti)
+
+    def get_user_profile(self, user: User) -> Profile:
+        ret = self.profiles.find_one({"_id": user._id})
+        if ret is None:
+            return Profile()
+        return Profile.from_dict(ret)
+
+    def put_user_profile(self, user: User, profile: Profile):
+        self.profiles.replace_one({"_id": user._id}, profile, upsert=True)
