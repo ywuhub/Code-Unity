@@ -1,0 +1,33 @@
+.contact-bar-outline {
+  border-right: 1px solid rgb(223, 223, 223);
+  border-spacing: 10px;
+  height: 400px;
+  width: 200px;
+
+}
+.contact-bar-item {
+  height: 80px;
+  width: 200px;
+}
+.contact-bar-item a{
+  color: black;
+}
+.contact-bar-item:hover, .contact-bar-item:visited, .contact-bar-item:link, .contact-bar-item:active
+{
+    text-decoration: none;
+}
+.contact-bar-item-selected {
+  border-radius: 10px;
+  border-spacing: -10px;
+  margin: 5px;
+  height: 80px;
+  width: 185px;
+  background-color: rgb(243, 243, 243);
+}
+.contact-bar-item-selected a{
+  color: black;
+}
+.contact-bar-item-selected:hover, .contact-bar-item-selected:visited, .contact-bar-item-selected:link, .contact-bar-item-selected:active
+{
+    text-decoration: none;
+}
