@@ -1,5 +1,7 @@
 import React from 'react';
 import AdvancedSearch from './AdvancedSearch';
+import config from 'config';
+import { authHeader } from '@/_helpers';
 
 const API_URL = 'http://localhost:4000'
 
@@ -26,11 +28,12 @@ class GroupList extends React.Component {
    */
   componentDidMount() {
     this.setState({ isLoading: true });
-    fetch(API_URL + '/api/project/list')
+    const projects_options = { method: 'GET', headers: authHeader() };
+    fetch(API_URL + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(json => {
         json.forEach(post => {
-          fetch(API_URL + '/api/project/' + post['project_id'])
+          fetch(API_URL + '/api/project/' + post['project_id'], projects_options)
             .then(project_post => { return project_post.json() })
             .then(post => {
               let initial = this.state.initialPosts;
@@ -226,7 +229,14 @@ class GroupList extends React.Component {
 
         <div className="row">
           <div className="col-sm-7 my-3 p-3 bg-white rounded shadow-sm">
-            <h6 className="border-bottom border-gray pb-2 mb-0">Find a new Group</h6>
+            <h6 className="border-bottom border-gray mb-0 d-flex justify-content-between">
+              Find a new Group 
+              <div className="custom-control custom-switch">
+                <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
+                <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
+              </div>
+            </h6>
+            
 
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
 
@@ -333,19 +343,20 @@ function ShowPosts(props) {
     <div>
       {
         props.posts.map((post) => {
-          return (
-            <div class="media text-muted pt-3" key={post_key++}>
-              <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
-              <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                  <strong class="text-gray-dark">{post['title']}</strong>
-                  <a href="#">Join</a>
+            return (
+              <div class="media text-muted pt-3" key={post_key++}>
+                <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
+                <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <strong class="text-gray-dark">{post['title']}</strong>
+                    { post['max_people'] !== post['cur_people'] && <a href="#">Join</a> }
+                  </div>
+
+                  {/* Show all the information in post  */}
+                  <ShowPost post={post}/>
                 </div>
-                {/* Show all the information in post  */}
-                <ShowPost post={post}/>
               </div>
-            </div>
-          );
+            );
         })
       }
     </div>

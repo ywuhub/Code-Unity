@@ -1,9 +1,14 @@
 import React from 'react';
+import config from 'config';
+import { authHeader } from '@/_helpers';
+
 const API_URL = 'http://localhost:4000'
 
 /**
  * Search bar to filter and show a list of possible tags (courses, programming languages, project classification e.g. mahcine learning, etc)
  *  Parent class
+ *  As users type, a list of preset options are shown
+ *      users then press enter or click the option to select it
  */
 class TagSearch extends React.Component {
     constructor(props) {
@@ -21,8 +26,8 @@ class TagSearch extends React.Component {
     componentDidMount() {
         this.setState({ isLoading: true });
         if (this.props.apiEndpoint !== '') {
-
-            fetch(API_URL + this.props.apiEndpoint)
+            const options = { method:'GET', headers: authHeader() }
+            fetch(API_URL + this.props.apiEndpoint, options)
             .then(response => { return response.json(); })
             .then(json => {
                 this.setState({ tags: json });
@@ -68,7 +73,7 @@ class TagSearch extends React.Component {
             this.setState({ filteredTags: [] });
             const tag = (this.props.parent === 'course') ? this.props.tagValue(this.state.filteredTags[0]).split(' ')[0] : this.props.tagValue(this.state.filteredTags[0]);
             this.props.processTag(tag); // child processes selected option
-            document.getElementById(this.props.searchID).value = '';
+            e.target.value = '';
         }
     }
 
@@ -84,7 +89,7 @@ class TagSearch extends React.Component {
             <div className="form-control p-0 border-0" style={{ 'position': 'relative' }}>
                 {/* search bar */}
                 <div className="input-group bg-dark shadow-sm rounded">
-                    <input type="text" id={this.props.searchID} className="form-control bg-dark border-0 shadow-sm rounded advanced-input" style={{ 'color': 'white' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
+                    <input type="text" id={this.props.searchID} className={"form-control bg-dark border-0 shadow-sm rounded advanced-input " + this.props.searchClass} style={{ 'color': 'white' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
                     <div className="input-group-append">
                         <div className="input-group-text bg-transparent border-0"><b className="fa fa-search"></b></div>
                     </div>
@@ -106,6 +111,7 @@ class TagSearch extends React.Component {
 /**
  * Course Search Component
  * @requires function processTag(tag) to be passed in to get/process selected course tag
+ * @requires id for input box
  * @param {*} props 
  */
 function CourseSearch(props) {
@@ -135,13 +141,14 @@ function CourseSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/course_list' filter={filterCourses} processTag={props.processTag} tagValue={toString} searchID='course-search' parent='course' searchPlaceholder='Search Course' />
+        <TagSearch apiEndpoint='/api/course_list' filter={filterCourses} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='course-search' parent='course' searchPlaceholder='Search Course' />
     );
 }
 
 /**
  * Language Search Component
  * @requires function processTag(tag) to be passed in to get/process selected language tag
+ * @requires id for input box
  * @param {*} props 
  */
 function LanguageSearch(props) {
@@ -166,7 +173,7 @@ function LanguageSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID='language-search' parent='p-lang' searchPlaceholder='Search Language' />
+        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='language-search' parent='p-lang' searchPlaceholder='Search Language' />
     );
 }
 

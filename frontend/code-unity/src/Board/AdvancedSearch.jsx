@@ -4,7 +4,12 @@ import { LanguageSearch, CourseSearch } from './SearchFilters';
 /**
  * Advanced Search component
  *  Contains input/search boxes for user input
+ *  Users type into input boxes provided and press enter to add as a tag
  *  Keeps track of all tags inputted by the user
+ * 
+ *  2 sections : "Search Posts By" and "Then Filter Tags By"
+ *      Search Posts By: filled in fields in this section makes a fetch call to api to get a set of posts based on these input values
+ *      Then Filter Tags By: fields in this section filters posts obtained from Search Posts By
  */
 class AdvancedSearch extends React.Component {
     constructor(props) {
@@ -22,12 +27,22 @@ class AdvancedSearch extends React.Component {
     filter(e) {
         const title = document.getElementById('project-title');
         const leader = document.getElementById('project-leader');
-        let appendSwitch = document.getElementById('append-switch');
-
+        const course = document.getElementsByClassName('course-search')[0];
+        const language = document.getElementsByClassName('language-search')[0];
+        
         // parent class processes project title and project leader input 
-        if (!(/^(\s+|)$/.test(title.value))) this.props.filterByKey('title', title.value);
+        if (!(/^(\s+|)$/.test(title.value))) this.props.filterByKey('title', title.value);  
         //if (/^(\s+|)$/.test(leader.value)) this.props.filterByKey('leader', leader.value);
 
+        // before going to group listings, ask to search by above
+        // then posts are fetched
+        // then users can filter by tags 
+        // if users want a new set of posts, they fill in above fields
+
+        // fetch posts with title, leader, course, language 
+        //.then add tags and filter       
+        
+        let appendSwitch = document.getElementById('append-switch');
         const tags = this.state.selected_tags;
         const append = appendSwitch.checked;
         if (tags.length !== 0) {
@@ -37,6 +52,8 @@ class AdvancedSearch extends React.Component {
         // reset search
         title.value = '';
         leader.value = '';
+        course.value = '';
+        language.value = '';
         appendSwitch.checked = false;
         this.setState({ selected_tags: [] });
     }
@@ -125,8 +142,8 @@ class AdvancedSearch extends React.Component {
                             <label className="custom-control-label text-muted mb-2 my-auto" htmlFor="append-switch">Append</label>
                         </div>
                     </div>
-                    <TagComponent label='Courses' content={<CourseSearch processTag={this.addTag.bind(this)} />} />
-                    <TagComponent label='Programming Languages' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
+                    <TagComponent label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
+                    <TagComponent label='Programming Languages' id='planguage-tag' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
                     <TagComponent label='Keywords' content={keywordInput} />
                     <TagComponent label='Excluded Keywords <Under Construction>' content={keywordInput} />
 
@@ -207,6 +224,20 @@ function SearchBy(props) {
                 <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Project Leader</div>
                 <div className="col-lg-8">
                     <input type='text' id='project-leader' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white' }} placeholder="Enter Project Leader"></input>
+                </div>
+            </div>
+
+            <div className="d-flex align-items-center row mb-3">
+                <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Course</div>
+                <div className="col-lg-8">
+                    <CourseSearch id='course-filter' processTag={() => {}}/>
+                </div>
+            </div>
+
+            <div className="d-flex align-items-center row mb-3">
+                <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Programming Language</div>
+                <div className="col-lg-8">
+                    <LanguageSearch id='planguage-filter' processTag={() => {}}/>
                 </div>
             </div>
         </div>
