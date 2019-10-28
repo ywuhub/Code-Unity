@@ -1,9 +1,20 @@
-from flask_restful import Resource, fields, marshal
+from flask_restful import Resource, fields
 
 from server.managers.project_manager import ProjectManager
-from server.utils.json import ObjectId
+from server.utils.json import ObjectId, marshal
 
-fields = {"title": fields.String, "project_id": ObjectId(attribute="_id")}
+fields = {
+    "project_id": ObjectId(attribute="_id"),
+    "title": fields.String,
+    "leader": ObjectId,
+    "cur_people": fields.Integer,
+    "members": fields.List(ObjectId),
+    "description": fields.String(default=None),
+    "course": fields.String(default=None),
+    "tags": fields.List(fields.String),
+    "languages": fields.List(fields.String),
+    "technologies": fields.List(fields.String),
+}
 
 
 class ProjectList(Resource):
@@ -19,13 +30,29 @@ class ProjectList(Resource):
         GET ->
         (200 OK) <-
             [
-                {
-                    "title": "ok test project please ignore",
-                    "project_id": "5dabdced46e6be107d2a1f98"
-                },
-                {
-                    "title": "better test project please ignore",
-                    "project_id": "5dabf1c0026f1a0cfff5d422"
+            {
+                    "project_id": "5dac029b8b819e584ff36f8d",
+                    "title": "Code Unity",
+                    "leader": "5dabfe830ddd57902efd2fa3",
+                    "cur_people": 1,
+                    "members": [
+                        "5dabfe830ddd57902efd2fa3"
+                    ],
+                    "description": "Nice.",
+                    "course": "4920",
+                    "tags": [
+                        "wam booster",
+                        "free hd",
+                    ],
+                    "languages": [
+                        "中文",
+                        "english"
+                    ],
+                    "technologies": [
+                        "python",
+                        "mongoDB",
+                        "react"
+                    ]
                 }
             ]
         ```
