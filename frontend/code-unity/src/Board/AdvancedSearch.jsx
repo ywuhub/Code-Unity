@@ -15,7 +15,8 @@ class AdvancedSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected_tags: []
+            selected_tags: [],
+            excluded_tags: []
         }
     }
 
@@ -43,10 +44,9 @@ class AdvancedSearch extends React.Component {
         //.then add tags and filter       
         
         let appendSwitch = document.getElementById('append-switch');
-        const tags = this.state.selected_tags;
         const append = appendSwitch.checked;
         if (tags.length !== 0) {
-            this.props.addTags(tags, append);   // parent class processes selected tags
+            this.props.addTags(this.state.selected_tags, this.state.excluded_tags, append);   // parent class processes selected tags
         }
 
         // reset search
@@ -55,7 +55,7 @@ class AdvancedSearch extends React.Component {
         course.value = '';
         language.value = '';
         appendSwitch.checked = false;
-        this.setState({ selected_tags: [] });
+        this.setState({ selected_tags: [], excluded_tags: [] });
     }
 
     /**
@@ -68,7 +68,8 @@ class AdvancedSearch extends React.Component {
             let keyword = e.target.value;
             // non empty and length > 1 keyword
             if (keyword.length > 1 && !(/^(\s+|)$/.test(keyword))) {
-                this.addTag(keyword);
+                if (e.target.id === 'keyword-input-false') this.addTag(keyword);
+                else this.addExcludedTag(keyword);
             }
             e.target.value = '';
         }
@@ -84,7 +85,21 @@ class AdvancedSearch extends React.Component {
         // add unique tags
         if (tags.indexOf(tag) === -1) {
             tags.push(tag);
-            this.setState({ tags: tags });
+            this.setState({ selected_tags: tags });
+        }
+    }
+
+    /**
+     * Adds tags to excluded tags
+     * @param {*} tag 
+     */
+    addExcludedTag(tag) {
+        let tags = this.state.excluded_tags;
+        tag = tag.toLowerCase();
+        // add unique tags
+        if (tags.indexOf(tag) === -1) {
+            tags.push(tag);
+            this.setState({ excluded_tags: tags });
         }
     }
 
@@ -97,7 +112,7 @@ class AdvancedSearch extends React.Component {
         const tagIndex = tags.indexOf(e.target.value);
         if (tagIndex !== -1) {
             tags.splice(tagIndex, 1);
-            this.setState({ tags: tags });
+            this.setState({ selected_tags: tags });
         }
     }
 
@@ -110,24 +125,26 @@ class AdvancedSearch extends React.Component {
             input.value = '';
         });
         document.getElementById('append-switch').checked = false;
-        this.setState({ selected_tags: [] });
+        this.setState({ selected_tags: [], excluded_tags: [] });
+    }
+
+    keywordTagComponent(excluded = false) {
+        return (
+            <div className="input-group bg-dark shadow-sm rounded">
+                <input type="text" id={'keyword-input-' + excluded} className="form-control bg-dark border-0 shadow-sm rounded advanced-input" style={{ 'color': 'white' }} placeholder="Enter Keyword(s)" onKeyPress={this.addKeyWord.bind(this)}></input>
+                <div className="input-group-append">
+                    <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
+                </div>
+            </div>
+        );
     }
     
     /**
      * Shows advanced search component 
      */
     render() {
-        let keywordInput = (
-        <div className="input-group bg-dark shadow-sm rounded">
-            <input type="text" id="keyword-input" className="form-control bg-dark border-0 shadow-sm rounded advanced-input" style={{ 'color': 'white' }} placeholder="Enter Keyword(s)" onKeyPress={this.addKeyWord.bind(this)}></input>
-            <div className="input-group-append">
-                <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
-            </div>
-        </div>
-        );
-
         return (
-            <div id="advancedSearch" className="collapse card border shadow">
+            <div id="advancedSearch" className="collapse show card border shadow">
                 <div className="card-body bg-light">    {/* d-flex flex-column */}
                     <h3 className="card-title text-muted p-1 mb-4"> Advanced Search </h3>
                     <h5 className="mb-3">Search Posts By {'<Under Construction>'} </h5> 
@@ -144,8 +161,8 @@ class AdvancedSearch extends React.Component {
                     </div>
                     <TagComponent label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
                     <TagComponent label='Programming Languages' id='planguage-tag' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
-                    <TagComponent label='Keywords' content={keywordInput} />
-                    <TagComponent label='Excluded Keywords <Under Construction>' content={keywordInput} />
+                    <TagComponent label='Keywords' content={this.keywordTagComponent()} />
+                    <TagComponent label='Excluded Keywords' content={this.keywordTagComponent(true)} />
 
                     <hr className="mt-5"/>
 
@@ -165,11 +182,12 @@ class AdvancedSearch extends React.Component {
                             }
                         </div>
                     </div>
+
                     <div className="card-footer rounded mt-4 mb-5 border shadow-sm">
-                        <i className="mr-4 p-1 text-muted"> Excluded Tags: {'<Under Construction>'}</i>
+                        <i className="mr-4 p-1 text-muted"> Excluded Tags: </i>
                         <div id="tags">
                             {
-                                this.state.selected_tags.map((tag) => {
+                                this.state.excluded_tags.map((tag) => {
                                     return (
                                         <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>
                                             {tag}
@@ -206,7 +224,7 @@ function TagComponent(props) {
 }
 
 /**
- * Shows input boxes for project title and project leader for searching
+ * Shows components for initial filter
  * @param {*} props 
  */
 function SearchBy(props) {

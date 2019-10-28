@@ -3,14 +3,14 @@ import AdvancedSearch from './AdvancedSearch';
 import config from 'config';
 import { authHeader } from '@/_helpers';
 
-const API_URL = 'http://localhost:4000'
-
 /**
  * Search bar that filters and shows group postings
  */
 class GroupList extends React.Component {
+
   constructor(props) {
     super(props);
+    this.isMounted_ = false;
     this.addTag = this.addTag.bind(this);
     this.removeTag = this.removeTag.bind(this);
     this.addTags = this.addTags.bind(this);
@@ -18,8 +18,13 @@ class GroupList extends React.Component {
       initialPosts: [],
       filteredPosts: [],
       tags: [],
+      excluded_tags: [],
       isLoading: false
     };
+  }
+
+  componentWillUnmount() {
+    this.isMounted_ = false;
   }
 
   /**
@@ -27,30 +32,25 @@ class GroupList extends React.Component {
    *  Fetches all posts
    */
   componentDidMount() {
+    this.isMounted_ = true;
     this.setState({ isLoading: true });
     const projects_options = { method: 'GET', headers: authHeader() };
-    fetch(API_URL + '/api/project/list', projects_options)
+    fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
-      .then(json => {
-        json.forEach(post => {
-          fetch(API_URL + '/api/project/' + post['project_id'], projects_options)
-            .then(project_post => { return project_post.json() })
-            .then(post => {
-              let initial = this.state.initialPosts;
-              initial.push(post)
-              let filtered = this.state.filteredPosts;
-              filtered.push(post)
-              this.setState({
-                initialPosts: initial,
-                filteredPosts: filtered,
-              });
-            })
-        })
+      .then(posts => {
+        if (this.isMounted_) {
+          this.setState({
+            initialPosts: posts,
+            filteredPosts: posts,
+          });
+        }
       })
       .then(() => {
-        this.setState({
-          isLoading: false
-        });
+        if (this.isMounted_) {
+          this.setState({
+            isLoading: false
+          });
+        }
       })
       .catch(err => { console.log(err); });
   }
@@ -66,7 +66,7 @@ class GroupList extends React.Component {
       if (typeof post[key] === 'string') {
         contains = (post[key].toLowerCase().indexOf(filter) !== -1);
         if (contains) break;
-        
+
       } else {
         contains = (Array.from(post[key]).toString().toLowerCase().indexOf(filter) !== -1);
         if (contains) break;
@@ -119,7 +119,14 @@ class GroupList extends React.Component {
     if (tags.length !== 0) {
       posts = posts.filter((post) => {
         // get posts containing all tags if 'contains all' option selected else get posts containing at least one tag  
-        return (inclusive_search) ? tags.every((tag) => { return this.containsFilter(post, tag); }) : tags.some((tag) => { return this.containsFilter(post, tag); });;
+        return (inclusive_search) ? tags.every((tag) => { return this.containsFilter(post, tag); }) : tags.some((tag) => { return this.containsFilter(post, tag); });
+      });
+    }
+
+    if (this.state.excluded_tags.length !== 0) {
+      const excluded_tags = this.state.excluded_tags;
+      posts = posts.filter((post) => {
+        return excluded_tags.every((tag) => { return !this.containsFilter(post, tag);  });
       });
     }
 
@@ -175,9 +182,10 @@ class GroupList extends React.Component {
   /**
    * Adds a list of tags to currently selected tags
    * @param {*} tags 
+   * @param {*} excluded_tags
    * @param {*} append 
    */
-  addTags(tags, append = false) {
+  addTags(tags, excluded_tags, append = false) {
     new Promise((resolve, reject) => {
       if (!append) this.setState({ tags: [] });
       resolve(this.state.tags);
@@ -185,6 +193,10 @@ class GroupList extends React.Component {
       .then(resp => {
         tags.forEach(tag => {
           if (!append || tags.indexOf(tag) !== -1) this.state.tags.push(tag);
+        });
+
+        excluded_tags.forEach(tag => {
+          if (!append || tags.indexOf(tag) !== -1) this.state.excluded_tags.push(tag);
         });
 
         this.filterByTag(!append, false);
@@ -197,12 +209,23 @@ class GroupList extends React.Component {
    * @param {*} e event
    */
   removeTag(e) {
-    let tags = this.state.tags;
-    const tagIndex = tags.indexOf(e.target.value);
-    if (tagIndex !== -1) {
-      tags.splice(tagIndex, 1);
-      this.setState({ tags: tags });
-      this.filterByTag(true);
+    if (e.target.className.indexOf('excluded') !== -1) {
+      let tags = this.state.excluded_tags;
+      const tagIndex = tags.indexOf(e.target.value);
+      if (tagIndex !== -1) {
+        tags.splice(tagIndex, 1);
+        this.setState({  excluded_tags: tags });
+        this.filterByTag(true);
+      }
+
+    } else {
+      let tags = this.state.tags;
+      const tagIndex = tags.indexOf(e.target.value);
+      if (tagIndex !== -1) {
+        tags.splice(tagIndex, 1);
+        this.setState({ tags: tags });
+        this.filterByTag(true);
+      }
     }
   }
 
@@ -220,23 +243,19 @@ class GroupList extends React.Component {
             <div className="btn-group mr-2">
               <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter">Create New Group</button>
             </div>
-            {/* <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                           	<span data-feather="calendar"></span>
-                                This week
-                        </button>*/}
           </div>
         </div>
 
         <div className="row">
           <div className="col-sm-7 my-3 p-3 bg-white rounded shadow-sm">
             <h6 className="border-bottom border-gray mb-0 d-flex justify-content-between">
-              Find a new Group 
+              Find a new Group
               <div className="custom-control custom-switch">
                 <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
                 <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
               </div>
             </h6>
-            
+
 
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
 
@@ -264,6 +283,12 @@ class GroupList extends React.Component {
                   this.state.tags.map((tag) => {
                     return (
                       <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
+                    );
+                  })}
+                  <br />{
+                  this.state.excluded_tags.map((tag) => {
+                    return (
+                      <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1 excluded" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
                     );
                   })
                 }
@@ -343,20 +368,20 @@ function ShowPosts(props) {
     <div>
       {
         props.posts.map((post) => {
-            return (
-              <div class="media text-muted pt-3" key={post_key++}>
-                <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
-                <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                  <div class="d-flex justify-content-between align-items-center w-100">
-                    <strong class="text-gray-dark">{post['title']}</strong>
-                    { post['max_people'] !== post['cur_people'] && <a href="#">Join</a> }
-                  </div>
-
-                  {/* Show all the information in post  */}
-                  <ShowPost post={post}/>
+          return (
+            <div class="media text-muted pt-3" key={post_key++}>
+              <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
+              <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <strong class="text-gray-dark">{post['title']}</strong>
+                  {post['max_people'] !== post['cur_people'] && <a href="#">Join</a>}
                 </div>
+
+                {/* Show all the information in post  */}
+                <ShowPost post={post} />
               </div>
-            );
+            </div>
+          );
         })
       }
     </div>
@@ -369,6 +394,7 @@ function ShowPost(props) {
   let post_info_key = 0;
 
   for (let key in post) {
+    if (key === 'project_id' || key === 'title') continue;
     const info = post[key];
     if (typeof info !== 'object') {
       items.push(<span className="d-block" key={post_info_key++}> {key} : {info} </span>);

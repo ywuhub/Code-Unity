@@ -2,8 +2,6 @@ import React from 'react';
 import config from 'config';
 import { authHeader } from '@/_helpers';
 
-const API_URL = 'http://localhost:4000'
-
 /**
  * Search bar to filter and show a list of possible tags (courses, programming languages, project classification e.g. mahcine learning, etc)
  *  Parent class
@@ -13,10 +11,15 @@ const API_URL = 'http://localhost:4000'
 class TagSearch extends React.Component {
     constructor(props) {
         super(props);
+        this.isMounted_ = false;
         this.state = {
             tags: [],
             filteredTags: [],
         };
+    }
+
+    componentWillUnmount() {
+        this.isMounted_ = false;
     }
 
     /**
@@ -24,13 +27,16 @@ class TagSearch extends React.Component {
      *  Fetches all options for users to filter through
      */
     componentDidMount() {
+        this.isMounted_ = true;
         this.setState({ isLoading: true });
         if (this.props.apiEndpoint !== '') {
             const options = { method:'GET', headers: authHeader() }
-            fetch(API_URL + this.props.apiEndpoint, options)
+            fetch(`${config.apiUrl}` + this.props.apiEndpoint, options)
             .then(response => { return response.json(); })
             .then(json => {
-                this.setState({ tags: json });
+                if (this.isMounted_) {
+                    this.setState({ tags: json });
+                }
             })
             .catch(err => { console.log(err); });
         }

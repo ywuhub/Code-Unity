@@ -17,7 +17,7 @@ class Register extends React.Component {
         return (
             <div>
                 <div className="container mt-5" style={{ 'width': '700px' }}>
-                    <div className="d-flex card-body bg-light flex-column shadow">
+                    <div className="d-flex card-body flex-column shadow">
                         <h2 className="card-title text-muted p-1 mb-4"> Sign Up </h2>
 
                         <Formik
@@ -59,8 +59,7 @@ class Register extends React.Component {
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text border-0 bg-transparent"> <i className="fa fa-envelope"></i> </span>
                                             </div>
-                                            {/* <input type="email" id="email" className="form-control bg-dark rounded py-2" placeholder="Enter Email" style={{ 'color': 'white' }} required></input> */}
-                                            <Field name="email" type="email" id="email" className={'form-control' + (errors.email && touched.email ? ' is-invalid' : '')} placeholder="Enter Email" />
+                                            <Field name="email" type="email" id="email" className={'bg-light ' + 'form-control' + (errors.email && touched.email ? ' is-invalid' : '')} placeholder="Enter Email" />
                                             <ErrorMessage name="email" component="div" className="invalid-feedback" />
                                         </div>
                                     </div>
@@ -70,8 +69,7 @@ class Register extends React.Component {
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text border-0 bg-transparent"> <i className="fa fa-user"></i> </span>
                                             </div>
-                                            {/* <input type="text" id="username" className="form-control bg-dark rounded py-2" placeholder="Enter Username" style={{ 'color': 'white' }} required></input> */}
-                                            <Field name="username" type="text" id="username" className={'form-control' + (errors.username && touched.username ? ' is-invalid' : '')} placeholder="Enter Username" />
+                                            <Field name="username" type="text" id="username" className={'bg-light ' + 'form-control' + (errors.username && touched.username ? ' is-invalid' : '')} placeholder="Enter Username" />
                                             <ErrorMessage name="username" component="div" className="invalid-feedback" />
                                         </div>
                                     </div>
@@ -81,8 +79,7 @@ class Register extends React.Component {
                                             <div className="input-group-prepend">
                                                 <span className="input-group-text border-0 bg-transparent"> <i className="fa fa-lock"></i> </span>
                                             </div>
-                                            {/* <input type="password" id="password" className="form-control bg-dark rounded py-2" placeholder="Enter Password" style={{ 'color': 'white' }} required></input> */}
-                                            <Field name="password" type="password" id="password" className={'form-control' + (errors.password && touched.password ? ' is-invalid' : '')} placeholder="Enter Password" />
+                                            <Field name="password" type="password" id="password" className={'bg-light ' + 'form-control' + (errors.password && touched.password ? ' is-invalid' : '')} placeholder="Enter Password" />
                                             <ErrorMessage name="password" component="div" className="invalid-feedback" />
                                         </div>
                                     </div>
