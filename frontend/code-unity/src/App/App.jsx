@@ -5,7 +5,7 @@ import { history } from '@/_helpers';
 import { authenticationService } from '@/_services';
 import { PrivateRoute } from '@/_components';
 import { HomePage } from '@/HomePage';
-import { LoginPage } from '@/LoginPage';
+import { LoginPage, Register } from '@/LoginPage';
 import '@/Style';
 
 
@@ -43,6 +43,7 @@ class App extends React.Component {
                     <div>
                         <Switch>
                             <Route exact path="/login" component={LoginPage} />
+                            <Route exact path="/register" component={Register} />
                             <PrivateRoute path="/" component={HomePage} />
                         </Switch>
 

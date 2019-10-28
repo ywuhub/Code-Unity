@@ -128,7 +128,7 @@ class AdvancedSearch extends React.Component {
 
         return (
             <div id="advancedSearch" className="collapse card border shadow">
-                <div className="card-body bg-light">
+                <div className="card-body bg-light">    {/* d-flex flex-column */}
                     <h3 className="card-title text-muted p-1 mb-4"> Advanced Search </h3>
                     <h5 className="mb-3">Search Posts By {'<Under Construction>'} </h5> 
                     {/* project title and leader search */}
