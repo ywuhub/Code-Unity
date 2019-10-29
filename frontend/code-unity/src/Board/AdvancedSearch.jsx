@@ -15,7 +15,8 @@ class AdvancedSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected_tags: [],
+            search_tags: [],
+            filter_tags: [],
             excluded_tags: []
         }
     }
@@ -30,9 +31,9 @@ class AdvancedSearch extends React.Component {
         const leader = document.getElementById('project-leader');
         const course = document.getElementsByClassName('course-search')[0];
         const language = document.getElementsByClassName('language-search')[0];
-        
+
         // parent class processes project title and project leader input 
-        if (!(/^(\s+|)$/.test(title.value))) this.props.filterByKey('title', title.value);  
+        //if (!(/^(\s+|)$/.test(title.value))) this.props.filterByKey('title', title.value);
         //if (/^(\s+|)$/.test(leader.value)) this.props.filterByKey('leader', leader.value);
 
         // before going to group listings, ask to search by above
@@ -42,11 +43,11 @@ class AdvancedSearch extends React.Component {
 
         // fetch posts with title, leader, course, language 
         //.then add tags and filter       
-        
+
         let appendSwitch = document.getElementById('append-switch');
         const append = appendSwitch.checked;
         if (tags.length !== 0) {
-            this.props.addTags(this.state.selected_tags, this.state.excluded_tags, append);   // parent class processes selected tags
+            this.props.addTags(this.state.filter_tags, this.state.excluded_tags, append);   // parent class processes selected tags
         }
 
         // reset search
@@ -55,7 +56,7 @@ class AdvancedSearch extends React.Component {
         course.value = '';
         language.value = '';
         appendSwitch.checked = false;
-        this.setState({ selected_tags: [], excluded_tags: [] });
+        this.setState({ filter_tags: [], excluded_tags: [], search_tags: [] });
     }
 
     /**
@@ -75,17 +76,27 @@ class AdvancedSearch extends React.Component {
         }
     }
 
+    addSearchTag(tag) {
+        let tags = this.state.search_tags;
+        tag = tag.toLowerCase();
+        // add unique tags
+        if (tags.indexOf(tag) === -1) {
+            tags.push(tag);
+            this.setState({ search_tags: tags });
+        }
+    }
+
     /**
      * Adds tags to selected tags
      * @param {*} tag 
      */
     addTag(tag) {
-        let tags = this.state.selected_tags;
+        let tags = this.state.filter_tags;
         tag = tag.toLowerCase();
         // add unique tags
         if (tags.indexOf(tag) === -1) {
             tags.push(tag);
-            this.setState({ selected_tags: tags });
+            this.setState({ filter_tags: tags });
         }
     }
 
@@ -108,11 +119,40 @@ class AdvancedSearch extends React.Component {
      * @param {*} e event
      */
     removeTag(e) {
-        let tags = this.state.selected_tags;
+        let tags = this.state.filter_tags;
         const tagIndex = tags.indexOf(e.target.value);
         if (tagIndex !== -1) {
             tags.splice(tagIndex, 1);
-            this.setState({ selected_tags: tags });
+            this.setState({ filter_tags: tags });
+        }
+    }
+
+    /**
+     * Remove tags from selected tags
+     * @param {*} e event
+     */
+    removeExcludedTag(e) {
+        let tags = this.state.excluded_tags;
+        const tagIndex = tags.indexOf(e.target.value);
+        if (tagIndex !== -1) {
+            tags.splice(tagIndex, 1);
+            this.setState({ excluded_tags: tags });
+        }
+    }
+
+    removeSearchTag(e) {
+        let tags = this.state.search_tags;
+        const tagIndex = tags.indexOf(e.target.value);
+        if (tagIndex !== -1) {
+            tags.splice(tagIndex, 1);
+            this.setState({ search_tags: tags });
+        }
+    }
+
+    onKeyPress(e) {
+        if (e.key === 'Enter') {
+          this.addSearchTag(e.target.value);
+          document.getElementById(e.target.id).value = '';
         }
     }
 
@@ -125,38 +165,57 @@ class AdvancedSearch extends React.Component {
             input.value = '';
         });
         document.getElementById('append-switch').checked = false;
-        this.setState({ selected_tags: [], excluded_tags: [] });
+        this.setState({ filter_tags: [], excluded_tags: [], search_tags: [] });
     }
 
     keywordTagComponent(excluded = false) {
         return (
             <div className="input-group bg-dark shadow-sm rounded">
-                <input type="text" id={'keyword-input-' + excluded} className="form-control bg-dark border-0 shadow-sm rounded advanced-input" style={{ 'color': 'white' }} placeholder="Enter Keyword(s)" onKeyPress={this.addKeyWord.bind(this)}></input>
+                <input type="text" id={'keyword-input-' + excluded} className="form-control bg-dark border-0 shadow-sm rounded advanced-input" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Keyword(s)" onKeyPress={this.addKeyWord.bind(this)}></input>
                 <div className="input-group-append">
                     <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
                 </div>
             </div>
         );
     }
-    
+
     /**
      * Shows advanced search component 
      */
     render() {
         return (
-            <div id="advancedSearch" className="collapse show card border shadow">
-                <div className="card-body bg-light">    {/* d-flex flex-column */}
-                    <h3 className="card-title text-muted p-1 mb-4"> Advanced Search </h3>
-                    <h5 className="mb-3">Search Posts By {'<Under Construction>'} </h5> 
+            <div id="advancedSearch" className="card shadow-sm border-0">
+                <div className="card-body">    {/* d-flex flex-column */}
+                    <h4 className="card-title text-muted p-1 mb-4"> Advanced Search </h4>
+                    <h6 className="mb-3">Search Posts By {'<Under Construction>'} </h6>
                     {/* project title and leader search */}
-                    <SearchBy />
+                    <SearchBy addTag={this.addSearchTag.bind(this)} onEnter={this.onKeyPress.bind(this)}/>
+
+                    <hr className="mt-5" />
+
+                    {/* Component showing all tags */}
+                    <div className="card-footer rounded mb-5 border-0 shadow-sm">
+                        <i className="mr-4 p-1 text-muted"> Search Tags:</i>
+                        <div id="tags">
+                            {
+                                this.state.search_tags.map((tag) => {
+                                    return (
+                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>
+                                            {tag}
+                                            <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeSearchTag.bind(this)}></button>
+                                        </span>
+                                    );
+                                })
+                            }
+                        </div>
+                    </div>
 
                     {/* search filers for courses and progamming languages, and input box for user specified keyword tags*/}
                     <div className="d-flex justify-content-between mb-3">
-                        <h5 className="my-auto">Then Filter By Tags</h5> 
+                        <h6 className="">Then Filter By Tags</h6>
                         <div className="custom-control custom-switch">
                             <input type="checkbox" className="custom-control-input my-auto" value="false" id="append-switch"></input>
-                            <label className="custom-control-label text-muted mb-2 my-auto" htmlFor="append-switch">Append</label>
+                            <label className="custom-control-label text-muted my-auto" htmlFor="append-switch">Append</label>
                         </div>
                     </div>
                     <TagComponent label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
@@ -164,14 +223,14 @@ class AdvancedSearch extends React.Component {
                     <TagComponent label='Keywords' content={this.keywordTagComponent()} />
                     <TagComponent label='Excluded Keywords' content={this.keywordTagComponent(true)} />
 
-                    <hr className="mt-5"/>
+                    <hr className="mt-5" />
 
                     {/* Component showing all tags */}
-                    <div className="card-footer rounded mt-4 mb-5 border shadow-sm">
-                        <i className="mr-4 p-1 text-muted"> Selected Tags:</i>
+                    <div className="card-footer rounded mb-3 border-0 shadow-sm">
+                        <i className="mr-4 p-1 text-muted"> Filter Tags:</i>
                         <div id="tags">
                             {
-                                this.state.selected_tags.map((tag) => {
+                                this.state.filter_tags.map((tag) => {
                                     return (
                                         <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>
                                             {tag}
@@ -183,15 +242,15 @@ class AdvancedSearch extends React.Component {
                         </div>
                     </div>
 
-                    <div className="card-footer rounded mt-4 mb-5 border shadow-sm">
+                    <div className="card-footer rounded mb-5 border-0 shadow-sm">
                         <i className="mr-4 p-1 text-muted"> Excluded Tags: </i>
                         <div id="tags">
                             {
                                 this.state.excluded_tags.map((tag) => {
                                     return (
-                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>
+                                        <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag}>
                                             {tag}
-                                            <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button>
+                                            <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeExcludedTag.bind(this)}></button>
                                         </span>
                                     );
                                 })
@@ -201,7 +260,7 @@ class AdvancedSearch extends React.Component {
 
                     {/* Search button to filter posts according to user input */}
                     <div className="d-flex justify-content-between">
-                        <button className="text-muted bg-transparent border-0 my-auto" style={{'outline':'0'}} onClick={this.reset.bind(this)}>Reset</button>
+                        <button className="text-muted bg-transparent border-0 my-auto" style={{ 'outline': '0' }} onClick={this.reset.bind(this)}>Reset</button>
                         <button className="bg-transparent border-0" style={{ 'fontSize': '25px', 'outline': 'none' }} onClick={this.filter.bind(this)}><b className="fa fa-search"></b></button>
                     </div>
                 </div>
@@ -217,7 +276,7 @@ class AdvancedSearch extends React.Component {
 function TagComponent(props) {
     return (
         <div className="row mb-3">
-            <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all'}}>{props.label}</div>
+            <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all', 'fontSize': '14px' }}>{props.label}</div>
             <div className="col-lg-8 my-auto"> {props.content} </div>
         </div>
     );
@@ -229,33 +288,33 @@ function TagComponent(props) {
  */
 function SearchBy(props) {
     return (
-        <div className="mb-5">
+        <div className="mb-5" style={{ 'fontSize': '14px' }}>
             <div className="d-flex align-items-center row mb-3">
-                <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Project Title</div>
+                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Project Title</div>
 
                 <div className="col-lg-8">
-                    <input type='text' id='project-title' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white' }} placeholder="Enter Project Title"></input>
+                    <input type='text' id='project-title' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Project Title" onKeyPress={props.onEnter}></input>
                 </div>
             </div>
 
             <div className="d-flex align-items-center row mb-3">
-                <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Project Leader</div>
+                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Project Leader</div>
                 <div className="col-lg-8">
-                    <input type='text' id='project-leader' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white' }} placeholder="Enter Project Leader"></input>
+                    <input type='text' id='project-leader' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Project Leader" onKeyPress={props.onEnter}></input>
                 </div>
             </div>
 
             <div className="d-flex align-items-center row mb-3">
-                <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Course</div>
+                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Course</div>
                 <div className="col-lg-8">
-                    <CourseSearch id='course-filter' processTag={() => {}}/>
+                    <CourseSearch id='course-filter' processTag={props.addTag} />
                 </div>
             </div>
 
             <div className="d-flex align-items-center row mb-3">
-                <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all' }}>Programming Language</div>
+                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Programming Language</div>
                 <div className="col-lg-8">
-                    <LanguageSearch id='planguage-filter' processTag={() => {}}/>
+                    <LanguageSearch id='planguage-filter' processTag={props.addTag} />
                 </div>
             </div>
         </div>

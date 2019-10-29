@@ -2,7 +2,7 @@ import React from 'react';
 import AdvancedSearch from './AdvancedSearch';
 import config from 'config';
 import { authHeader } from '@/_helpers';
-
+import '@/Style';
 /**
  * Search bar that filters and shows group postings
  */
@@ -126,7 +126,7 @@ class GroupList extends React.Component {
     if (this.state.excluded_tags.length !== 0) {
       const excluded_tags = this.state.excluded_tags;
       posts = posts.filter((post) => {
-        return excluded_tags.every((tag) => { return !this.containsFilter(post, tag);  });
+        return excluded_tags.every((tag) => { return !this.containsFilter(post, tag); });
       });
     }
 
@@ -157,9 +157,8 @@ class GroupList extends React.Component {
    */
   onKeyPress(e) {
     if (e.key === 'Enter') {
-      // check empty string ?
       this.addTag(e.target.value);
-      document.getElementById('search-bar').value = '';
+      document.getElementById(e.target.id).value = '';
       this.filterByTag();
     }
   }
@@ -176,7 +175,6 @@ class GroupList extends React.Component {
       tags.push(tag);
       this.setState({ tags: tags });
     }
-
   }
 
   /**
@@ -192,11 +190,11 @@ class GroupList extends React.Component {
     })
       .then(resp => {
         tags.forEach(tag => {
-          if (!append || tags.indexOf(tag) !== -1) this.state.tags.push(tag);
+          if (!append || this.state.tags.indexOf(tag) === -1) this.state.tags.push(tag);
         });
 
         excluded_tags.forEach(tag => {
-          if (!append || tags.indexOf(tag) !== -1) this.state.excluded_tags.push(tag);
+          if (!append || this.state.excluded_tags.indexOf(tag) === -1) this.state.excluded_tags.push(tag);
         });
 
         this.filterByTag(!append, false);
@@ -214,7 +212,7 @@ class GroupList extends React.Component {
       const tagIndex = tags.indexOf(e.target.value);
       if (tagIndex !== -1) {
         tags.splice(tagIndex, 1);
-        this.setState({  excluded_tags: tags });
+        this.setState({ excluded_tags: tags });
         this.filterByTag(true);
       }
 
@@ -247,32 +245,21 @@ class GroupList extends React.Component {
         </div>
 
         <div className="row">
-          <div className="col-sm-7 my-3 p-3 bg-white rounded shadow-sm">
-            <h6 className="border-bottom border-gray mb-0 d-flex justify-content-between">
-              Find a new Group
-              <div className="custom-control custom-switch">
-                <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
-                <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
+          <div className="col-sm-8 rounded shadow-sm">
+
+            <div className="input-group bg-light border-bottom shadow-sm rounded-pill mt-3 mb-4">
+              <input type="text" id="search-bar" className="form-control bg-transparent rounded-pill p-4 pr-5 border-0" placeholder="Search" onKeyPress={this.onKeyPress.bind(this)} onChange={this.filterPosts.bind(this)}></input>
+              <div className="input-group-append">
+                <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
               </div>
-            </h6>
+            </div>
 
-
-            {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
-
-            {/* Shows all group listings */}
-            {!this.isLoading && <ShowPosts posts={this.state.filteredPosts} />}
-
-            <small className="d-block text-right mt-3">
-              <a href="#">All Groups</a>
-            </small>
-          </div>
-
-          <div className="col-sm-5 ">
-            {/* shows tags */}
-            <div className="card-footer rounded mb-3 border shadow-sm p-0 px-2 py-2">
+            <hr />
+            {/* Show tags */}
+            <div className="mb-3 border-0 p-0 px-2">
               <div className="d-flex justify-content-between">
-                <i className="mr-4 p-2 text-muted"> Search Tags:</i>
-                <div className="custom-control custom-switch p-2">
+                <i className="mr-4 text-muted"> Search Tags:</i>
+                <div className="custom-control custom-switch">
                   <input type="checkbox" className="custom-control-input" value="false" id="inclusive-search" onClick={this.filterByTag.bind(this)}></input>
                   <label className="custom-control-label text-muted" htmlFor="inclusive-search">Contains All</label>
                 </div>
@@ -285,7 +272,7 @@ class GroupList extends React.Component {
                       <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
                     );
                   })}
-                  <br />{
+                <br />{
                   this.state.excluded_tags.map((tag) => {
                     return (
                       <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1 excluded" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
@@ -294,23 +281,33 @@ class GroupList extends React.Component {
                 }
               </div>
             </div>
+            <hr />
 
-            {/* search bar */}
-            <div className="input-group bg-dark shadow-sm mb-1" style={{ 'borderRadius': '5px' }}>
-              <input type="text" id="search-bar" className="form-control bg-transparent p-4 pr-5 border" style={{ 'borderRadius': '5px', 'color': 'white', 'borderTopRightRadius': '0px', 'borderBottomRightRadius': '0px' }} placeholder="Search" onKeyPress={this.onKeyPress.bind(this)} onChange={this.filterPosts.bind(this)}></input>
-              <div className="input-group-append">
-                <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
+            <h6 className="border-bottom border-gray mb-0 d-flex justify-content-between">
+              Find a new Group
+              <div className="custom-control custom-switch">
+                <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
+                <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
               </div>
-              <button type="button" className="btn btn-dark border fa fa-caret-down" data-toggle="collapse" data-target="#advancedSearch" style={{ 'borderTopLeftRadius': '0px', 'borderBottomLeftRadius': '0px' }} onClick={collapseChange.bind(this)}></button>
-            </div>
+            </h6>
 
+            {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
+
+            {/* Shows all group listings */}
+            {!this.isLoading && <ShowPosts posts={this.state.filteredPosts} />}
+
+            <small className="d-block text-right my-3">
+              <a href="#">All Groups</a>
+            </small>
+          </div>
+
+          <div className="col-sm-4">
             {/* Advanced Search component */}
-            <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} /> <br />
-
+            <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} />
           </div>
 
         </div>
-
+        <br />
         {/* Create group modal */}
         <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div className="modal-dialog modal-dialog-centered" role="document">
@@ -343,18 +340,6 @@ class GroupList extends React.Component {
 
       </div>
     );
-  }
-}
-
-/**
- * Change collapse component icon on click
- * @param {*} e event
- */
-function collapseChange(e) {
-  if (e.target.className.indexOf('down') !== -1) {
-    e.target.className = "btn btn-dark border fa fa-caret-up";
-  } else {
-    e.target.className = "btn btn-dark border fa fa-caret-down";
   }
 }
 

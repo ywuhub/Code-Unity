@@ -92,10 +92,10 @@ class TagSearch extends React.Component {
         let count = 0;
 
         return (
-            <div className="form-control p-0 border-0" style={{ 'position': 'relative' }}>
+            <div className="p-0 border-0" style={{ 'position': 'relative' }}>
                 {/* search bar */}
                 <div className="input-group bg-dark shadow-sm rounded">
-                    <input type="text" id={this.props.searchID} className={"form-control bg-dark border-0 shadow-sm rounded advanced-input " + this.props.searchClass} style={{ 'color': 'white' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
+                    <input type="text" id={this.props.searchID} className={"form-control bg-dark border-0 shadow-sm rounded advanced-input " + this.props.searchClass} style={{ 'color': 'white', 'fontSize': '14px' }} placeholder={this.props.searchPlaceholder} onChange={this.filter.bind(this)} onKeyPress={this.onKeyPress.bind(this)}></input>
                     <div className="input-group-append">
                         <div className="input-group-text bg-transparent border-0"><b className="fa fa-search"></b></div>
                     </div>
