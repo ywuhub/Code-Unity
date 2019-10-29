@@ -5,9 +5,17 @@ import * as Yup from 'yup';
 import { projectService } from '@/_services';
 
 class CreateGroup extends React.Component {
-    // constructor(props) {
-    //        super(props);
-    //    }
+    constructor(props) {
+         super(props);
+         this.state = {
+             value: ''
+         };
+         this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(event) {
+        this.setState({ value: event.target.value });
+    }
 
     render() {
         return (
@@ -18,14 +26,14 @@ class CreateGroup extends React.Component {
                     <Formik
                         initialValues={{
                             title: '',
-                            max_people: 1
+                            max_people: 1,
                         }}
                         validationSchema={Yup.object().shape({
                             title: Yup.string().required('title is required')
                         })}
-                        onSubmit={({ title, max_people }, { setStatus, setSubmitting }) => {
+                        onSubmit={({ title, max_people, description }, { setStatus, setSubmitting }) => {
                             setStatus();
-                            projectService.create_group(title, max_people)
+                            projectService.create_group(title, max_people, this.state.value)
                                 .then(
                                     user => {
                                         const { from } = this.props.location.state || { from: { pathname: "/" } };
@@ -46,14 +54,25 @@ class CreateGroup extends React.Component {
                                     </div>
                                 }
                                 <div className="form-group">
-                                    <label htmlFor="title" className="input-group-text text-muted bg-transparent border-0">Title</label>
+                                    <label htmlFor="title" className="pb-2 mb-0">Title</label>
                                     <div className="form-group input-group">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text border-0 bg-transparent"> <i className="fa fa-user"></i> </span>
-                                        </div>
                                         {/* <input type="text" id="title" className="form-control bg-dark rounded py-2" placeholder="Enter title" style={{ 'color': 'white' }} required></input> */}
-                                        <Field name="title" type="text" id="title" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} placeholder="Enter title" />
+                                        <Field name="title" type="text" id="title" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')}/>
                                         <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Number of members</label>
+                                    <div className="form-group input-group">
+                                        {/* <input type="text" id="title" className="form-control bg-dark rounded py-2" placeholder="Enter title" style={{ 'color': 'white' }} required></input> */}
+                                        <Field name="max_people" type="number" id="max_people" min="1" className={'form-control'} />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Description</label>
+                                    <div className="form-group input-group">
+                                        {/* <input type="text" id="title" className="form-control bg-dark rounded py-2" placeholder="Enter title" style={{ 'color': 'white' }} required></input> */}
+                                        <textarea name="description" value={this.state.value} onChange={this.handleChange} type="text" id="description" rows="3" className={'form-control'} placeholder="Write a description"/>
                                     </div>
                                 </div>
                                 <div className="d-flex justify-content-between form-group mt-5">

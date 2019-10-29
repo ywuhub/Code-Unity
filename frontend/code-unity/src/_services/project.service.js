@@ -10,11 +10,11 @@ export const projectService = {
     get currentUserValue() { return currentUserSubject.value }
 };
 
-function create_group(title, max_people) {
+function create_group(title, max_people, description) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
-        body: JSON.stringify({ title: title, max_people: max_people})
+        body: JSON.stringify({ title: title, max_people: max_people, description: description})
     };
 
     return fetch(`${config.apiUrl}/api/project`, requestOptions)
