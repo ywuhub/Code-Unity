@@ -83,10 +83,12 @@ class AdvancedSearch extends React.Component {
     }
 
     addSearchTag(tag) {
+        let tags = this.state.search_tags;
         tag = tag.toLowerCase();
         // add unique tags
         if (this.state.search_tags.indexOf(tag) === -1) {
-            this.setState(prevState => ({ search_tags: [...prevState.search_tags, tag] }));
+            tags.push(tag);
+            this.setState({ search_tags: tags });
         }
     }
 
@@ -95,10 +97,12 @@ class AdvancedSearch extends React.Component {
      * @param {*} tag 
      */
     addTag(tag) {
+        let tags = this.state.filter_tags;
         tag = tag.toLowerCase();
         // add unique tags
-        if (this.state.filter_tags.indexOf(tag) === -1) {
-            this.setState(prevState => ({ filter_tags: [...prevState.filter_tags, tag] }));
+        if (tags.indexOf(tag) === -1) {
+            tags.push(tag);
+            this.setState({ filter_tags: tags });
         }
     }
 
@@ -107,10 +111,12 @@ class AdvancedSearch extends React.Component {
      * @param {*} tag 
      */
     addExcludedTag(tag) {
+        let tags = this.state.excluded_tags;
         tag = tag.toLowerCase();
         // add unique tags
-        if (this.state.excluded_tags.indexOf(tag) === -1) {
-            this.setState(prevState => ({ excluded_tags: [...prevState.excluded_tags, tag] }));
+        if (tags.indexOf(tag) === -1) {
+            tags.push(tag);
+            this.setState({ excluded_tags: tags });
         }
     }
 

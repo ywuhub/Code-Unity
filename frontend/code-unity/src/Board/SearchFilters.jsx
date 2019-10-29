@@ -30,7 +30,7 @@ class TagSearch extends React.Component {
         this.isMounted_ = true;
         this.setState({ isLoading: true });
         if (this.props.apiEndpoint !== '') {
-            const options = { method:'GET', headers: authHeader() }
+            const options = { method:'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} }
             fetch(`${config.apiUrl}` + this.props.apiEndpoint, options)
             .then(response => { return response.json(); })
             .then(json => {

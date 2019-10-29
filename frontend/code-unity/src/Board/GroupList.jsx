@@ -1,7 +1,7 @@
 import React from 'react';
 import AdvancedSearch from './AdvancedSearch';
 import config from 'config';
-import { authHeader } from '@/_helpers';
+import { authHeader, authHeaderOld } from '@/_helpers';
 import '@/Style';
 /**
  * Search bar that filters and shows group postings
@@ -34,7 +34,7 @@ class GroupList extends React.Component {
   componentDidMount() {
     this.isMounted_ = true;
     this.setState({ isLoading: true });
-    const projects_options = { method: 'GET', headers: authHeader() };
+    const projects_options = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };
     fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(posts => {
@@ -168,12 +168,15 @@ class GroupList extends React.Component {
    * @param {*} tag 
    */
   addTag(tag) {
+    let tags = this.state.tags;
     tag = tag.toLowerCase();
     // ignore duplicate tags
-    if (tag.length > 1 && this.state.tags.indexOf(tag) === -1) {
-      this.setState(prevState => ({ tags: [...prevState.tags, tag] }));
+    if (tag.length > 1 && tags.indexOf(tag) === -1) {
+      tags.push(tag);
+      this.setState({ tags: tags });
     }
   }
+
 
   /**
    * Adds a list of tags to currently selected tags
