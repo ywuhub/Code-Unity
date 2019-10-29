@@ -15,6 +15,12 @@ class AdvancedSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            // search_tags: {
+            //     titles: [],
+            //     leaders: [],
+            //     courses: [],
+            //     plangs: []
+            // },
             search_tags: [],
             filter_tags: [],
             excluded_tags: []
@@ -77,12 +83,10 @@ class AdvancedSearch extends React.Component {
     }
 
     addSearchTag(tag) {
-        let tags = this.state.search_tags;
         tag = tag.toLowerCase();
         // add unique tags
-        if (tags.indexOf(tag) === -1) {
-            tags.push(tag);
-            this.setState({ search_tags: tags });
+        if (this.state.search_tags.indexOf(tag) === -1) {
+            this.setState(prevState => ({ search_tags: [...prevState.search_tags, tag] }));
         }
     }
 
@@ -91,12 +95,10 @@ class AdvancedSearch extends React.Component {
      * @param {*} tag 
      */
     addTag(tag) {
-        let tags = this.state.filter_tags;
         tag = tag.toLowerCase();
         // add unique tags
-        if (tags.indexOf(tag) === -1) {
-            tags.push(tag);
-            this.setState({ filter_tags: tags });
+        if (this.state.filter_tags.indexOf(tag) === -1) {
+            this.setState(prevState => ({ filter_tags: [...prevState.filter_tags, tag] }));
         }
     }
 
@@ -105,12 +107,10 @@ class AdvancedSearch extends React.Component {
      * @param {*} tag 
      */
     addExcludedTag(tag) {
-        let tags = this.state.excluded_tags;
         tag = tag.toLowerCase();
         // add unique tags
-        if (tags.indexOf(tag) === -1) {
-            tags.push(tag);
-            this.setState({ excluded_tags: tags });
+        if (this.state.excluded_tags.indexOf(tag) === -1) {
+            this.setState(prevState => ({ excluded_tags: [...prevState.excluded_tags, tag] }));
         }
     }
 
@@ -151,8 +151,8 @@ class AdvancedSearch extends React.Component {
 
     onKeyPress(e) {
         if (e.key === 'Enter') {
-          this.addSearchTag(e.target.value);
-          document.getElementById(e.target.id).value = '';
+            this.addSearchTag(e.target.value);
+            document.getElementById(e.target.id).value = '';
         }
     }
 
@@ -187,27 +187,17 @@ class AdvancedSearch extends React.Component {
             <div id="advancedSearch" className="card shadow-sm border-0">
                 <div className="card-body">    {/* d-flex flex-column */}
                     <h4 className="card-title text-muted p-1 mb-4"> Advanced Search </h4>
-                    <h6 className="mb-3">Search Posts By {'<Under Construction>'} </h6>
-                    {/* project title and leader search */}
-                    <SearchBy addTag={this.addSearchTag.bind(this)} onEnter={this.onKeyPress.bind(this)}/>
+                    
+                    <div>
+                        <h6 className="mb-3">Search Posts By {'<Under Construction>'} </h6>
+                        <SearchBy addTag={this.addSearchTag.bind(this)} onEnter={this.onKeyPress.bind(this)} />
+                    </div>
 
                     <hr className="mt-5" />
 
                     {/* Component showing all tags */}
                     <div className="card-footer rounded mb-5 border-0 shadow-sm">
-                        <i className="mr-4 p-1 text-muted"> Search Tags:</i>
-                        <div id="tags">
-                            {
-                                this.state.search_tags.map((tag) => {
-                                    return (
-                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>
-                                            {tag}
-                                            <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeSearchTag.bind(this)}></button>
-                                        </span>
-                                    );
-                                })
-                            }
-                        </div>
+                        <TagList label='Search Tags' list={this.state.search_tags} badge='badge-success' removeTag={this.removeSearchTag.bind(this)}/>
                     </div>
 
                     {/* search filers for courses and progamming languages, and input box for user specified keyword tags*/}
@@ -218,44 +208,22 @@ class AdvancedSearch extends React.Component {
                             <label className="custom-control-label text-muted my-auto" htmlFor="append-switch">Append</label>
                         </div>
                     </div>
-                    <TagComponent label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
-                    <TagComponent label='Programming Languages' id='planguage-tag' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
-                    <TagComponent label='Keywords' content={this.keywordTagComponent()} />
-                    <TagComponent label='Excluded Keywords' content={this.keywordTagComponent(true)} />
+
+                    <div>
+                        <TagSearch label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
+                        <TagSearch label='Programming Languages' id='planguage-tag' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
+                        <TagSearch label='Keywords' content={this.keywordTagComponent()} />
+                        <TagSearch label='Excluded Keywords' content={this.keywordTagComponent(true)} />
+                    </div>
 
                     <hr className="mt-5" />
 
-                    {/* Component showing all tags */}
                     <div className="card-footer rounded mb-3 border-0 shadow-sm">
-                        <i className="mr-4 p-1 text-muted"> Filter Tags:</i>
-                        <div id="tags">
-                            {
-                                this.state.filter_tags.map((tag) => {
-                                    return (
-                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>
-                                            {tag}
-                                            <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button>
-                                        </span>
-                                    );
-                                })
-                            }
-                        </div>
+                        <TagList label='Filter Tags:' list={this.state.filter_tags} badge='badge-success' removeTag={this.removeTag.bind(this)}/>
                     </div>
 
                     <div className="card-footer rounded mb-5 border-0 shadow-sm">
-                        <i className="mr-4 p-1 text-muted"> Excluded Tags: </i>
-                        <div id="tags">
-                            {
-                                this.state.excluded_tags.map((tag) => {
-                                    return (
-                                        <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag}>
-                                            {tag}
-                                            <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeExcludedTag.bind(this)}></button>
-                                        </span>
-                                    );
-                                })
-                            }
-                        </div>
+                        <TagList label='Excluded Tags:' list={this.state.excluded_tags} badge='badge-danger' removeTag={this.removeExcludedTag.bind(this)}/>
                     </div>
 
                     {/* Search button to filter posts according to user input */}
@@ -269,11 +237,32 @@ class AdvancedSearch extends React.Component {
     }
 }
 
+
+function TagList(props) {
+    return (
+        <div>
+            <i className="mr-4 p-1 text-muted"> {props.label} </i>
+            <div className="tags">
+                {
+                    props.list.map((tag) => {
+                        return (
+                            <span className={`badge badge-pill ${props.badge} p-2 mx-1 my-2`} key={tag}>
+                                {tag}
+                                <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={props.removeTag}></button>
+                            </span>
+                        );
+                    })
+                }
+            </div>
+        </div>
+    );
+}
+
 /**
  * Shows tag search filter in advanced search component
  * @param {*} props 
  */
-function TagComponent(props) {
+function TagSearch(props) {
     return (
         <div className="row mb-3">
             <div className="col-lg-4 bg-transparent border-0 text-muted my-auto" style={{ 'wordBreak': 'keep-all', 'fontSize': '14px' }}>{props.label}</div>

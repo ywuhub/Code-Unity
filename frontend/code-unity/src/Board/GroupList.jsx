@@ -168,12 +168,10 @@ class GroupList extends React.Component {
    * @param {*} tag 
    */
   addTag(tag) {
-    let tags = this.state.tags;
     tag = tag.toLowerCase();
     // ignore duplicate tags
-    if (tag.length > 1 && tags.indexOf(tag) === -1) {
-      tags.push(tag);
-      this.setState({ tags: tags });
+    if (tag.length > 1 && this.state.tags.indexOf(tag) === -1) {
+      this.setState(prevState => ({ tags: [...prevState.tags, tag] }));
     }
   }
 
@@ -246,18 +244,27 @@ class GroupList extends React.Component {
 
         <div className="row">
           <div className="col-sm-8 rounded shadow-sm">
+            {/* page header */}
+            <div className="border-bottom border-gray">
+              <h6 className="mb-0 d-flex justify-content-between">
+                Find a new Group
+                <div className="custom-control custom-switch">
+                  <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
+                  <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
+                </div>
+              </h6>
 
-            <div className="input-group bg-light border-bottom shadow-sm rounded-pill mt-3 mb-4">
-              <input type="text" id="search-bar" className="form-control bg-transparent rounded-pill p-4 pr-5 border-0" placeholder="Search" onKeyPress={this.onKeyPress.bind(this)} onChange={this.filterPosts.bind(this)}></input>
-              <div className="input-group-append">
-                <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
+              <div className="input-group bg-light border-bottom shadow-sm rounded-pill mt-3 mb-4">
+                <input type="text" id="search-bar" className="form-control bg-transparent rounded-pill p-4 pr-5 border-0" placeholder="Search" onKeyPress={this.onKeyPress.bind(this)} onChange={this.filterPosts.bind(this)}></input>
+                <div className="input-group-append">
+                  <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
+                </div>
               </div>
             </div>
 
-            <hr />
             {/* Show tags */}
-            <div className="mb-3 border-0 p-0 px-2">
-              <div className="d-flex justify-content-between">
+            <div className="my-3 border-0 p-0 px-2">
+              <div className="d-flex justify-conteFnt-between">
                 <i className="mr-4 text-muted"> Search Tags:</i>
                 <div className="custom-control custom-switch">
                   <input type="checkbox" className="custom-control-input" value="false" id="inclusive-search" onClick={this.filterByTag.bind(this)}></input>
@@ -272,7 +279,8 @@ class GroupList extends React.Component {
                       <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
                     );
                   })}
-                <br />{
+                <br />
+                {
                   this.state.excluded_tags.map((tag) => {
                     return (
                       <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1 excluded" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
@@ -281,19 +289,12 @@ class GroupList extends React.Component {
                 }
               </div>
             </div>
+
             <hr />
 
-            <h6 className="border-bottom border-gray mb-0 d-flex justify-content-between">
-              Find a new Group
-              <div className="custom-control custom-switch">
-                <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
-                <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
-              </div>
-            </h6>
-
-            {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
 
             {/* Shows all group listings */}
+            {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
             {!this.isLoading && <ShowPosts posts={this.state.filteredPosts} />}
 
             <small className="d-block text-right my-3">
@@ -302,12 +303,12 @@ class GroupList extends React.Component {
           </div>
 
           <div className="col-sm-4">
-            {/* Advanced Search component */}
             <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} />
           </div>
-
         </div>
+
         <br />
+
         {/* Create group modal */}
         <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div className="modal-dialog modal-dialog-centered" role="document">
@@ -337,7 +338,6 @@ class GroupList extends React.Component {
             </div>
           </div>
         </div>
-
       </div>
     );
   }
@@ -387,11 +387,7 @@ function ShowPost(props) {
       items.push(<span className="d-block" key={post_info_key++}> {key} : {Array.from(info).join(', ')} </span>);
     }
   }
-  return (
-    <div>
-      {items}
-    </div>
-  );
+  return ( <div> {items}</div> );
 }
 
 export { GroupList };
