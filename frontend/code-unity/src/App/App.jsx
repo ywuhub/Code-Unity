@@ -33,12 +33,37 @@ class App extends React.Component {
             <Router history={history}>
                 <div>
                     {currentUser &&
-                        <nav className="navbar navbar-expand navbar-dark bg-dark">
+                        <nav className="navbar navbar-expand navbar-dark bg-dark" style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <div className="navbar-nav">
+                                <Link to="/" className="nav-item nav-link" style={{ fontWeight: "bold", color: 'white' }}>
+                                    Code Unity
+                                </Link>
+                            </div>
                             <div className="navbar-nav">
                                 <Link to="/" className="nav-item nav-link">Home</Link>
-                                <a onClick={this.logout} className="nav-item nav-link">Logout</a>
+                                <Link to="/" className="nav-item nav-link">Projects</Link>
+                                <li class="nav-item">
+                                    <div class="dropdown">
+                                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+                                            Username
+                                    </button>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="user">
+                                            <a class="dropdown-item" href="/profile">Profile</a>
+                                            <a class="dropdown-item" href="#">Messages</a>
+                                            <a class="dropdown-item" href="#">My Favourites</a>
+
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Applications</a>
+
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Settings</a>
+                                            <a onClick={this.logout} class="dropdown-item">Logout</a>
+                                        </div>
+                                    </div>
+                                </li>
                             </div>
                         </nav>
+
                     }
                     <div>
                         <Switch>
