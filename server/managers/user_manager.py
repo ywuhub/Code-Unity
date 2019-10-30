@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Set
+from typing import Dict, Set, Tuple
 
 from argon2 import PasswordHasher
 from bson import ObjectId
@@ -13,7 +13,7 @@ from flask_jwt_extended import (
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
 
-from server.models.user import User, Profile
+from server.models.user import User
 
 ph = PasswordHasher(time_cost=1, memory_cost=51200, parallelism=2)
 
@@ -43,15 +43,11 @@ class ValueExistsError(Exception):
 
 
 class UserManager:
-    __instance = None
-
     def __init__(self, app: Flask, db: Database, jwt: JWTManager):
         self.users = db.get_collection("users")
-        self.profiles = db.get_collection("profiles")
         # In memory store of revoked tokens. WARNING: will allow logged out users to
         # log back in if app is restarted.
         self.revoked_tokens: Set[str] = set()
-        UserManager.__instance = self
 
         # Overrides the default function of jwt.current_user to return a User object.
         @jwt.user_loader_callback_loader
@@ -63,13 +59,6 @@ class UserManager:
         def check_if_token_in_blacklist(decrypted_token: Dict[str, str]):
             jti = decrypted_token["jti"]
             return jti in self.revoked_tokens
-
-    @staticmethod
-    def get_instance():
-        instance = UserManager.__instance
-        if instance is None:
-            raise LookupError("UserManager instance requested before initialization")
-        return instance
 
     def register_user(self, username: str, email: str, password: str):
         """
@@ -113,7 +102,7 @@ class UserManager:
         # Successfully registered user, logging them in.
         return self.log_in_user(username, password)
 
-    def log_in_user(self, username: str, password: str):
+    def log_in_user(self, username: str, password: str) -> Tuple[str, str]:
         """
         log_in_user attempts to log in a user given their username and password.
         
@@ -138,12 +127,3 @@ class UserManager:
         """
         jti: str = get_raw_jwt()["jti"]
         self.revoked_tokens.add(jti)
-
-    def get_user_profile(self, user: User) -> Profile:
-        ret = self.profiles.find_one({"_id": user._id})
-        if ret is None:
-            return Profile()
-        return Profile.from_dict(ret)
-
-    def put_user_profile(self, user: User, profile: Profile):
-        self.profiles.replace_one({"_id": user._id}, profile, upsert=True)

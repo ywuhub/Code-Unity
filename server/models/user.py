@@ -71,11 +71,27 @@ class User:
 
     def __init__(self, id: ObjectId, db: Database):
         self._id = id
+        self.profiles = db.get_collection("profiles")
         self.projects = db.get_collection("projects")
 
     def create_project(self, title: str, max_people: int, **kwargs):
         new_project = Project(self._id, title, max_people, **kwargs)
         return self.projects.insert_one(new_project.to_dict()).inserted_id
+
+    @property
+    def profile(self) -> Profile:
+        ret = self.profiles.find_one({"_id": self._id})
+
+        if ret is None:
+            return Profile()
+
+        return Profile.from_dict(ret)
+
+    def update_profile(self, profile: Dict):
+        """
+        Replaces the user's current profile or creates it if it does not exist.
+        """
+        self.profiles.replace_one({"_id": self._id}, profile, upsert=True)
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'
