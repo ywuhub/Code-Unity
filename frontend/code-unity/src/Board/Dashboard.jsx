@@ -40,7 +40,7 @@ class Dashboard extends React.Component {
                         <br></br>
                         <div class="btn-toolbar mb-2 mb-md-0">
                             <div class="btn-group mr-2">
-                                <a class="nav-link active" href="/CreateGroup">Create New Group</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/CreateGroup">Create New Group</a>
                             </div>
                         </div>
                     </small>
