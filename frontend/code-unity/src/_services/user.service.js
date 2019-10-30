@@ -1,14 +1,19 @@
 import config from 'config';
-import { authHeader, handleResponse } from '@/_helpers';
+import { authHeaderOld, authHeader, handleResponse } from '@/_helpers';
 
 export const userService = {
     getProfile,
     getProjectList,
-    getProjectDetail
+    getProjectDetail,
+    getAll
 };
 
 function getProfile() {
-    const requestOptions = { method: 'GET', headers: authHeader() };
+    const requestOptions = { method: 'GET', headers: authHeaderOld() };
+    return fetch(`${config.apiUrl}/api/user/profile`, requestOptions).then(handleResponse);
+};
+function getAll() {
+    const requestOptions = { method: 'GET', headers: authHeaderOld() };
     return fetch(`${config.apiUrl}/api/user/profile`, requestOptions).then(handleResponse);
 }
 

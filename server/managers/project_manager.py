@@ -30,7 +30,7 @@ class ProjectManager:
 
     def get_project_listing(self):
         ret = []
-        for doc in self.db.find(projection=["title"]):
+        for doc in self.db.find().limit(10):
             ret.append(doc)
         return ret
 

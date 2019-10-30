@@ -174,17 +174,33 @@ logged in user does not own the specified project.
 ### `/api/project/list`
 
 #### GET
-Returns a list of every project's title and their project_id.
+Returns a list of 10 project's and their full details.
 
 ```json
 [
-    {
-        "title": "ok test project please ignore",
-        "project_id": "5dabdced46e6be107d2a1f98"
-    },
-    {
-        "title": "better test project please ignore",
-        "project_id": "5dabf1c0026f1a0cfff5d422"
+ {
+        "project_id": "5dac029b8b819e584ff36f8d",
+        "title": "Code Unity",
+        "leader": "5dabfe830ddd57902efd2fa3",
+        "cur_people": 1,
+        "members": [
+            "5dabfe830ddd57902efd2fa3"
+        ],
+        "description": "Nice.",
+        "course": "4920",
+        "tags": [
+            "wam booster",
+            "free hd",
+        ],
+        "languages": [
+            "中文",
+            "english"
+        ],
+        "technologies": [
+            "python",
+            "mongoDB",
+            "react"
+        ]
     }
 ]
 ```

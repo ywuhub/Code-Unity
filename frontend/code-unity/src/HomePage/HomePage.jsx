@@ -3,6 +3,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
 import { Dashboard, GroupList, GroupChat, Profile } from '@/Board';
+import { CreateGroup } from '@/CreateGroup';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -73,9 +74,9 @@ class HomePage extends React.Component {
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="/CreateGroup">
                           <span data-feather="file-text"></span>
-                        Temp
+                        Create a Group
                         </a>
                       </li>
                       <li class="nav-item">
@@ -100,6 +101,7 @@ class HomePage extends React.Component {
                     <Route exact path="/" component={Dashboard} />
                     <Route path="/groupchat" component={GroupChat} />
                     <Route path="/profile" component={Profile} />
+                    <Route path="/CreateGroup" component={CreateGroup} />
                 </Switch>
 
                 </main>

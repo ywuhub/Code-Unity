@@ -3,7 +3,6 @@ export function configureFakeBackend() {
     let realFetch = window.fetch;
     window.fetch = function (url, opts) {
         const isLoggedIn = opts.headers['Authorization'] === 'Bearer fake-jwt-token';
-
         return new Promise((resolve, reject) => {
             // wrap in timeout to simulate server api call
             setTimeout(() => {
@@ -20,7 +19,6 @@ export function configureFakeBackend() {
                         token: 'fake-jwt-token'
                     });
                 }
-
                 // get users - secure
                 if (url.endsWith('/users') && opts.method === 'GET') {
                     if (!isLoggedIn) return unauthorised();
