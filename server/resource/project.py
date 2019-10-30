@@ -93,7 +93,10 @@ class ProjectResource(Resource):
             return {"message": f"project_id {project_id} not found"}, 404
         if current_user._id != project.leader:
             return {"message": "only the owner may modify a project"}, 401
+
         # Create a new Project
+
+        # Parse arguments
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument("title", required=True)
         parser.add_argument("max_people", type=int, required=True)
@@ -104,10 +107,11 @@ class ProjectResource(Resource):
             parser.add_argument(k, action="append")
         args = parser.parse_args(strict=True)
 
+        # Pop out the required arguments to instantiate a new project
         title = args.pop("title")
         max_people = args.pop("max_people")
         try:
-            new_project = current_user.new_project(title, max_people, **args)
+            new_project = Project(current_user._id, title, max_people, **args)
         except ValueError as err:
             return {"message": str(err)}, 400
 
