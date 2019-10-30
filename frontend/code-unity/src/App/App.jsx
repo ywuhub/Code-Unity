@@ -45,7 +45,7 @@ class App extends React.Component {
                                 <li class="nav-item">
                                     <div class="dropdown">
                                         <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-                                            Username
+                                            Menu
                                     </button>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="user">
                                             <a class="dropdown-item" href="/profile">Profile</a>
