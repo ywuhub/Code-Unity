@@ -290,6 +290,7 @@ class GroupList extends React.Component {
                     );
                   })
                 }
+
               </div>
             </div>
 
