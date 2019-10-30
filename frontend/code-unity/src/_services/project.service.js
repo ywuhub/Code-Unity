@@ -18,10 +18,5 @@ function create_group(title, max_people, description) {
     };
 
     return fetch(`${config.apiUrl}/api/project`, requestOptions)
-        .then(handleResponse)
-        .then(user => {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            currentUserSubject.next(user);
-            return user;
-        });
+        .then(handleResponse);
 }
