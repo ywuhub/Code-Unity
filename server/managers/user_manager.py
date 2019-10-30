@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Set
+from typing import Dict, Set, Tuple
 
 from argon2 import PasswordHasher
 from bson import ObjectId
@@ -102,7 +102,7 @@ class UserManager:
         # Successfully registered user, logging them in.
         return self.log_in_user(username, password)
 
-    def log_in_user(self, username: str, password: str):
+    def log_in_user(self, username: str, password: str) -> Tuple[str, str]:
         """
         log_in_user attempts to log in a user given their username and password.
         

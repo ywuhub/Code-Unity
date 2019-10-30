@@ -43,8 +43,11 @@ class NewProject(Resource):
             parser.add_argument(k, action="append")
         args = parser.parse_args(strict=True)
 
+        # Pop out the required fields to create a project, they mustn't be in
+        # the kwargs of create_project. 
         title = args.pop("title")
         max_people = args.pop("max_people")
+
         try:
             project_id = current_user.create_project(title, max_people, **args)
         except ValueError as err:

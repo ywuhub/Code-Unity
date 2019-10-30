@@ -66,9 +66,10 @@ class Auth(Resource):
         )
         args = post_parser.parse_args(strict=True)
 
+        username = args["username"]
+        pwd = args["password"]
+
         try:
-            username = args["username"]
-            pwd = args["password"]
             uid, token = self.user_manager.log_in_user(username, pwd)
         except (VerificationError, ValueError):
             return {"message": "incorrect username or password"}, 401
