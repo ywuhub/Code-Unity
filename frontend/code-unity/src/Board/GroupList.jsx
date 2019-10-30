@@ -19,6 +19,7 @@ class GroupList extends React.Component {
       filteredPosts: [],
       tags: [],
       excluded_tags: [],
+      hidePosts: false,
       isLoading: false
     };
   }
@@ -228,6 +229,11 @@ class GroupList extends React.Component {
     }
   }
 
+  toggleHidePost(e) {
+    const hide = !this.state.hidePosts;
+    this.setState({ hidePosts: hide });
+  }
+
   /**
    * Shows group listing page
    */
@@ -252,7 +258,7 @@ class GroupList extends React.Component {
               <h6 className="mb-0 d-flex justify-content-between">
                 Find a new Group
                 <div className="custom-control custom-switch">
-                  <input type="checkbox" className="custom-control-input" id="full-groups-switch"></input>
+                  <input type="checkbox" className="custom-control-input" id="full-groups-switch" onClick={this.toggleHidePost.bind(this)}></input>
                   <label className="custom-control-label text-muted" htmlFor="full-groups-switch">Hide Full Groups</label>
                 </div>
               </h6>
@@ -299,7 +305,7 @@ class GroupList extends React.Component {
 
             {/* Shows all group listings */}
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
-            {!this.isLoading && <ShowPosts posts={this.state.filteredPosts} />}
+            {!this.isLoading && <ShowPosts posts={this.state.filteredPosts} hidePosts={this.state.hidePosts}/>}
 
             <small className="d-block text-right my-3">
               <a href="#">All Groups</a>
@@ -357,13 +363,15 @@ function ShowPosts(props) {
     <div>
       {
         props.posts.map((post) => {
+          const group_full = post['max_people'] === post['cur_people'];
+          if (props.hidePosts && group_full) return;
           return (
             <div class="media text-muted pt-3" key={post_key++}>
               <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
               <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                 <div class="d-flex justify-content-between align-items-center w-100">
                   <strong class="text-gray-dark">{post['title']}</strong>
-                  {post['max_people'] !== post['cur_people'] && <a href="#">Join</a>}
+                  {!group_full && <a href="#">Join</a>}
                 </div>
 
                 {/* Show all the information in post  */}
