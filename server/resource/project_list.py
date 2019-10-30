@@ -8,6 +8,7 @@ fields = {
     "title": fields.String,
     "leader": ObjectId,
     "cur_people": fields.Integer,
+    "max_people": fields.Integer,
     "members": fields.List(ObjectId),
     "description": fields.String(default=None),
     "course": fields.String(default=None),
