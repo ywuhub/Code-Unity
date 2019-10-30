@@ -34,7 +34,6 @@ class AdvancedSearch extends React.Component {
      */
     filter(e) {
         const title = document.getElementById('project-title');
-        const leader = document.getElementById('project-leader');
         const course = document.getElementsByClassName('course-search')[0];
         const language = document.getElementsByClassName('language-search')[0];
 
@@ -289,13 +288,6 @@ function SearchBy(props) {
 
                 <div className="col-lg-8">
                     <input type='text' id='project-title' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Project Title" onKeyPress={props.onEnter}></input>
-                </div>
-            </div>
-
-            <div className="d-flex align-items-center row mb-3">
-                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Project Leader</div>
-                <div className="col-lg-8">
-                    <input type='text' id='project-leader' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Project Leader" onKeyPress={props.onEnter}></input>
                 </div>
             </div>
 

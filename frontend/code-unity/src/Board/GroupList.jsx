@@ -1,7 +1,8 @@
 import React from 'react';
 import AdvancedSearch from './AdvancedSearch';
+import GroupPost from './GroupPost';
 import config from 'config';
-import { authHeader, authHeaderOld } from '@/_helpers';
+import { authHeader } from '@/_helpers';
 import '@/Style';
 /**
  * Search bar that filters and shows group postings
@@ -35,7 +36,7 @@ class GroupList extends React.Component {
   componentDidMount() {
     this.isMounted_ = true;
     this.setState({ isLoading: true });
-    const projects_options = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };
+    const projects_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
     fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(posts => {
@@ -238,10 +239,9 @@ class GroupList extends React.Component {
    * Shows group listing page
    */
   render() {
-    let tag_id = 0;
+    let post_key = 0;
     return (
       <div id="page-start">
-
         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 className="h4">Groups</h1>
           <div className="btn-toolbar mb-2 mb-md-0">
@@ -252,6 +252,7 @@ class GroupList extends React.Component {
         </div>
 
         <div className="row">
+          {/* Group Listings Column */}
           <div className="col-sm-8 rounded shadow-sm">
             {/* page header */}
             <div className="border-bottom border-gray">
@@ -271,7 +272,7 @@ class GroupList extends React.Component {
               </div>
             </div>
 
-            {/* Show tags */}
+            {/* search tags */}
             <div className="my-3 border-0 p-0 px-2">
               <div className="d-flex justify-conteFnt-between">
                 <i className="mr-4 text-muted"> Search Tags:</i>
@@ -285,37 +286,41 @@ class GroupList extends React.Component {
                 {
                   this.state.tags.map((tag) => {
                     return (
-                      <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
+                      <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
                     );
-                  })}
+                  })
+                }
                 <br />
                 {
                   this.state.excluded_tags.map((tag) => {
                     return (
-                      <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag + ' ' + tag_id++}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1 excluded" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
+                      <span className="badge badge-pill badge-danger p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1 excluded" value={tag} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
                     );
                   })
                 }
-
               </div>
             </div>
 
             <hr />
 
-
             {/* Shows all group listings */}
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
-            {!this.isLoading && <ShowPosts posts={this.state.filteredPosts} hidePosts={this.state.hidePosts}/>}
+            {!this.isLoading &&
+              this.state.filteredPosts.map((post) => {
+                return <div key={post_key++}><GroupPost post={post} hidePosts={this.state.hidePosts} /></div>;
+              })
+            }
 
             <small className="d-block text-right my-3">
               <a href="#">All Groups</a>
             </small>
-          </div>
+          </div> {/* Group Listings Column End */}
 
+          {/* Advanced Search Column */}
           <div className="col-sm-4">
             <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} />
           </div>
-        </div>
+        </div>  {/* Page end */}
 
         <br />
 
@@ -351,55 +356,6 @@ class GroupList extends React.Component {
       </div>
     );
   }
-}
-
-/**
- * Shows each filtered post onto the page
- * @param {*} props 
- */
-function ShowPosts(props) {
-  let post_key = 0;
-  return (
-    <div>
-      {
-        props.posts.map((post) => {
-          const group_full = post['max_people'] === post['cur_people'];
-          if (props.hidePosts && group_full) return;
-          return (
-            <div class="media text-muted pt-3" key={post_key++}>
-              <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
-              <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                  <strong class="text-gray-dark">{post['title']}</strong>
-                  {!group_full && <a href="#">Join</a>}
-                </div>
-
-                {/* Show all the information in post  */}
-                <ShowPost post={post} />
-              </div>
-            </div>
-          );
-        })
-      }
-    </div>
-  );
-}
-
-function ShowPost(props) {
-  const items = [];
-  let post = props.post;
-  let post_info_key = 0;
-
-  for (let key in post) {
-    if (key === 'project_id' || key === 'title') continue;
-    const info = post[key];
-    if (typeof info !== 'object') {
-      items.push(<span className="d-block" key={post_info_key++}> {key} : {info} </span>);
-    } else {
-      items.push(<span className="d-block" key={post_info_key++}> {key} : {Array.from(info).join(', ')} </span>);
-    }
-  }
-  return ( <div> {items}</div> );
 }
 
 export { GroupList };
