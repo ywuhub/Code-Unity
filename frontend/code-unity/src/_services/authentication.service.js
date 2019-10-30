@@ -35,7 +35,7 @@ function register(email, username, password) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username, email: email, password: password })
     };
-    create_group("hello", 5);
+    //create_group("hello", 5);
     return fetch(`${config.apiUrl}/api/auth`, requestOptions)
         .then(handleRegisterResponse)
         .then(user => {
