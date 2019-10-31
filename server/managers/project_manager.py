@@ -19,10 +19,18 @@ class ProjectManager:
             return doc
         return Project.from_dict(doc)
 
-    def get_project_listing(self):
+    def get_project_listing(self, user_id: str = None):
         ret = []
-        for doc in self.db.find().limit(10):
+
+        # check if getting a project list for the current user or in general
+        if user_id:
+            project_list = self.db.find({"members": {"$eq": ObjectId(user_id)} })
+        else:
+            project_list = self.db.find().limit(10)
+
+        for doc in project_list:
             ret.append(doc)
+            
         return ret
 
     def delete_project(self, project: Project):

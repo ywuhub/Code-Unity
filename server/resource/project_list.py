@@ -1,3 +1,4 @@
+from flask import request
 from flask_restful import Resource, fields
 
 from server.managers.project_manager import ProjectManager
@@ -24,7 +25,8 @@ class ProjectList(Resource):
 
     def get(self):
         """
-        Returns a list of every project's title and their project_id.
+        Returns a list of the current user's involved projects or
+        every project's title and their project_id.
 
         Examples:
         ```
@@ -46,7 +48,7 @@ class ProjectList(Resource):
                         "free hd",
                     ],
                     "languages": [
-                        "中文",
+                        "chinese",
                         "english"
                     ],
                     "technologies": [
@@ -58,4 +60,8 @@ class ProjectList(Resource):
             ]
         ```
         """
-        return marshal(self.project_manager.get_project_listing(), fields)
+        user_id = request.args.get('user_id')
+        if (user_id == None):
+            return marshal(self.project_manager.get_project_listing(), fields)
+        else:
+            return marshal(self.project_manager.get_project_listing(user_id), fields)

@@ -38,7 +38,7 @@ class ProjectResource(Resource):
                     "react"
                 ],
                 "languages": [
-                    "中文",
+                    "chinese",
                     "english"
                 ],
                 "tags": [
