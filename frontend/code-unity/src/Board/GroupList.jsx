@@ -40,19 +40,10 @@ class GroupList extends React.Component {
     fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(posts => {
-        if (this.isMounted_) {
-          this.setState({
-            initialPosts: posts,
-            filteredPosts: posts,
-          });
-        }
+        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts });
       })
       .then(() => {
-        if (this.isMounted_) {
-          this.setState({
-            isLoading: false
-          });
-        }
+        if (this.isMounted_) this.setState({ isLoading: false });
       })
       .catch(err => { console.log(err); });
   }
@@ -65,14 +56,9 @@ class GroupList extends React.Component {
   containsFilter(post, filter) {
     let contains = false;
     for (let key of Object.keys(post)) {
-      if (typeof post[key] === 'string') {
-        contains = (post[key].toLowerCase().indexOf(filter) !== -1);
-        if (contains) break;
-
-      } else {
-        contains = (Array.from(post[key]).toString().toLowerCase().indexOf(filter) !== -1);
-        if (contains) break;
-      }
+      if (typeof post[key] === 'string') contains = (post[key].toLowerCase().indexOf(filter) !== -1);
+      else contains = (Array.from(post[key]).toString().toLowerCase().indexOf(filter) !== -1);
+      if (contains) break;
     }
     return contains;
   }
@@ -242,6 +228,8 @@ class GroupList extends React.Component {
     let post_key = 0;
     return (
       <div id="page-start">
+
+        {/* page header */}
         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 className="h4">Groups</h1>
           <div className="btn-toolbar mb-2 mb-md-0">
@@ -249,12 +237,13 @@ class GroupList extends React.Component {
               <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter">Create New Group</button>
             </div>
           </div>
-        </div>
+        </div> {/* page header end */}
 
         <div className="row">
           {/* Group Listings Column */}
           <div className="col-sm-8 rounded shadow-sm">
-            {/* page header */}
+
+            {/* content header */}
             <div className="border-bottom border-gray">
               <h6 className="mb-0 d-flex justify-content-between">
                 Find a new Group
@@ -270,7 +259,7 @@ class GroupList extends React.Component {
                   <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
                 </div>
               </div>
-            </div>
+            </div> {/* content header end */}
 
             {/* search tags */}
             <div className="my-3 border-0 p-0 px-2">
@@ -299,7 +288,7 @@ class GroupList extends React.Component {
                   })
                 }
               </div>
-            </div>
+            </div> {/* search tags end */}
 
             <hr />
 
@@ -320,7 +309,7 @@ class GroupList extends React.Component {
           <div className="col-sm-4">
             <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} />
           </div>
-        </div>  {/* Page end */}
+        </div>  {/* row end */}
 
         <br />
 
@@ -352,7 +341,8 @@ class GroupList extends React.Component {
               </div>
             </div>
           </div>
-        </div>
+        </div> {/* Create group modal end */}
+
       </div>
     );
   }

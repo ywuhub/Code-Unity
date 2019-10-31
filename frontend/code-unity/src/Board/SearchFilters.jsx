@@ -34,9 +34,7 @@ class TagSearch extends React.Component {
             fetch(`${config.apiUrl}` + this.props.apiEndpoint, options)
             .then(response => { return response.json(); })
             .then(json => {
-                if (this.isMounted_) {
-                    this.setState({ tags: json });
-                }
+                if (this.isMounted_) this.setState({ tags: json });
             })
             .catch(err => { console.log(err); });
         }

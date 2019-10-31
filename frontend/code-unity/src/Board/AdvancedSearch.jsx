@@ -17,9 +17,8 @@ class AdvancedSearch extends React.Component {
         this.state = {
             // search_tags: {
             //     titles: [],
-            //     leaders: [],
             //     courses: [],
-            //     plangs: []
+            //     technologies: []
             // },
             search_tags: [],
             filter_tags: [],
@@ -37,31 +36,27 @@ class AdvancedSearch extends React.Component {
         const course = document.getElementsByClassName('course-search')[0];
         const language = document.getElementsByClassName('language-search')[0];
 
-        // parent class processes project title and project leader input 
-        //if (!(/^(\s+|)$/.test(title.value))) this.props.filterByKey('title', title.value);
-        //if (/^(\s+|)$/.test(leader.value)) this.props.filterByKey('leader', leader.value);
-
-        // before going to group listings, ask to search by above
-        // then posts are fetched
-        // then users can filter by tags 
-        // if users want a new set of posts, they fill in above fields
-
-        // fetch posts with title, leader, course, language 
-        //.then add tags and filter       
+        // const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }, body: JSON.stringify(this.state.search_tags) };
+        // fetch(`${config.apiUrl}/api/...`, options)
+        //     .then(response => { return response.json() })
+        //     .then(filtered_posts => {
+        //         // set initial posts and filtered posts in groupList to filtered_post
+        //     })
+        //     .catch(err => { console.log(err) });
 
         let appendSwitch = document.getElementById('append-switch');
-        const append = appendSwitch.checked;
-        if (tags.length !== 0) {
-            this.props.addTags(this.state.filter_tags, this.state.excluded_tags, append);   // parent class processes selected tags
+        if (this.state.search_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
+            this.props.addTags(this.state.filter_tags, this.state.excluded_tags, appendSwitch.checked);   // parent class processes selected tags
         }
 
         // reset search
-        title.value = '';
-        leader.value = '';
-        course.value = '';
-        language.value = '';
-        appendSwitch.checked = false;
-        this.setState({ filter_tags: [], excluded_tags: [], search_tags: [] });
+        // title.value = '';
+        // leader.value = '';
+        // course.value = '';
+        // language.value = '';
+        // appendSwitch.checked = false;
+        // this.setState({ filter_tags: [], excluded_tags: [], search_tags: [] });
+        this.reset();
     }
 
     /**
@@ -133,7 +128,7 @@ class AdvancedSearch extends React.Component {
     }
 
     /**
-     * Remove tags from selected tags
+     * Remove tags from excluded tags
      * @param {*} e event
      */
     removeExcludedTag(e) {
@@ -165,7 +160,7 @@ class AdvancedSearch extends React.Component {
      * Clear advanced search form
      * @param {*} e event
      */
-    reset(e) {
+    reset() {
         Array.from(document.getElementsByClassName('advanced-input')).forEach(input => {
             input.value = '';
         });
@@ -192,7 +187,7 @@ class AdvancedSearch extends React.Component {
             <div id="advancedSearch" className="card shadow-sm border-0">
                 <div className="card-body">    {/* d-flex flex-column */}
                     <h4 className="card-title text-muted p-1 mb-4"> Advanced Search </h4>
-                    
+
                     <div>
                         <h6 className="mb-3">Search Posts By {'<Under Construction>'} </h6>
                         <SearchBy addTag={this.addSearchTag.bind(this)} onEnter={this.onKeyPress.bind(this)} />
@@ -200,12 +195,11 @@ class AdvancedSearch extends React.Component {
 
                     <hr className="mt-5" />
 
-                    {/* Component showing all tags */}
+                    {/* Show Tags */}
                     <div className="card-footer rounded mb-5 border-0 shadow-sm">
-                        <TagList label='Search Tags' list={this.state.search_tags} badge='badge-success' removeTag={this.removeSearchTag.bind(this)}/>
+                        <TagList label='Search Tags' list={this.state.search_tags} badge='badge-success' removeTag={this.removeSearchTag.bind(this)} />
                     </div>
 
-                    {/* search filers for courses and progamming languages, and input box for user specified keyword tags*/}
                     <div className="d-flex justify-content-between mb-3">
                         <h6 className="">Then Filter By Tags</h6>
                         <div className="custom-control custom-switch">
@@ -214,6 +208,7 @@ class AdvancedSearch extends React.Component {
                         </div>
                     </div>
 
+                    {/* Tag input fields */}
                     <div>
                         <TagSearch label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
                         <TagSearch label='Programming Languages' id='planguage-tag' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
@@ -223,12 +218,15 @@ class AdvancedSearch extends React.Component {
 
                     <hr className="mt-5" />
 
-                    <div className="card-footer rounded mb-3 border-0 shadow-sm">
-                        <TagList label='Filter Tags:' list={this.state.filter_tags} badge='badge-success' removeTag={this.removeTag.bind(this)}/>
-                    </div>
+                    {/* Show tags */}
+                    <div>
+                        <div className="card-footer rounded mb-3 border-0 shadow-sm">
+                            <TagList label='Filter Tags:' list={this.state.filter_tags} badge='badge-success' removeTag={this.removeTag.bind(this)} />
+                        </div>
 
-                    <div className="card-footer rounded mb-5 border-0 shadow-sm">
-                        <TagList label='Excluded Tags:' list={this.state.excluded_tags} badge='badge-danger' removeTag={this.removeExcludedTag.bind(this)}/>
+                        <div className="card-footer rounded mb-5 border-0 shadow-sm">
+                            <TagList label='Excluded Tags:' list={this.state.excluded_tags} badge='badge-danger' removeTag={this.removeExcludedTag.bind(this)} />
+                        </div>
                     </div>
 
                     {/* Search button to filter posts according to user input */}
