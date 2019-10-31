@@ -1,3 +1,28 @@
 .profile-descrption-block {
   height: auto;
+  width: 70%;
+  flex-wrap: wrap;
+  display: flex;
+
+}
+.profile-tag-container {
+	width: auto;
+}
+.profile-tag-input {
+  text-align: center;
+
+	background-color: rgba(0, 0, 0, 0);
+	outline: none;
+	border: none;
+  	color: white;
+	font-weight: bold;
+	width: 100px;
+}
+.profile-tag-color {
+	background-color: rgba(220, 0, 0, 0);
+}
+.profile-tag-input::placeholder {
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
 }
