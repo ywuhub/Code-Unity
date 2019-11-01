@@ -10,18 +10,13 @@ export const projectService = {
     get currentUserValue() { return currentUserSubject.value }
 };
 
-function create_group(title, max_people, description) {
+function create_group(title, max_people, description, prog_languages) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
-        body: JSON.stringify({ title: title, max_people: max_people, description: description})
+        body: JSON.stringify({ title: title, max_people: max_people, description: description, technologies: prog_languages})
     };
 
     return fetch(`${config.apiUrl}/api/project`, requestOptions)
-        .then(handleResponse)
-        .then(user => {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            currentUserSubject.next(user);
-            return user;
-        });
+        .then(handleResponse);
 }

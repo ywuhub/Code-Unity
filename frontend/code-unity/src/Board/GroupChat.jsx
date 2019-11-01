@@ -18,22 +18,22 @@ class GroupChat extends React.Component {
                   <ul class="nav flex-column">
                     <a href="#" className="contact-bar-item-selected">
                       <li class="nav-item" >
-                        <a class="nav-link active" >Comp4920</a>
+                        <a class="nav-link active">Project: Comp4920</a>
                       </li>
                     </a>
                     <a href="#" className="contact-bar-item">
                       <li class="nav-item">
-                        <a class="nav-link" >Web Dev</a>
+                        <a class="nav-link">Project: Web Development Crew</a>
                       </li>
                     </a>
                     <a href="#" className="contact-bar-item">
                       <li class="nav-item">
-                        <a class="nav-link" >Hack project</a>
+                        <a class="nav-link" >Project: Hackathon</a>
                       </li>
                     </a>
                     <a href="#" className="contact-bar-item">
                       <li class="nav-item">
-                        <a class="nav-link" >Comp2511 project</a>
+                        <a class="nav-link" >Project: COMP2511</a>
                       </li>
                     </a>
                   </ul>

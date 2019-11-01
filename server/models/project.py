@@ -12,7 +12,7 @@ project_fields = {
     "cur_people": fields.Integer,
     "members": fields.List(ObjectIdUnmarshaller),
     "description": fields.String,
-    "course": fields.Integer(default=None),
+    "course": fields.String(default=None),
     "technologies": fields.List(fields.String),
     "languages": fields.List(fields.String),
     "tags": fields.List(fields.String),

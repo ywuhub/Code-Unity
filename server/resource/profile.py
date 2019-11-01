@@ -2,7 +2,9 @@ from flask_jwt_extended import current_user, jwt_required
 from flask_restful import Resource, reqparse
 from server.managers.user_manager import UserManager
 from server.utils.json import marshal
-from server.models.user import profile_fields
+from server.models.user import profile_fields, User
+
+from typing import cast
 
 
 class ProfileResource(Resource):
@@ -27,7 +29,10 @@ class ProfileResource(Resource):
             }
         ```
         """
-        profile = UserManager.get_instance().get_user_profile(current_user)
+        # Hack to get proper type annotation working, casting doesn't do anything
+        # at runtime. Should optimally create a proxy for current_user to annotate
+        # the return of a User object.
+        profile = cast(User, current_user).profile
         return marshal(profile, profile_fields)
 
     @jwt_required
@@ -63,5 +68,6 @@ class ProfileResource(Resource):
         parser.add_argument("languages", action="append", store_missing=False)
         parser.add_argument("github", store_missing=False)
         profile_dict = parser.parse_args(strict=True)
-        UserManager.get_instance().put_user_profile(current_user, profile_dict)
+
+        cast(User, current_user).update_profile(profile_dict)
         return {"message": "success"}
