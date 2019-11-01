@@ -8,6 +8,7 @@ class Profile extends React.Component {
         super(props);
         this.removeTag = this.removeTag.bind(this);
         this.addTag = this.addTag.bind(this);
+        this.putProfile = this.putProfile.bind(this);
         this.state = {
             "_id": "",
             name: "",
@@ -17,7 +18,7 @@ class Profile extends React.Component {
             interests: [],
             programming_languages: [],
             languages:[],
-            github: ""
+            github: "",
             // isEditing: false
         };
 
@@ -38,49 +39,72 @@ class Profile extends React.Component {
             }
         ));
     }
-     // <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-     //                <button type="button" class="btn btn-sm btn-outline-secondary" data-target="#edit" data-toggle="tab">Edit Profile</button>
-     //                </div>
+
     removeTag(e) {
         e.preventDefault();
-        if (e.target.classList.contains('interests')) {
-            alert('Enter interests!!!');    
-          let tags = this.state.interests;
-          const tagIndex = tags.indexOf(e.target.value);
-          if (tagIndex !== -1) {
-            tags.splice(tagIndex, 1);
-            this.setState({ interests: tags });
-        }
+        if (e.detail != 0) {
+            if (e.target.classList.contains('interests')) {
+              let tags = this.state.interests;
+              const tagIndex = tags.indexOf(e.target.value);
+              if (tagIndex !== -1) {
+                tags.splice(tagIndex, 1);
+                this.setState({ interests: tags });
+            }
 
-        } else if (e.target.classList.contains('programming_languages')) {
-            alert('Enter programming_languages!!!');    
-          let tags = this.state.programming_languages;
-          const tagIndex = tags.indexOf(e.target.value);
-          if (tagIndex !== -1) {
-            tags.splice(tagIndex, 1);
-            this.setState({ programming_languages: tags });
+            } else if (e.target.classList.contains('programming_languages')) {
+              let tags = this.state.programming_languages;
+              const tagIndex = tags.indexOf(e.target.value);
+              if (tagIndex !== -1) {
+                tags.splice(tagIndex, 1);
+                this.setState({ programming_languages: tags });
+                }
+            } else if (e.target.classList.contains('languages')) {
+              let tags = this.state.languages;
+              const tagIndex = tags.indexOf(e.target.value);
+              if (tagIndex !== -1) {
+                tags.splice(tagIndex, 1);
+                this.setState({ languages: tags });
+                }
             }
         }
     }
 
-    addTag(e) {
-        if (e.key === 'Enter') {
-            alert('Enter clicked!!!');    
-            // if (e.target.className.indexOf('interests') !== -1) {
-            //   // let tags = this.state.interests;
-            //   // if (tagIndex !== -1) {
-            //   //   tags.splice(tagIndex, 1);
-            //   //   this.setState({ interests: tags });
-            //   //   // this.filterByTag(true);
 
-            // } else if (e.target.className.indexOf('programming_languages') !== -1) {
-              let tags = this.state.programming_languages;
+    addTag(e) {
+
+        if (e.key === 'Enter') {
+            if (e.target.classList.contains('interests')) {
+              let tags = (this.state.interests || []);
+              const newTag = e.target.value;
+              tags.push(newTag);
+              this.setState({ interests: tags });
+
+            } else if (e.target.classList.contains('programming_languages')) {
+              let tags = (this.state.programming_languages || []);
               const newTag = e.target.value;
               tags.push(newTag);
               this.setState({ programming_languages: tags });
-                // this.filterByTag(true);
-            // }
+            } else if (e.target.classList.contains('languages')) {
+              let tags = (this.state.languages || []);
+              const newTag = e.target.value;
+              tags.push(newTag);
+              this.setState({ languages: tags });
+            }
         }
+    }
+    putProfile(event) {
+            event.preventDefault();
+            alert(this.state.interests)
+            userService.putProfile(
+                    this.refs.edit_name.value,
+                    this.refs.edit_email.value,
+                    "public",
+                    this.refs.edit_description.value,
+                    this.state.interests,
+                    this.state.programming_languages,
+                    this.state.languages,
+                    this.refs.edit_github.value,
+                )
     }
     render() {
         let tag_id = 0;
@@ -131,7 +155,7 @@ class Profile extends React.Component {
                                                     <h6 class="border-bottom border-gray pb-2 mb-0">Interests</h6>
                                                     <div class="profile-descrption-block">
                                                     {
-                                                        this.state.interests.map((item) => {
+                                                        (this.state.interests || []).map((item) => {
                                                             return(
                                                                     <a href="#" class="badge badge-dark badge-pill mr-2">{item}</a>
                                                                 )
@@ -144,7 +168,20 @@ class Profile extends React.Component {
                                                     <h6 class="border-bottom border-gray pb-2 mb-0">Programming language</h6>
                                                     <div class="profile-descrption-block">
                                                     {
-                                                        this.state.programming_languages.map((item) => {
+                                                        (this.state.programming_languages || []).map((item) => {
+                                                            return(
+                                                                <a href="#" class="badge badge-dark badge-pill mr-2">{item}</a>
+                                                                )
+                                                        })                            
+                                                    }
+                                                    </div>
+                                                </div>
+                                                <div class="editable-alias">&nbsp;</div>
+                                                <div>
+                                                    <h6 class="border-bottom border-gray pb-2 mb-0">language</h6>
+                                                    <div class="profile-descrption-block">
+                                                    {
+                                                        (this.state.languages || []).map((item) => {
                                                             return(
                                                                 <a href="#" class="badge badge-dark badge-pill mr-2">{item}</a>
                                                                 )
@@ -160,44 +197,55 @@ class Profile extends React.Component {
 
                         <div class="tab-pane fade" id="nav-edit">
                             <div class="my-3 p-3 bg-white rounded shadow-sm">
-                                <form role="form">
+                                <form role="form" onSubmit={this.putProfile}>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label form-control-label">User name</label>
                                         <div class="col-lg-9">
-                                            <input class="form-control" type="text" defaultValue={this.state.name} />
+                                            <input class="form-control" type="text" defaultValue={this.state.name} ref="edit_name"/>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">{this.state.email}</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Email</label>
                                         <div class="col-lg-9">
-                                            <input class="form-control" type="email" defaultValue="email@gmail.com" />
+                                            <input class="form-control" type="email" defaultValue={this.state.email} ref="edit_email" />
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label form-control-label">Github Address</label>
                                         <div class="col-lg-9">
-                                            <input class="form-control" type="text" defaultValue={this.state.github} />
+                                            <input class="form-control" type="text" defaultValue={this.state.github} ref="edit_github"/>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label form-control-label">Interests</label>
                                         <div class="col-lg-9">
                                             <div class="profile-descrption-block">
+                                                <span class="d-flex flex-wrap">
                                                 {
-                                                    this.state.interests.map((item) => {
+                                                    (this.state.interests|| []).map((item) => {
                                                         return( 
                                                                 <span className="badge badge-pill badge-success mr-2" key={item + ' ' + tag_id++}>
                                                                 {item}
                                                                 <button className="fa fa-times bg-transparent border-0 p-0 pl-1 interests" 
+                                                                        type="submit"
                                                                         value={item} 
                                                                         style={{ 'outline': 'none' }} 
-                                                                        onClick={this.removeTag.bind(this)}>
+                                                                        onClick={this.removeTag}>
                                                                 </button>
                                                                 </span>
 
                                                             )
-                                                    })                            
+                                                        }
+                                                    )
                                                 }
+                                                <span className="badge badge-pill badge-primary mr-2" >
+                                                        <input type="text" 
+                                                        placeholder="add new interest" 
+                                                        className="profile-tag-input interests" 
+                                                        onKeyDown={this.addTag}/>
+
+                                                </span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -207,14 +255,14 @@ class Profile extends React.Component {
                                             <div class="profile-descrption-block">
                                                 <span class="d-flex flex-wrap">
                                                 {
-                                                    this.state.programming_languages.map((item) => {
+                                                    (this.state.programming_languages || []).map((item) => {
                                                         return(
                                                                 <span className="badge badge-pill badge-success mr-2" key={item + ' ' + tag_id++}>
                                                                     {item}
                                                                     <button className="fa fa-times bg-transparent border-0 p-0 pl-1 programming_languages" 
                                                                             value={item} 
                                                                             style={{ 'outline': 'none' }} 
-                                                                            onClick={this.removeTag.bind(this)}>
+                                                                            onClick={this.removeTag}>
                                                                     </button>
                                                                 </span>
                                                                 )
@@ -222,24 +270,51 @@ class Profile extends React.Component {
                                                 }
                                                 <span className="badge badge-pill badge-primary mr-2" >
                                                         <input type="text" 
-                                                        placeholder="add new tag" 
-                                                        className="profile-tag-input" 
-                                                        onKeyPress={this.addTag.bind(this)}/>
+                                                        placeholder="add new programming language" 
+                                                        className="profile-tag-input programming_languages" 
+                                                        onKeyDown={this.addTag}/>
+
                                                 </span>
-                                                <button className="fa fa-times bg-transparent border-0 p-0 pl-1 programming_languages" 
-                                                        value="???" 
-                                                        style={{ 'outline': 'none' }} 
-                                                        onKeyPress={this.addTag.bind(this)}>
-                                                </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label form-control-label">language</label>
+                                        <div class="col-lg-9">
+                                            <div class="profile-descrption-block">
+                                                <span class="d-flex flex-wrap">
+                                                {
+                                                    (this.state.languages || []).map((item) => {
+                                                        return(
+                                                                <span className="badge badge-pill badge-success mr-2" key={item + ' ' + tag_id++}>
+                                                                    {item}
+                                                                    <button className="fa fa-times bg-transparent border-0 p-0 pl-1 languages" 
+                                                                            value={item} 
+                                                                            style={{ 'outline': 'none' }} 
+                                                                            onClick={this.removeTag}>
+                                                                    </button>
+                                                                </span>
+                                                                )
+                                                    })                            
+                                                }
+                                                <span className="badge badge-pill badge-primary mr-2" >
+                                                        <input type="text" 
+                                                        placeholder="add new language" 
+                                                        className="profile-tag-input languages" 
+                                                        onKeyDown={this.addTag}/>
+
+                                                </span>
                                                 </span>
                                             </div>
                                         </div>
 
                                     </div>
+
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label form-control-label">About me</label>
                                         <div class="col-lg-9">
-                                            <textarea class="form-control" id="message-text" defaultValue={this.state.description}></textarea>
+                                            <textarea class="form-control" ref="edit_description" defaultValue={this.state.description}></textarea>
 
                                         </div>
                                     </div>
@@ -249,7 +324,9 @@ class Profile extends React.Component {
                                             <a class="btn btn-secondary mr-2 nav-item" href="/profile">
                                              Cancel 
                                              </a>
-                                            <button type="button" class="btn btn-primary" > Save Change </button>
+                                            <button type="submit" 
+                                            class="btn btn-primary"
+                                            > Save Change </button>
                                         </div>
                                     </div>
                                 </form>

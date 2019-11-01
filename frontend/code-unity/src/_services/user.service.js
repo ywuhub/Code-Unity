@@ -5,11 +5,32 @@ export const userService = {
     getProfile,
     getProjectList,
     getProjectDetail,
-    getAll
+    getAll,
+    putProfile
 };
 
 function getProfile() {
     const requestOptions = { method: 'GET', headers: authHeaderOld() };
+    return fetch(`${config.apiUrl}/api/user/profile`, requestOptions).then(handleResponse);
+};
+function putProfile(name, email, visibility, description, interests, 
+                        programming_languages, languages, github) {
+
+
+    const requestOptions = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()},
+        body: JSON.stringify({ 
+            "name": name,
+            "email": email,
+            "visibility": visibility, // "public" or "private
+            "description": description,
+            "interests": interests,
+            "programming_languages": programming_languages,
+            "languages": languages,
+            "github": github})
+    };
     return fetch(`${config.apiUrl}/api/user/profile`, requestOptions).then(handleResponse);
 };
 function getAll() {

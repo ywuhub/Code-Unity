@@ -16,13 +16,13 @@
 	border: none;
   	color: white;
 	font-weight: bold;
-	width: 100px;
+	width: auto;
 }
 .profile-tag-color {
 	background-color: rgba(220, 0, 0, 0);
 }
 .profile-tag-input::placeholder {
-  color: white;
+  color: rgba(250, 250, 250, 0.6);
   font-size: 1em;
   font-weight: bold;
 }
