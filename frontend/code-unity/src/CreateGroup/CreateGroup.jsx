@@ -9,12 +9,14 @@ class CreateGroup extends React.Component {
     constructor(props) {
         super(props);
         this.isMounted_ = false;
+        this.handleChange = this.handleChange.bind(this);
+        this.handleProgChange = this.handleProgChange.bind(this);
+        this.removeTag = this.removeTag.bind(this);
         this.state = {
             description: '',
             initialProg: [],
             selectedProg: []
         };
-        this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event) {
@@ -22,9 +24,11 @@ class CreateGroup extends React.Component {
     }
 
     handleProgChange(event) {
-        let prog = event.target.value;
-        prog.push(event.target.value);
-        this.setState({ selectedProg: prog });
+        let progs = this.state.selectedProg;
+        if (progs.length === 0 || progs.indexOf(event.target.value) === -1) {
+            this.state.selectedProg.push(event.target.value);
+            this.setState({});
+        }
     }
 
     componentWillUnmount() {
@@ -39,11 +43,20 @@ class CreateGroup extends React.Component {
             .then(progs => {
                 if (this.isMounted_) {
                     this.setState({
-                        initialProg: progs
+                        initialProg: progs,
                     });
                 }
             })
             .catch(err => { console.log(err); });
+    }
+
+    removeTag(e) {
+        let tags = this.state.selectedProg;
+        const tagIndex = tags.indexOf(e.target.value);
+        if (tagIndex !== -1) {
+            tags.splice(tagIndex, 1);
+            this.setState({ selectedProg: tags });
+        }
     }
 
     render() {
@@ -107,16 +120,17 @@ class CreateGroup extends React.Component {
                                     </select>
                                     {/* Show tags */}
                                     <div className="my-3 border-0 p-0 px-2">
-                                        <div id="tags">
+                                        <i className="mr-4 text-muted"> Selected:</i>
+                                        <span id="tags">
                                             {
-                                                this.state.selectedProg.map((tag) => {
+                                                this.state.selectedProg.map((prog) => {
                                                     return (
-                                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }}></button></span>
+                                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={prog}>{prog}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={prog} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
                                                     );
                                                 })}
                                             <br />
 
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="form-group">
