@@ -102,7 +102,7 @@ class Profile extends React.Component {
             userService.putProfile(
                     this.refs.edit_name.value,
                     this.refs.edit_email.value,
-                    "public",
+                    this.refs.edit_visibility.value,
                     this.refs.edit_description.value,
                     this.state.interests,
                     this.state.programming_languages,
@@ -118,7 +118,7 @@ class Profile extends React.Component {
 
                         } else {
                             this.setState({
-                                edit_status_class:"alert alert-success",
+                                edit_status_class:"alert alert-danger",
                                 edit_status:status});
                         }
                     }
@@ -241,6 +241,22 @@ class Profile extends React.Component {
                                         <label class="col-lg-3 col-form-label form-control-label">Github Address</label>
                                         <div class="col-lg-9">
                                             <input class="form-control" type="text" defaultValue={this.state.github} ref="edit_github"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label form-control-label">Visibility</label>
+                                        <div class="col-lg-9">
+                                            {this.state.visibility == "public" ?
+                                            <select class="custom-select" ref="edit_visibility">
+                                                <option value="public">public</option>
+                                                <option value="private">private</option>
+                                            </select>
+                                            :
+                                            <select class="custom-select" ref="edit_visibility">
+                                                <option value="private">private</option>
+                                                <option value="public">public</option>
+                                            </select>
+                                            }
                                         </div>
                                     </div>
                                     <div class="form-group row">
