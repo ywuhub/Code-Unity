@@ -30,7 +30,7 @@ class ProjectResource(Resource):
                     "5dabfe830ddd57902efd2fa3"
                 ],
                 "description": "Nice.",
-                "course": 4920,
+                "course": "4920",
                 "technologies": [
                     "assembly",
                     "python",
@@ -38,7 +38,7 @@ class ProjectResource(Resource):
                     "react"
                 ],
                 "languages": [
-                    "中文",
+                    "chinese",
                     "english"
                 ],
                 "tags": [
