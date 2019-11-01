@@ -133,7 +133,7 @@ class Profile extends React.Component {
 
                     <div class="nav nav-tabs btn-group mr-2" role="tablist">
                         <button type="button" class="btn btn-sm btn-outline-secondary nav-item active" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary nav-item" data-toggle="tab" href="#nav-edit" role="tab" aria-controls="nav-edit" aria-selected="false">edit</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary nav-item" data-toggle="tab" href="#nav-edit" role="tab" aria-controls="nav-edit" aria-selected="false">Edit Profile</button>
                     </div>
                 </div>
                     <div class="tab-content" id="nav-tabContent">
@@ -146,15 +146,15 @@ class Profile extends React.Component {
                                         </div>
                                         <div class="col-md-6">
                                             <div> 
-                                                <p> {this.state.name} </p>
+                                                <p> Name: {this.state.name} </p>
                                             </div>
                                             <div> 
-                                                <p> {this.state.email} </p>
+                                                <p> Email: {this.state.email} </p>
                                             </div>
                                             <div>
                                             {
                                                 <p>
-                                                {this.state.github}
+                                                Github Portfolio: <a href={'https:\\' + this.state.github} target="_blank"> {this.state.github} </a>
                                                 </p>
                                             }
                                             </div>
@@ -163,13 +163,13 @@ class Profile extends React.Component {
 
                                         <div class="col-md-12">
                                                 <div> 
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">About Me</h6>
+                                                    <h6 class="border-bottom border-gray pb-2 mb-0">About Me:</h6>
                                                     <p> {this.state.description} </p> 
                                                 </div>
                                                 <div class="editable-alias">&nbsp;</div>
 
                                                 <div> 
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Interests</h6>
+                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Interests:</h6>
                                                     <div class="profile-descrption-block">
                                                     {
                                                         (this.state.interests || []).map((item) => {
@@ -182,7 +182,7 @@ class Profile extends React.Component {
                                                 </div>
                                                 <div class="editable-alias">&nbsp;</div>
                                                 <div>
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Programming language</h6>
+                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Programming languages:</h6>
                                                     <div class="profile-descrption-block">
                                                     {
                                                         (this.state.programming_languages || []).map((item) => {
@@ -195,7 +195,7 @@ class Profile extends React.Component {
                                                 </div>
                                                 <div class="editable-alias">&nbsp;</div>
                                                 <div>
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">language</h6>
+                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Languages Spoken:</h6>
                                                     <div class="profile-descrption-block">
                                                     {
                                                         (this.state.languages || []).map((item) => {
@@ -226,41 +226,42 @@ class Profile extends React.Component {
                                 }
                                 <form role="form" onSubmit={this.putProfile}>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">User name</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Username:</label>
                                         <div class="col-lg-9">
                                             <input class="form-control" type="text" defaultValue={this.state.name} ref="edit_name"/>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Email</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Email:</label>
                                         <div class="col-lg-9">
                                             <input class="form-control" type="email" defaultValue={this.state.email} ref="edit_email" />
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Github Address</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Github Portfolio:</label>
                                         <div class="col-lg-9">
                                             <input class="form-control" type="text" defaultValue={this.state.github} ref="edit_github"/>
+                                            Format: github.com/username
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Visibility</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Profile Visibility:</label>
                                         <div class="col-lg-9">
                                             {this.state.visibility == "public" ?
                                             <select class="custom-select" ref="edit_visibility">
-                                                <option value="public">public</option>
-                                                <option value="private">private</option>
+                                                <option value="public">Public</option>
+                                                <option value="private">Private</option>
                                             </select>
                                             :
                                             <select class="custom-select" ref="edit_visibility">
-                                                <option value="private">private</option>
-                                                <option value="public">public</option>
+                                                <option value="private">Public</option>
+                                                <option value="public">Private</option>
                                             </select>
                                             }
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Interests</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Interests:</label>
                                         <div class="col-lg-9">
                                             <div class="profile-descrption-block">
                                                 <span class="d-flex flex-wrap">
@@ -293,7 +294,7 @@ class Profile extends React.Component {
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Programming language</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Programming languages:</label>
                                         <div class="col-lg-9">
                                             <div class="profile-descrption-block">
                                                 <span class="d-flex flex-wrap">
@@ -323,7 +324,7 @@ class Profile extends React.Component {
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">language</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Languages Spoken:</label>
                                         <div class="col-lg-9">
                                             <div class="profile-descrption-block">
                                                 <span class="d-flex flex-wrap">
@@ -355,7 +356,7 @@ class Profile extends React.Component {
                                     </div>
 
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">About me</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">About Me:</label>
                                         <div class="col-lg-9">
                                             <textarea class="form-control" ref="edit_description" defaultValue={this.state.description}></textarea>
 
@@ -369,7 +370,7 @@ class Profile extends React.Component {
                                              </a>
                                             <button type="submit" 
                                             class="btn btn-primary"
-                                            > Save Change </button>
+                                            > Save Changes </button>
                                         </div>
                                     </div>
                                 </form>
