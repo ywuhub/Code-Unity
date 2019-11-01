@@ -17,6 +17,10 @@ export function handleResponse(response) {
     });
 }
 
+export function GetReponseCode(response) {
+    return response.statusText;
+}
+
 export function handleRegisterResponse(response) {
     return response.text().then(text => {
         const data = text && JSON.parse(text);
