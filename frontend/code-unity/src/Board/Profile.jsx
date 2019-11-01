@@ -25,21 +25,19 @@ class Profile extends React.Component {
     }
     componentDidMount() {
         console.log("========componentWillReceiveProps")
-        userService.getProfile().then(data => {
-            this.setState(
-                {
-                    "_id": data._id,
-                    name: data.name,
-                    email: data.email,
-                    visibility: data.visibility,
-                    description: data.description,
-                    interests: data.interests,
-                    programming_languages: data.programming_languages,
-                    languages: data.languages,
-                    github: data.github
-                }
-            )
-        });
+        userService.getProfile().then(data => this.setState(
+            { 
+                "_id": data._id,
+                name: data.name,
+                email: data.email,
+                visibility: data.visibility,
+                description: data.description,
+                interests: data.interests,
+                programming_languages: data.programming_languages,
+                languages: data.languages,
+                github: data.github
+            }
+        ));
     }
 
     removeTag(e) {
@@ -120,38 +118,38 @@ class Profile extends React.Component {
                         <button type="button" class="btn btn-sm btn-outline-secondary nav-item" data-toggle="tab" href="#nav-edit" role="tab" aria-controls="nav-edit" aria-selected="false">edit</button>
                     </div>
                 </div>
-                <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="nav-profile">
-
-                        <div class="my-3 p-3 bg-white rounded shadow-sm">
-                            <div class="col-lg-10 order-lg-2">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <img src="//placehold.it/200" class="mx-auto img-fluid img-circle d-block" alt="avatar" />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p> {this.state.name} </p>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id ="nav-profile">
+                            
+                            <div class="my-3 p-3 bg-white rounded shadow-sm">
+                                <div class="col-lg-10 order-lg-2">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <img src="//placehold.it/200" class="mx-auto img-fluid img-circle d-block" alt="avatar" />                                        
                                         </div>
-                                        <div>
-                                            <p> {this.state.email} </p>
-                                        </div>
-                                        <div>
+                                        <div class="col-md-6">
+                                            <div> 
+                                                <p> {this.state.name} </p>
+                                            </div>
+                                            <div> 
+                                                <p> {this.state.email} </p>
+                                            </div>
+                                            <div>
                                             {
                                                 <p>
-                                                    {this.state.github}
+                                                {this.state.github}
                                                 </p>
                                             }
-                                        </div>
-                                    </div>
-                                    <div class="editable-alias">&nbsp;</div>
-
-                                    <div class="col-md-12">
-                                        <div>
-                                            <h6 class="border-bottom border-gray pb-2 mb-0">About Me</h6>
-                                            <p> {this.state.description} </p>
+                                            </div>
                                         </div>
                                         <div class="editable-alias">&nbsp;</div>
+
+                                        <div class="col-md-12">
+                                                <div> 
+                                                    <h6 class="border-bottom border-gray pb-2 mb-0">About Me</h6>
+                                                    <p> {this.state.description} </p> 
+                                                </div>
+                                                <div class="editable-alias">&nbsp;</div>
 
                                                 <div> 
                                                     <h6 class="border-bottom border-gray pb-2 mb-0">Interests</h6>
@@ -191,13 +189,11 @@ class Profile extends React.Component {
                                                     }
                                                     </div>
                                                 </div>
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                         <div class="tab-pane fade" id="nav-edit">
                             <div class="my-3 p-3 bg-white rounded shadow-sm">
@@ -320,27 +316,25 @@ class Profile extends React.Component {
                                         <div class="col-lg-9">
                                             <textarea class="form-control" ref="edit_description" defaultValue={this.state.description}></textarea>
 
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-lg-3 col-form-label form-control-label"></label>
-                                    <div class="col-lg-9 btn-toolbar  justify-content-end">
-                                        <a class="btn btn-secondary mr-2 nav-item" href="/profile">
-                                            Cancel
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label form-control-label"></label>
+                                        <div class="col-lg-9 btn-toolbar  justify-content-end">
+                                            <a class="btn btn-secondary mr-2 nav-item" href="/profile">
+                                             Cancel 
                                              </a>
                                             <button type="submit" 
                                             class="btn btn-primary"
                                             > Save Change </button>
                                         </div>
-
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
             </div>
-        );
+          );
     }
 
 }
