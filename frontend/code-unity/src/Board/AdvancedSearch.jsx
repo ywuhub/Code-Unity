@@ -1,5 +1,5 @@
 import React from 'react';
-import { LanguageSearch, CourseSearch } from './SearchFilters';
+import { LanguageSearch, CourseSearch, ProgrammingLanguageSearch } from './SearchFilters';
 
 /**
  * Advanced Search component
@@ -43,9 +43,8 @@ class AdvancedSearch extends React.Component {
         //         // set initial posts and filtered posts in groupList to filtered_post
         //     })
         //     .catch(err => { console.log(err) });
-
         let appendSwitch = document.getElementById('append-switch');
-        if (this.state.search_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
+        if (this.state.filter_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
             this.props.addTags(this.state.filter_tags, this.state.excluded_tags, appendSwitch.checked);   // parent class processes selected tags
         }
 
@@ -210,8 +209,9 @@ class AdvancedSearch extends React.Component {
 
                     {/* Tag input fields */}
                     <div>
+                        <TagSearch label='Languages' content={<LanguageSearch id='language-tag' processTag={this.addTag.bind(this)} />} />
                         <TagSearch label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
-                        <TagSearch label='Programming Languages' id='planguage-tag' content={<LanguageSearch processTag={this.addTag.bind(this)} />} />
+                        <TagSearch label='Programming Languages' content={<ProgrammingLanguageSearch id='planguage-tag' processTag={this.addTag.bind(this)} />} />
                         <TagSearch label='Keywords' content={this.keywordTagComponent()} />
                         <TagSearch label='Excluded Keywords' content={this.keywordTagComponent(true)} />
                     </div>
@@ -295,11 +295,18 @@ function SearchBy(props) {
                     <CourseSearch id='course-filter' processTag={props.addTag} />
                 </div>
             </div>
+            
+            <div className="d-flex align-items-center row mb-3">
+                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Language</div>
+                <div className="col-lg-8">
+                    <LanguageSearch id='language-filter' processTag={props.addTag} />
+                </div>
+            </div>
 
             <div className="d-flex align-items-center row mb-3">
                 <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Programming Language</div>
                 <div className="col-lg-8">
-                    <LanguageSearch id='planguage-filter' processTag={props.addTag} />
+                    <ProgrammingLanguageSearch id='planguage-filter' processTag={props.addTag} />
                 </div>
             </div>
         </div>

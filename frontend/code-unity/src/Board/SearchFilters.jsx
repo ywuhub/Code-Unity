@@ -155,7 +155,7 @@ function CourseSearch(props) {
  * @requires id for input box
  * @param {*} props 
  */
-function LanguageSearch(props) {
+function ProgrammingLanguageSearch(props) {
     function filterLanguages(tags, filter) {
         // no languages shown for whitespace/empty
         let tags_ = tags;
@@ -177,8 +177,34 @@ function LanguageSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='language-search' parent='p-lang' searchPlaceholder='Search Language' />
+        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='language-search' parent='p-lang' searchPlaceholder='Search Programming Language' />
     );
 }
 
-export { LanguageSearch, CourseSearch };
+function LanguageSearch(props) {
+    function filterLanguages(tags, filter) {
+        let tags_ = tags;
+        // no languages for empty/whitespace
+        if (/^(\s+|)$/.test(filter)) {
+            tags_ = [];
+
+        } else {
+            tags_ = tags_.filter((tag) => {
+                let language = tag.toLowerCase();
+                return language.indexOf(filter) !== -1;
+                // return language.startsWith(fitler);
+            });
+        }
+        return tags_;
+    }
+
+    function toString(tag) {
+        return tag;
+    }
+
+    return (
+        <TagSearch apiEndpoint='/api/list/languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='speaking-language-search' parent='lang' searchPlaceholder='Search Language' />
+    );
+}
+
+export { CourseSearch, ProgrammingLanguageSearch, LanguageSearch };
