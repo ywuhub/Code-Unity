@@ -36,6 +36,17 @@ def new_project():
     # db = Database.get_collection("projects")
     return render_template("new_project.html")
 
+@app.route("/user/project/<user_id>", methods=["GET"])
+def user_projects(user_id):
+    user_db = db.get_collection("profiles")
+    profile_db = db.get_collection("projects")
+    name = user_db.find_one({"_id": ObjectId(user_id)}, {"_id": 0, "name": 1})
+    projects = profile_db.find({"members": {"$eq": ObjectId(user_id)}})
+    data = {
+        "name" : name['name'],
+        "projects": projects
+    }
+    return json.loads(dumps(data))
 
 @app.route("/profile/<user_id>", methods=["GET"])
 def user_profile(user_id):
