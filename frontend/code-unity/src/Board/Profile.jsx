@@ -19,12 +19,16 @@ class Profile extends React.Component {
             programming_languages: [],
             languages:[],
             github: "",
+            edit_status:"",
+            edit_status_class:"",
+            edit_status_visibility: false,
             // isEditing: false
         };
 
     }
     componentDidMount() {
         console.log("========componentWillReceiveProps")
+        this.setState({ edit_status_visibility: false})
         userService.getProfile().then(data => this.setState(
             { 
                 "_id": data._id,
@@ -38,6 +42,7 @@ class Profile extends React.Component {
                 github: data.github
             }
         ));
+
     }
 
     removeTag(e) {
@@ -94,7 +99,6 @@ class Profile extends React.Component {
     }
     putProfile(event) {
             event.preventDefault();
-            alert(this.state.interests)
             userService.putProfile(
                     this.refs.edit_name.value,
                     this.refs.edit_email.value,
@@ -104,7 +108,21 @@ class Profile extends React.Component {
                     this.state.programming_languages,
                     this.state.languages,
                     this.refs.edit_github.value,
-                )
+                ).then(
+                    status => {
+                        this.setState({ edit_status_visibility: true})
+                        if (status == "OK") {
+                            this.setState({
+                                edit_status_class:"alert alert-success",
+                                edit_status:"Profile has been updated."});
+
+                        } else {
+                            this.setState({
+                                edit_status_class:"alert alert-success",
+                                edit_status:status});
+                        }
+                    }
+                );
     }
     render() {
         let tag_id = 0;
@@ -120,7 +138,6 @@ class Profile extends React.Component {
                 </div>
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id ="nav-profile">
-                            
                             <div class="my-3 p-3 bg-white rounded shadow-sm">
                                 <div class="col-lg-10 order-lg-2">
                                     <div class="row">
@@ -197,6 +214,16 @@ class Profile extends React.Component {
 
                         <div class="tab-pane fade" id="nav-edit">
                             <div class="my-3 p-3 bg-white rounded shadow-sm">
+                                {
+                                this.state.edit_status_visibility 
+                                    ?
+                                    <div class={this.state.edit_status_class} role="alert">
+                                        {this.state.edit_status}
+                                    </div>
+                                    :
+                                    <div>
+                                    </div>
+                                }
                                 <form role="form" onSubmit={this.putProfile}>
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label form-control-label">User name</label>

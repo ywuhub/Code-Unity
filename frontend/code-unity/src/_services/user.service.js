@@ -1,5 +1,5 @@
 import config from 'config';
-import { authHeaderOld, authHeader, handleResponse } from '@/_helpers';
+import { authHeaderOld, authHeader, handleResponse, GetReponseCode } from '@/_helpers';
 
 export const userService = {
     getProfile,
@@ -31,7 +31,7 @@ function putProfile(name, email, visibility, description, interests,
             "languages": languages,
             "github": github})
     };
-    return fetch(`${config.apiUrl}/api/user/profile`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/api/user/profile`, requestOptions).then(GetReponseCode);
 };
 function getAll() {
     const requestOptions = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };
