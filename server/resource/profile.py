@@ -38,7 +38,7 @@ class ProfileResource(Resource):
     @jwt_required
     def put(self):
         """
-        Replaces the information of the currently loggedin user's profile with
+        Replaces the information of the currently logged in user's profile with
         the supplied information. All fields are optional.
         Will return 401/422 if user is not authenticated.
 

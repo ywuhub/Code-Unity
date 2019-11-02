@@ -235,7 +235,7 @@ class Profile extends React.Component {
                                 }
                                 <form role="form" onSubmit={this.putProfile}>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Username:</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Name:</label>
                                         <div class="col-lg-9">
                                             <input class="form-control" type="text" defaultValue={this.state.name} ref="edit_name"/>
                                         </div>
