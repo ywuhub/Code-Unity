@@ -3,7 +3,6 @@ import AdvancedSearch from './AdvancedSearch';
 import GroupPost from './GroupPost';
 import config from 'config';
 import { authHeader } from '@/_helpers';
-import '@/Style';
 /**
  * Search bar that filters and shows group postings
  */

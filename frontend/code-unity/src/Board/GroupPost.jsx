@@ -1,4 +1,31 @@
 import React from 'react';
+import config from 'config';
+import { authHeader } from '@/_helpers';
+
+function nameClicked(e) {
+    const projects_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
+    fetch(`${config.apiUrl}` + '/profile/' + e.target.id, projects_options)
+        .then(response => { return response.json() })
+        .then(profile => {
+            console.log(profile);
+        })
+        .catch(err => { console.log(err); });
+}
+
+function ShowMembers(props) {
+    let post = props.post;
+    return (
+        <span>
+            <i class="fas fa-user-friends"></i> <b>Members:</b> <button className="user bg-transparent border-0 p-0" id={post['leader']} onClick={nameClicked}>{post['leader']}</button>
+            {post['members'] && post['members'].length > 1 && ', '}
+            {post['members'] &&
+                Array.from(post['members']).filter((member) => { return member !== post['leader'] }).map((member) => {
+                    return <button className="user bg-transparent border-0 p-0" key={member} id={member} onClick={nameClicked}>{member}</button>;
+                })
+            }
+        </span>
+    );
+}
 
 function GroupPost(props) {
     const post = props.post;
@@ -17,7 +44,7 @@ function GroupPost(props) {
 
                 {/* details (members, course, language spoken, tags) */}
                 <div className="d-flex flex-column">
-                    <span><i class="fas fa-user-friends"></i> <b>Members:</b> <i>{post['leader']}</i>, {post['members'] && Array.from(post['members']).join(', ')}</span>
+                    <ShowMembers post={post} />
                     <span><i class="fas fa-book-reader"></i> &nbsp;<b>Course:</b> {post['course']}</span>
                     <span><i class="fas fa-language"></i> <b>Language:</b> {post['languages'] && Array.from(post['languages']).join(', ')}</span>
                     <span>
