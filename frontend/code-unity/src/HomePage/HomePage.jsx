@@ -11,12 +11,30 @@ class HomePage extends React.Component {
 
         this.state = {
             currentUser: authenticationService.currentUserValue,
-            users: null
+            "_id": "",
+            "name": "",
+            "email": "",
+            "visibility": "",
+            "description": "",
+            "interests": [],
+            "programming_languages": [],
+            "languages": [],
+            "github": ""
         };
     }
 
     componentDidMount() {
-        userService.getProfile().then(users => this.setState({ users }));
+        userService.getProfile().then(data => this.setState({ 
+            "_id": data._id,
+            "name": data.name,
+            "email": data.email,
+            "visibility": data.visibility,
+            "description": data.description,
+            "interests": data.interests,
+            "programming_languages": data.programming_languages,
+            "languages": data.languages,
+            "github": data.github
+        }));
     }
 
     render() {
@@ -104,7 +122,9 @@ class HomePage extends React.Component {
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <Switch>
                     <Route path="/grouplist" component={GroupList} />
-                    <Route exact path="/" component={Dashboard} />
+                    <Route exact path="/" component={() => (
+                        <Dashboard _id={this.state._id}/>
+                      )} />
                     <Route path="/groupchat" component={GroupChat} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />

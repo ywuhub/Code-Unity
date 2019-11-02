@@ -6,7 +6,8 @@ export const userService = {
     getProjectList,
     getProjectDetail,
     getAll,
-    putProfile
+    putProfile,
+    getUserProject
 };
 
 function getProfile() {
@@ -42,6 +43,13 @@ function getProjectList() {
     const requestOptions = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };
     return fetch(`${config.apiUrl}/api/project/list`, requestOptions).then(handleResponse);
 }
+function getUserProject(id) {
+    const requestOptions = { 
+                            method: 'GET', 
+                            headers: {'Content-Type': 'application/json', 'Authorization': authHeader()}
+                        };
+    return fetch(`${config.apiUrl}/user/project/${id}`, requestOptions).then(handleResponse);
+}
 
 function getProjectDetail(id) {
     const requestOptions = { 
@@ -49,6 +57,5 @@ function getProjectDetail(id) {
                             headers: {'Content-Type': 'application/json', 'Authorization': authHeader()},
                             body: JSON.stringify({ id })
                         };
-    return fetch(`${config.apiUrl}/api/project/`, requestOptions).then(handleResponse);
-
+    return fetch(`${config.apiUrl}/user/project/${id}`, requestOptions).then(handleResponse);
 }

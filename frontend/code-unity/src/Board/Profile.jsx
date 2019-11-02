@@ -182,7 +182,7 @@ class Profile extends React.Component {
                                         <div class="col-md-6">
                                             <img src="//placehold.it/200" class="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 align-middle">
                                             <div> 
                                                 <p> Name: {this.state.name} </p>
                                             </div>
