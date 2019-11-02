@@ -11,6 +11,7 @@ class MyGroup extends React.Component {
     }
     render() {
 
+        let key_id=0;
     	return(
             <div class="container">
                 <div class="row border-bottom border-gray">
@@ -20,12 +21,14 @@ class MyGroup extends React.Component {
 					{/* My Group List*/}
 					<div class="col-sm-3 pl-0">
                     	<div class="ml-0 mr-auto">
-                  			<GroupCard title="Comp4920 Project"
-                                            current_number="5"
-                                             description="we are looking for 2 frontend guys."/>
-                    	   <GroupCard title="Comp4920 Project"
-                                            current_number="5"
-                                             description="we are looking for 2 frontend guys."/>
+                  			<GroupCard keyValue={key_id++}
+                                        title="Comp4920 Project"
+                                        current_number="5"
+                                         description="we are looking for 2 frontend guys."/>
+                    	   <GroupCard keyValue = {key_id++}
+                                        title="Comp4920 Project"
+                                        current_number="5"
+                                         description="we are looking for 2 frontend guys."/>
                         
 
                         </div>
@@ -73,9 +76,9 @@ class MyGroup extends React.Component {
                                     </div>
                                 </div>
                                 <div class="row container pt-3 pl-0">
-                                    <SkillBox title="technologies" data={ ["hiking","watching the world cup","programming"] }/>
-                                    <SkillBox title="languages" data={ ["hiking","watching the world cup","programming"] }/>
-                                    <SkillBox title="tags" data={ ["hiking","watching the world cup","programming"] }/>
+                                    <SkillBox keyValue={key_id++} title="technologies" data={ ["hiking","watching the world cup","programming"] }/>
+                                    <SkillBox keyValue={key_id++} title="languages" data={ ["hiking","watching the world cup","programming"] }/>
+                                    <SkillBox keyValue={key_id++} title="tags" data={ ["hiking","watching the world cup","programming"] }/>
 
                                 </div>
                             </div>
