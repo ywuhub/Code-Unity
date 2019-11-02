@@ -6,11 +6,11 @@
 
 }
 .profile-tag-container {
+  height:20px;
 	width: auto;
 }
 .profile-tag-input {
   text-align: center;
-
 	background-color: rgba(0, 0, 0, 0);
 	outline: none;
 	border: none;
@@ -25,4 +25,6 @@
   color: rgba(250, 250, 250, 0.6);
   font-size: 1em;
   font-weight: bold;
+  width: auto;
+
 }

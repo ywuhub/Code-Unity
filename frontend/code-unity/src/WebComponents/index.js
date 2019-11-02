@@ -1,2 +1,2 @@
 export * from "./DashboardNotification";
-export * from "./GroupListItem";
+export * from "./SkillBox";

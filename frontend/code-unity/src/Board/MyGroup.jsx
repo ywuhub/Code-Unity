@@ -3,6 +3,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 import peopleIcon from '@/Assert/peopleIcon.png';
 import UserIcon from '@/Assert/catSelfie.png';
 import '@/Style';
+import { SkillBox } from '@/WebComponents';
 
 class MyGroup extends React.Component {
     constructor(props) {
@@ -36,24 +37,6 @@ class MyGroup extends React.Component {
         			</div>
         		</div>
     		);
-        const GroupSkillBox = (props) => (
-                <div class="col mr-2 group-page-box">
-                    <div class="row group-page-box-header">
-                        <h1 class="h6 mt-2 ml-3 mb-2">{props.title}</h1>
-                    </div>
-                    <div>
-                        {
-                            (props.data || []).map((item) => {
-                                return(
-                                    <span className="badge badge-pill badge-info mr-2 mt-1 pl-2 pr-2" key={props.item + ' '}>
-                                        {item}
-                                    </span>
-                                    )
-                            })
-                        }
-                    </div>
-                </div>
-            );
     	return(
             <div class="container">
                 <div class="row border-bottom border-gray">
@@ -116,9 +99,9 @@ class MyGroup extends React.Component {
                                     </div>
                                 </div>
                                 <div class="row container pt-3 pl-0">
-                                    <GroupSkillBox title="technologies" data={ ["hiking","watching the world cup","programming"] }/>
-                                    <GroupSkillBox title="languages" data={ ["hiking","watching the world cup","programming"] }/>
-                                    <GroupSkillBox title="tags" data={ ["hiking","watching the world cup","programming"] }/>
+                                    <SkillBox title="technologies" data={ ["hiking","watching the world cup","programming"] }/>
+                                    <SkillBox title="languages" data={ ["hiking","watching the world cup","programming"] }/>
+                                    <SkillBox title="tags" data={ ["hiking","watching the world cup","programming"] }/>
 
                                 </div>
                             </div>

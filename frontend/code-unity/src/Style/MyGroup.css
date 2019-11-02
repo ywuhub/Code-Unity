@@ -45,9 +45,9 @@
 	border-style: solid;
 	border-color: #F0F0F0;
 	border-width: 1px;
-	border-radius: 10px;
+	border-radius: 2px;
 	overflow: hidden;
-
+	min-height:150px;
 }
 
 .group-page-box-header {
