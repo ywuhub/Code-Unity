@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
-import { Dashboard, GroupList, GroupChat, Profile } from '@/Board';
+import { Dashboard, GroupList, GroupChat, Profile, MyGroup } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 
 class HomePage extends React.Component {
@@ -58,6 +58,12 @@ class HomePage extends React.Component {
                           My Profile
                         </a>
                       </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/mygroup">
+                          <span data-feather="shopping-cart"></span>
+                          My Groups
+                        </a>
+                      </li>
                     </ul>
 
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
@@ -102,6 +108,7 @@ class HomePage extends React.Component {
                     <Route path="/groupchat" component={GroupChat} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />
+                    <Route path="/mygroup" component={MyGroup} />
                 </Switch>
 
                 </main>
