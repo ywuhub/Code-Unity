@@ -22,7 +22,7 @@ class LoginPage extends React.Component {
                     <div className="row">
                         <div className="col-md-6 offset-md-3">
                             <div className="alert alert-info">
-                                Username: test<br />
+                                Username: testuser<br />
                                 Password: test
                                 </div>
                             <h2>Login</h2>

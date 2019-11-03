@@ -2,6 +2,7 @@ import React from 'react';
 
 import { userService } from '@/_services';
 import '@/Style';
+import { SkillBox } from '@/WebComponents';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -125,6 +126,43 @@ class Profile extends React.Component {
                 );
     }
     render() {
+
+        const GroupComponent = (props) => (
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label">{props.title}</label>
+                <div class="col-lg-9">
+                    <div class="profile-descrption-block">
+                        <span class="d-flex flex-wrap">
+                        {
+                            (props.data || []).map((item) => {
+                                const buttonclasses = `fa fa-times bg-transparent border-0 p-0 pl-1 ${props.className}`;
+                                const addTagclasses = `profile-tag-input ${props.className}`;
+                                return(
+                                        <span className="badge badge-pill badge-info profile-tag-container mt-1 mb-1 mr-2" key={item}>
+                                            {item}
+                                            <button className={["fa fa-times bg-transparent border-0 p-0 pl-1", props.className].join(' ')}
+                                                    value={item} 
+                                                    style={{ 'outline': 'none' }} 
+                                                    onClick={this.removeTag}>
+                                            </button>
+                                        </span>
+                                        )
+                            })                            
+                        }
+                        <span className="badge badge-pill badge-primary mr-1  mt-1 mb-1 profile-tag-container" >
+                                <input type="text" 
+                                placeholder={props.placeholder} 
+                                className={["profile-tag-input", props.className].join(' ')} 
+                                onKeyDown={this.addTag}/>
+
+                        </span>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+            );
+
         let tag_id = 0;
         return (
             <div class="container">
@@ -139,14 +177,14 @@ class Profile extends React.Component {
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id ="nav-profile">
                             <div class="my-3 p-3 bg-white rounded shadow-sm">
-                                <div class="col-lg-10 order-lg-2">
+                                <div class="m-4">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <img src="//placehold.it/200" class="mx-auto img-fluid img-circle d-block" alt="avatar" />                                        
+                                            <img src="//placehold.it/200" class="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 align-middle">
                                             <div> 
-                                                <p> Name: {this.state.name} </p>
+                                                <p> Username: {this.state.name} </p>
                                             </div>
                                             <div> 
                                                 <p> Email: {this.state.email} </p>
@@ -162,49 +200,20 @@ class Profile extends React.Component {
                                         <div class="editable-alias">&nbsp;</div>
 
                                         <div class="col-md-12">
-                                                <div> 
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">About Me:</h6>
-                                                    <p> {this.state.description} </p> 
-                                                </div>
-                                                <div class="editable-alias">&nbsp;</div>
-
-                                                <div> 
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Interests:</h6>
-                                                    <div class="profile-descrption-block">
-                                                    {
-                                                        (this.state.interests || []).map((item) => {
-                                                            return(
-                                                                    <a href="#" class="badge badge-dark badge-pill mr-2">{item}</a>
-                                                                )
-                                                        })                            
-                                                    }
+                                                <div class="row">
+                                                    <div class="col mr-3 mt-3 group-page-box">
+                                                        <div class="row group-page-box-header">
+                                                            <h1 class="h6 mt-2 ml-3 mb-2">About Me:</h1>
+                                                        </div>
+                                                        <div>
+                                                            <p> {this.state.description} </p> 
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="editable-alias">&nbsp;</div>
-                                                <div>
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Programming languages:</h6>
-                                                    <div class="profile-descrption-block">
-                                                    {
-                                                        (this.state.programming_languages || []).map((item) => {
-                                                            return(
-                                                                <a href="#" class="badge badge-dark badge-pill mr-2">{item}</a>
-                                                                )
-                                                        })                            
-                                                    }
-                                                    </div>
-                                                </div>
-                                                <div class="editable-alias">&nbsp;</div>
-                                                <div>
-                                                    <h6 class="border-bottom border-gray pb-2 mb-0">Languages Spoken:</h6>
-                                                    <div class="profile-descrption-block">
-                                                    {
-                                                        (this.state.languages || []).map((item) => {
-                                                            return(
-                                                                <a href="#" class="badge badge-dark badge-pill mr-2">{item}</a>
-                                                                )
-                                                        })                            
-                                                    }
-                                                    </div>
+                                                <div class="row mt-2">
+                                                    <SkillBox title="Interests" data={this.state.interests}/>
+                                                    <SkillBox title="Programming languages" data={this.state.programming_languages}/>
+                                                    <SkillBox title="Languages Spoken" data={this.state.languages}/>
                                                 </div>
                                         </div>
                                     </div>
@@ -226,7 +235,7 @@ class Profile extends React.Component {
                                 }
                                 <form role="form" onSubmit={this.putProfile}>
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Username:</label>
+                                        <label class="col-lg-3 col-form-label form-control-label">Name:</label>
                                         <div class="col-lg-9">
                                             <input class="form-control" type="text" defaultValue={this.state.name} ref="edit_name"/>
                                         </div>
@@ -260,101 +269,22 @@ class Profile extends React.Component {
                                             }
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Interests:</label>
-                                        <div class="col-lg-9">
-                                            <div class="profile-descrption-block">
-                                                <span class="d-flex flex-wrap">
-                                                {
-                                                    (this.state.interests|| []).map((item) => {
-                                                        return( 
-                                                                <span className="badge badge-pill badge-success mr-2" key={item + ' ' + tag_id++}>
-                                                                {item}
-                                                                <button className="fa fa-times bg-transparent border-0 p-0 pl-1 interests" 
-                                                                        type="submit"
-                                                                        value={item} 
-                                                                        style={{ 'outline': 'none' }} 
-                                                                        onClick={this.removeTag}>
-                                                                </button>
-                                                                </span>
-
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                                <span className="badge badge-pill badge-primary mr-2" >
-                                                        <input type="text" 
-                                                        placeholder="add new interest" 
-                                                        className="profile-tag-input interests" 
-                                                        onKeyDown={this.addTag}/>
-
-                                                </span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Programming languages:</label>
-                                        <div class="col-lg-9">
-                                            <div class="profile-descrption-block">
-                                                <span class="d-flex flex-wrap">
-                                                {
-                                                    (this.state.programming_languages || []).map((item) => {
-                                                        return(
-                                                                <span className="badge badge-pill badge-success mr-2" key={item + ' ' + tag_id++}>
-                                                                    {item}
-                                                                    <button className="fa fa-times bg-transparent border-0 p-0 pl-1 programming_languages" 
-                                                                            value={item} 
-                                                                            style={{ 'outline': 'none' }} 
-                                                                            onClick={this.removeTag}>
-                                                                    </button>
-                                                                </span>
-                                                                )
-                                                    })                            
-                                                }
-                                                <span className="badge badge-pill badge-primary mr-2" >
-                                                        <input type="text" 
-                                                        placeholder="add new programming language" 
-                                                        className="profile-tag-input programming_languages" 
-                                                        onKeyDown={this.addTag}/>
-
-                                                </span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label form-control-label">Languages Spoken:</label>
-                                        <div class="col-lg-9">
-                                            <div class="profile-descrption-block">
-                                                <span class="d-flex flex-wrap">
-                                                {
-                                                    (this.state.languages || []).map((item) => {
-                                                        return(
-                                                                <span className="badge badge-pill badge-success mr-2" key={item + ' ' + tag_id++}>
-                                                                    {item}
-                                                                    <button className="fa fa-times bg-transparent border-0 p-0 pl-1 languages" 
-                                                                            value={item} 
-                                                                            style={{ 'outline': 'none' }} 
-                                                                            onClick={this.removeTag}>
-                                                                    </button>
-                                                                </span>
-                                                                )
-                                                    })                            
-                                                }
-                                                <span className="badge badge-pill badge-primary mr-2" >
-                                                        <input type="text" 
-                                                        placeholder="add new language" 
-                                                        className="profile-tag-input languages" 
-                                                        onKeyDown={this.addTag}/>
-
-                                                </span>
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
+  
+                                    <GroupComponent title="Interests:" 
+                                                    data={this.state.interests} 
+                                                    className="interests" 
+                                                    placeholder="add new interests" 
+                                                    />
+                                    <GroupComponent title="Programming languages:" 
+                                                    data={this.state.programming_languages} 
+                                                    className="programming_languages" 
+                                                    placeholder="add new programming language" 
+                                                    />
+                                    <GroupComponent title="Languages Spoken:" 
+                                                    data={this.state.languages} 
+                                                    className="languages" 
+                                                    placeholder="add new language" 
+                                                    />
                                     <div class="form-group row">
                                         <label class="col-lg-3 col-form-label form-control-label">About Me:</label>
                                         <div class="col-lg-9">

@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
-import { Dashboard, GroupList, GroupChat, Profile } from '@/Board';
+import { Dashboard, GroupList, GroupChat, Profile, MyGroup } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 
 class HomePage extends React.Component {
@@ -11,12 +11,30 @@ class HomePage extends React.Component {
 
         this.state = {
             currentUser: authenticationService.currentUserValue,
-            users: null
+            "_id": "",
+            "name": "",
+            "email": "",
+            "visibility": "",
+            "description": "",
+            "interests": [],
+            "programming_languages": [],
+            "languages": [],
+            "github": ""
         };
     }
 
     componentDidMount() {
-        userService.getProfile().then(users => this.setState({ users }));
+        userService.getProfile().then(data => this.setState({ 
+            "_id": data._id,
+            "name": data.name,
+            "email": data.email,
+            "visibility": data.visibility,
+            "description": data.description,
+            "interests": data.interests,
+            "programming_languages": data.programming_languages,
+            "languages": data.languages,
+            "github": data.github
+        }));
     }
 
     render() {
@@ -56,6 +74,12 @@ class HomePage extends React.Component {
                         <a class="nav-link" href="/profile">
                           <span data-feather="shopping-cart"></span>
                           My Profile
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/mygroup">
+                          <span data-feather="shopping-cart"></span>
+                          My Groups
                         </a>
                       </li>
                     </ul>
@@ -98,10 +122,13 @@ class HomePage extends React.Component {
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <Switch>
                     <Route path="/grouplist" component={GroupList} />
-                    <Route exact path="/" component={Dashboard} />
+                    <Route exact path="/" component={() => (
+                        <Dashboard _id={this.state._id}/>
+                      )} />
                     <Route path="/groupchat" component={GroupChat} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />
+                    <Route path="/mygroup" component={MyGroup} />
                 </Switch>
 
                 </main>

@@ -23,7 +23,7 @@ class Project:
     _id: ObjectId
     title: str
     description: str
-    course: int
+    course: str
     leader: ObjectId
     members: List[ObjectId]
     max_people: int

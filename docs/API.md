@@ -134,7 +134,7 @@ GET /api/project/5dac029b8b819e584ff36f8d ->
             "react"
         ],
         "languages": [
-            "中文",
+            "chinese",
             "english"
         ],
         "tags": [
@@ -193,7 +193,7 @@ Returns a list of 10 project's and their full details.
             "free hd",
         ],
         "languages": [
-            "中文",
+            "chinese",
             "english"
         ],
         "technologies": [

@@ -1,0 +1,66 @@
+.avatar-div-setting {
+  margin-top:-10px;
+  display: inline-flex;
+  flex-direction: row-reverse;
+  padding-left:25px;
+}
+
+.avatar {
+  margin-left: -10px;
+  position: relative;
+  border:1px solid #fff;
+  border-radius: 50%;
+  overflow:hidden;
+  width:50px;
+  height:50px;
+  border-color: white;
+  border-style: solid;
+  border-width: 3px;
+}
+
+.avatar img {
+  width:50px;
+  height:50px;
+}
+.group-card-box {
+}
+.group-card-box:hover {
+  transition: box-shadow 0.3s ease-in-out;
+  box-shadow: 1px 1px 1px rgba(190, 190, 190, 0.35);
+}
+.group-card-list-setting {
+	margin-left:0px;
+	margin-right:auto;
+}
+.group-card-member-text p{
+  display: inline-flex;
+  font-size: 12px;
+  color: grey;
+}
+.group-card-row-text p{
+  font-size: 13px;
+  color: black;
+}
+.group-page-member-setting p{
+	display: inline-flex;
+	font-size: 12px;
+	color: grey;
+ }
+.group-page-box {
+	height: auto;
+	border-style: solid;
+	border-color: #F0F0F0;
+	border-width: 1px;
+	border-radius: 2px;
+	overflow: hidden;
+	min-height:150px;
+}
+
+.group-page-box:hover{
+  transition: box-shadow 0.3s ease-in-out;
+  box-shadow: 1px 1px 1px rgba(190, 190, 190, 0.45);
+}
+.group-page-box-header {
+	background-color: #F5F5F5;
+}
+

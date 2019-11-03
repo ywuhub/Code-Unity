@@ -31,6 +31,7 @@ def tech_list():
     return send_file("data/technologies.json")
 
 
+"""
 @app.route("/project", methods=["GET", "POST"])
 def new_project():
     # db = Database.get_collection("projects")
@@ -66,3 +67,4 @@ def user_profile(user_id):
     except:
         # goes here if user_id is not a valid ObjectId object
         return render_template("404.html"), 404  # we will need a better 404 error page
+"""

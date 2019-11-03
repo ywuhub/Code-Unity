@@ -45,6 +45,7 @@ class ValueExistsError(Exception):
 class UserManager:
     def __init__(self, app: Flask, db: Database, jwt: JWTManager):
         self.users = db.get_collection("users")
+        self.profiles = db.get_collection("profiles")
         # In memory store of revoked tokens. WARNING: will allow logged out users to
         # log back in if app is restarted.
         self.revoked_tokens: Set[str] = set()
@@ -85,8 +86,27 @@ class UserManager:
         # Race conditions possible, check if database throws an error about
         # a duplicate username/email key.
         try:
-            self.users.insert_one(
-                {"username": username, "password": pwd_hash, "email": email}
+            # add user to 'users' database
+            _id = self.users.insert_one(
+                    {   
+                        "username": username, 
+                        "password": pwd_hash, 
+                        "email": email
+                    }
+                  )
+            # initiate blank profile for newly registered user
+            self.profiles.insert_one(
+                {
+                    "_id": ObjectId(_id.inserted_id),
+                    "name": "",
+                    "email": email,
+                    "visibility": "public",
+                    "description": "",
+                    "interests": [],
+                    "programming_languages": [],
+                    "languages": [],
+                    "github": ""
+                }
             )
         except DuplicateKeyError as err:
             # The error message returned from pymongo is messy, extract the
