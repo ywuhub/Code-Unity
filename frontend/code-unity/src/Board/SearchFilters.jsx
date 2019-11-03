@@ -207,4 +207,30 @@ function LanguageSearch(props) {
     );
 }
 
-export { CourseSearch, ProgrammingLanguageSearch, LanguageSearch };
+function TechnologySearch(props) {
+    function filterTechnologies(tags, filter) {
+        let tags_ = tags;
+        // no languages for empty/whitespace
+        if (/^(\s+|)$/.test(filter)) {
+            tags_ = [];
+
+        } else {
+            tags_ = tags_.filter((tag) => {
+                let technology = tag.toLowerCase();
+                return technology.indexOf(filter) !== -1;
+                // return language.startsWith(fitler);
+            });
+        }
+        return tags_;
+    }
+
+    function toString(tag) {
+        return tag;
+    }
+
+    return (
+        <TagSearch apiEndpoint='/api/list/technologies' filter={filterTechnologies} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='technologies-search' parent='technologies' searchPlaceholder='Search Technologies' />
+    );
+}
+
+export { CourseSearch, ProgrammingLanguageSearch, LanguageSearch, TechnologySearch };
