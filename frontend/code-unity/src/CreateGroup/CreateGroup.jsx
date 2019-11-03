@@ -10,12 +10,20 @@ class CreateGroup extends React.Component {
         super(props);
         this.isMounted_ = false;
         this.handleChange = this.handleChange.bind(this);
-        this.handleProgChange = this.handleProgChange.bind(this);
+        this.handleMenuChange = this.handleMenuChange.bind(this);
+        this.handleCourseChange = this.handleCourseChange.bind(this);
+        this.menuSelect = this.menuSelect.bind(this);
         this.removeTag = this.removeTag.bind(this);
         this.state = {
+            course: '',
+            courseList: [],
             description: '',
+            initialLang: [],
+            selectedLang: [],
             initialProg: [],
-            selectedProg: []
+            selectedProg: [],
+            initialTag: [],
+            selectedTag: []
         };
     }
 
@@ -23,11 +31,24 @@ class CreateGroup extends React.Component {
         this.setState({ description: event.target.value });
     }
 
-    handleProgChange(event) {
-        let progs = this.state.selectedProg;
-        if (progs.length === 0 || progs.indexOf(event.target.value) === -1) {
-            this.state.selectedProg.push(event.target.value);
-            this.setState({});
+    handleMenuChange(event) {
+        if (event.target.name == 'lang-menu') {
+            this.menuSelect(this.state.selectedLang, event.target.value);
+        } else if (event.target.name == 'prog-menu') {
+            this.menuSelect(this.state.selectedProg, event.target.value);
+        } else if (event.target.name == 'tag-menu') {
+            this.menuSelect(this.state.selectedTag, event.target.value);
+        }
+        this.setState({});
+    }
+
+    handleCourseChange(event) {
+        this.setState({ course: event.target.value });
+    }
+
+    menuSelect(selected, value) {
+        if (selected.length === 0 || selected.indexOf(value) === -1) {
+            selected.push(value);
         }
     }
 
@@ -37,6 +58,17 @@ class CreateGroup extends React.Component {
 
     componentDidMount() {
         this.isMounted_ = true;
+        const lang_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
+        fetch(`${config.apiUrl}` + '/api/list/languages', lang_options)
+            .then(response => { return response.json() })
+            .then(langs => {
+                if (this.isMounted_) {
+                    this.setState({
+                        initialLang: langs,
+                    });
+                }
+            })
+            .catch(err => { console.log(err); });
         const prog_lang_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
         fetch(`${config.apiUrl}` + '/api/programming_languages', prog_lang_options)
             .then(response => { return response.json() })
@@ -48,20 +80,57 @@ class CreateGroup extends React.Component {
                 }
             })
             .catch(err => { console.log(err); });
+        const tag_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
+        fetch(`${config.apiUrl}` + '/api/list/technologies', tag_options)
+            .then(response => { return response.json() })
+            .then(tags => {
+                if (this.isMounted_) {
+                    this.setState({
+                        initialTag: tags,
+                    });
+                }
+            })
+            .catch(err => { console.log(err); });
+        const course_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
+        fetch(`${config.apiUrl}` + '/api/course_list', course_options)
+            .then(response => { return response.json() })
+            .then(courses => {
+                if (this.isMounted_) {
+                    this.setState({
+                        courseList: courses,
+                    });
+                }
+            })
+            .catch(err => { console.log(err); });
     }
 
     removeTag(e) {
-        let tags = this.state.selectedProg;
-        const tagIndex = tags.indexOf(e.target.value);
-        if (tagIndex !== -1) {
-            tags.splice(tagIndex, 1);
-            this.setState({ selectedProg: tags });
+        if (event.target.name == 'lang-tag') {
+            let tags = this.state.selectedLang;
+            this.setState({ selectedLang: this.spliceArray(tags, event.target.value) });
+        } else if (event.target.name == 'prog-tag') {
+            let tags = this.state.selectedProg;
+            this.setState({ selectedProg: this.spliceArray(tags, event.target.value) });
+        } else if (event.target.name == 'tag-tag') {
+            let tags = this.state.selectedTag;
+            this.setState({ selectedTag: this.spliceArray(tags, event.target.value) });
         }
     }
 
+    spliceArray(arr, value) {
+        const tagIndex = arr.indexOf(value);
+        if (tagIndex !== -1) {
+            arr.splice(tagIndex, 1);
+        }
+        return arr;
+    }
+
     render() {
-        {/* Setup dropdown menu for prog languages */}
-        let progDropdown = this.state.initialProg.map((prog) => <option key={prog}>{prog}</option>);
+        {/* Setup dropdown menus */}
+        let langMenu = this.state.initialLang.map((lang) => <option key={lang}>{lang}</option>);
+        let progMenu = this.state.initialProg.map((prog) => <option key={prog}>{prog}</option>);
+        let tagMenu = this.state.initialTag.map((tag) => <option key={tag}>{tag}</option>);
+        let courseMenu = this.state.courseList.map((course) => <option key={course['code']} value={course['code']}>{course['code'] + ' ' + course['name']}</option>);
 
         return (
             <div id="page-start">
@@ -78,7 +147,7 @@ class CreateGroup extends React.Component {
                         })}
                         onSubmit={({ title, max_people }, { setStatus, setSubmitting }) => {
                             setStatus();
-                            projectService.create_group(title, max_people, this.state.description, this.state.selectedProg)
+                            projectService.create_group(title, max_people, this.state.course, this.state.description, this.state.selectedLang, this.state.selectedProg, this.state.selectedTag)
                                 .then(
                                     user => {
                                         const { from } = this.props.location.state || { from: { pathname: "/" } };
@@ -107,6 +176,12 @@ class CreateGroup extends React.Component {
                                     </div>
                                 </div>
                                 <div className="form-group">
+                                    <label htmlFor="course" className="pb-2 mb-0">Course</label>
+                                    <select class="custom-select" data-dropup-auto="false" onChange={event => this.handleCourseChange(event)}>
+                                        {courseMenu}
+                                    </select>
+                                </div>
+                                <div className="form-group">
                                     <label htmlFor="title" className="pb-2 mb-0">Number of members</label>
                                     <div className="form-group input-group">
                                         {/* <input type="text" id="title" className="form-control bg-dark rounded py-2" placeholder="Enter title" style={{ 'color': 'white' }} required></input> */}
@@ -114,9 +189,29 @@ class CreateGroup extends React.Component {
                                     </div>
                                 </div>
                                 <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Languages</label>
+                                    <select class="custom-select" data-dropup-auto="false" name="lang-menu" onChange={event => this.handleMenuChange(event)}>
+                                        {langMenu}
+                                    </select>
+                                    {/* Show tags */}
+                                    <div className="my-3 border-0 p-0 px-2">
+                                        <i className="mr-4 text-muted"> Selected:</i>
+                                        <span id="tags">
+                                            {
+                                                this.state.selectedLang.map((lang) => {
+                                                    return (
+                                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={lang}>{lang}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={lang} style={{ 'outline': 'none' }} name="lang-tag" onClick={this.removeTag.bind(this)}></button></span>
+                                                    );
+                                                })}
+                                            <br />
+
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="form-group">
                                     <label htmlFor="title" className="pb-2 mb-0">Programming Languages</label>
-                                    <select class="custom-select" data-dropup-auto="false" onChange={event => this.handleProgChange(event)}>
-                                        {progDropdown}
+                                    <select class="custom-select" data-dropup-auto="false" name="prog-menu" onChange={event => this.handleMenuChange(event)}>
+                                        {progMenu}
                                     </select>
                                     {/* Show tags */}
                                     <div className="my-3 border-0 p-0 px-2">
@@ -125,7 +220,27 @@ class CreateGroup extends React.Component {
                                             {
                                                 this.state.selectedProg.map((prog) => {
                                                     return (
-                                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={prog}>{prog}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={prog} style={{ 'outline': 'none' }} onClick={this.removeTag.bind(this)}></button></span>
+                                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={prog}>{prog}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={prog} style={{ 'outline': 'none' }} name="prog-tag" onClick={this.removeTag.bind(this)}></button></span>
+                                                    );
+                                                })}
+                                            <br />
+
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Tags</label>
+                                    <select class="custom-select" data-dropup-auto="false" name="tag-menu" onChange={event => this.handleMenuChange(event)}>
+                                        {tagMenu}
+                                    </select>
+                                    {/* Show tags */}
+                                    <div className="my-3 border-0 p-0 px-2">
+                                        <i className="mr-4 text-muted"> Selected:</i>
+                                        <span id="tags">
+                                            {
+                                                this.state.selectedTag.map((tag) => {
+                                                    return (
+                                                        <span className="badge badge-pill badge-success p-2 mx-1 my-2" key={tag}>{tag}<button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} name="tag-tag" onClick={this.removeTag.bind(this)}></button></span>
                                                     );
                                                 })}
                                             <br />
