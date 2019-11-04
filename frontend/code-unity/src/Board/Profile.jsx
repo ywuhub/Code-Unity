@@ -180,7 +180,7 @@ class Profile extends React.Component {
                                 <div class="m-4">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <img src="//placehold.it/200" class="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
+                                            <img src="https://api.adorable.io/avatars/200/avatar.png" class="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
                                         </div>
                                         <div class="col-md-6 align-middle">
                                             <div> 
