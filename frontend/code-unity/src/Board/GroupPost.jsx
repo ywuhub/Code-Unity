@@ -4,7 +4,7 @@ import { authHeader } from '@/_helpers';
 
 function nameClicked(e) {
     const projects_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
-    fetch(`${config.apiUrl}` + '/user/' + e.target.id + '/profile', projects_options)
+    fetch(`${config.apiUrl}` + '/api/user/' + e.target.id + '/profile', projects_options)
         .then(response => { return response.json() })
         .then(profile => {
             console.log(profile);
