@@ -1,7 +1,23 @@
 from flask_jwt_extended import current_user, jwt_required
-from flask_restful import Resource
+from flask_restful import Resource, fields
+from flask_restful.reqparse import RequestParser
 
 from server.managers.project_manager import ProjectManager
+from server.utils.json import ObjectId, marshal
+
+outgoing_fields = {
+    "project_id": ObjectId,
+    "project_title": fields.String,
+    "message": fields.String,
+}
+
+incoming_fields = {
+    "project_id": ObjectId,
+    "project_title": fields.String,
+    "user_id": fields.String,
+    "user_name": fields.String,
+    "message": fields.String,
+}
 
 
 class ProjectJoinList(Resource):
@@ -23,7 +39,8 @@ class ProjectJoinList(Resource):
         [
             {
                 "project_id": string,
-                "project_name": string
+                "project_title": string,
+                "message": string
             }
         ]
 
@@ -32,12 +49,21 @@ class ProjectJoinList(Resource):
         [
             {
                 "project_id": string,
-                "project_name": string,
+                "project_title": string,
                 "user_id": string,
                 "user_name": string,
-                "user_message": string
+                "message": string
             }
         ]
         ```
         """
-        pass
+        parser = RequestParser()
+        parser.add_argument("incoming")
+        incoming = parser.parse_args(strict=True)["incoming"]
+
+        if incoming is None or incoming.lower() is "false":
+            result = current_user.get_outgoing_join_requests()
+            return marshal(result, outgoing_fields)
+
+        result = current_user.get_incoming_join_requests()
+        return marshal(result, incoming_fields)

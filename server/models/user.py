@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from bson import ObjectId
 from flask_restful import fields
@@ -122,6 +122,75 @@ class User:
         result = requests.delete_one({"project_id": project_id, "user_id": self._id})
         if result.deleted_count == 0:
             raise ProjectNotFound()
+
+    def get_outgoing_join_requests(self):
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "projects",
+                    "localField": "project_id",
+                    "foreignField": "_id",
+                    "as": "project",
+                }
+            },
+            {"$match": {"user_id": self._id}},
+            # The $lookup stage causes every project that matches the project_id
+            # to be included as an array in the project field, thus we unwind it
+            # to maintain a sane structure.
+            {"$unwind": "$project"},
+            {
+                "$project": {
+                    "project_id": 1,
+                    "project_title": "$project.title",
+                    "message": 1,
+                }
+            },
+        ]
+
+        result = []
+        requests = self.db.get_collection("join_requests")
+        for doc in requests.aggregate(pipeline):
+            result.append(doc)
+
+        return result
+
+    def get_incoming_join_requests(self):
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "projects",
+                    "localField": "project_id",
+                    "foreignField": "_id",
+                    "as": "project",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                }
+            },
+            {"$unwind": "$project"},
+            {"$unwind": "$user"},
+            {"$match": {"project.leader": self._id}},
+            {
+                "$project": {
+                    "project_id": 1,
+                    "project_title": "$project.title",
+                    "user_id": 1,
+                    "user_name": "$user.username",
+                    "message": 1,
+                }
+            },
+        ]
+
+        result = []
+        requests = self.db.get_collection("join_requests")
+        for doc in requests.aggregate(pipeline):
+            result.append(doc)
+        return result
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'
