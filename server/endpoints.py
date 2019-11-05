@@ -13,6 +13,8 @@ from server.resource import (
     ProfileResource,
     ProgrammingLanguages,
     ProjectList,
+    ProjectJoin,
+    ProjectJoinList,
     ProjectResource,
     SearchProjects,
     UserList
@@ -34,6 +36,8 @@ def register_endpoints(
     api.add_resource(NewProject, "/project")
     api.add_resource(ProjectResource, "/project/<string:project_id>", resource_class_args=[project_manager])
     api.add_resource(ProjectList, "/project/list", resource_class_args=[project_manager])
+    api.add_resource(ProjectJoin, "/project/<string:project_id>/request", resource_class_args=[project_manager])
+    api.add_resource(ProjectJoinList, "/project/<string:project_id>/request", resource_class_args=[project_manager])
     api.add_resource(SearchProjects, "/project/search", resource_class_args=[project_manager])
     api.add_resource(CourseList, "/course_list", resource_class_args=[db])
     api.add_resource(UserList, "/user_list", resource_class_args=[db])
