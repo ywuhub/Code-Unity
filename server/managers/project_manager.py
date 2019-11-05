@@ -33,6 +33,9 @@ class ProjectManager:
             
         return ret
 
+    def search_project_listing(self):
+        pass
+
     def delete_project(self, project: Project):
         self.db.delete_one({"_id": project._id})
 
