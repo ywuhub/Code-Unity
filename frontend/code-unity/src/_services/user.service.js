@@ -62,5 +62,5 @@ function getProjectDetail(id) {
                             method: 'GET', 
                             headers: {'Content-Type': 'application/json', 'Authorization': authHeader()},
                         };
-    return fetch(`${config.apiUrl}/api/project/list?user_id=${id}`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/api/project/${id}`, requestOptions).then(handleResponse);
 }
