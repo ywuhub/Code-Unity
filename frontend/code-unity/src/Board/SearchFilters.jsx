@@ -45,11 +45,13 @@ class TagSearch extends React.Component {
      * @param {*} e event
      */
     filter(e) {
-        if (/^(\s+|)$/.test(this.props.filter)) return;
-
         let tags = this.state.tags;
         let filter = e.target.value.toLowerCase();
 
+        if (/^(\s+|)$/.test(filter)) {
+            this.setState({ filteredTags: [] });
+            return;
+        }
         tags = this.props.filter(tags, filter); // uses child's filter method
 
         this.setState({ filteredTags: tags });
