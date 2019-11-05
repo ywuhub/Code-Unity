@@ -6,6 +6,7 @@ import { authenticationService } from '@/_services';
 import { PrivateRoute } from '@/_components';
 import { HomePage } from '@/HomePage';
 import { LoginPage, Register } from '@/LoginPage';
+import { UserSearch } from '@/UserSearch';
 import '@/Style';
 
 
@@ -39,6 +40,12 @@ class App extends React.Component {
                                     Code Unity
                                 </Link>
                             </div>
+
+                            <div className="navbar-nav">
+                               <UserSearch />                         
+                            </div>
+
+                            
                             <div className="navbar-nav">
                                 <Link to="/" className="nav-item nav-link">Home</Link>
                                 <Link to="/" className="nav-item nav-link">Projects</Link>

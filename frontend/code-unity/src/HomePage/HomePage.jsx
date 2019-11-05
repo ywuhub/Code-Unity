@@ -4,6 +4,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 import { userService, authenticationService } from '@/_services';
 import { Dashboard, GroupList, GroupChat, Profile, MyGroup } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
+import { OthersProfile } from '@/UserSearch';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -126,6 +127,7 @@ class HomePage extends React.Component {
                         <Dashboard _id={this.state._id}/>
                       )} />
                     <Route path="/groupchat" component={GroupChat} />
+                    <Route path="/profile-:handle" component={OthersProfile} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />
                     <Route path="/mygroup" component={() => (

@@ -7,3 +7,5 @@ from .profile import ProfileResource
 from .programming_languages import ProgrammingLanguages
 from .project import ProjectResource
 from .project_list import ProjectList
+from .project_list import SearchProjects
+from .user_list import UserList

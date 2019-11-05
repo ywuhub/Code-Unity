@@ -1,0 +1,23 @@
+#user-search:focus {
+    border-color: inherit;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+#user-search-bar:focus-within {
+    border-bottom: 1px solid pink;
+}
+
+#user-search-bar {
+    border-bottom: 1px solid whitesmoke;
+}
+
+.user-button {
+    overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#user-search-dropdown {
+    border: 1px solid whitesmoke;
+}
