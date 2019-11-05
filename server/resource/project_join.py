@@ -1,8 +1,11 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 from flask_jwt_extended import current_user, jwt_required
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
+from flask_restful.reqparse import RequestParser
+from pymongo.errors import DuplicateKeyError
 
+from server.exceptions import AlreadyMemberOf, ProjectFull, ProjectNotFound
 from server.managers.project_manager import ProjectManager
 
 
@@ -49,7 +52,27 @@ class ProjectJoin(Resource):
         }
         ```
         """
-        pass
+        parser = RequestParser()
+        parser.add_argument("message")
+        args = parser.parse_args(strict=True)
+
+        try:
+            project_id = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 400
+
+        try:
+            current_user.apply_to_project(project_id, args["message"])
+        except ProjectNotFound:
+            return {"message": "project not found"}, 404
+        except DuplicateKeyError:
+            return {"message": "request already pending"}, 400
+        except ProjectFull:
+            return {"message": "project is full"}, 400
+        except AlreadyMemberOf:
+            return {"message": "already a member"}, 400
+
+        return {"status": "success"}
 
     @jwt_required
     def delete(self, project_id: str):
@@ -63,4 +86,14 @@ class ProjectJoin(Resource):
         (200 OK) <-
         ```
         """
-        pass
+        try:
+            project_id = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 400
+
+        try:
+            current_user.delete_project_application(project_id)
+        except ProjectNotFound:
+            return {"message": "join request not found"}, 404
+
+        return {"status": "success"}

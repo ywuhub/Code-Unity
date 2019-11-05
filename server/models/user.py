@@ -1,10 +1,11 @@
-from typing import List, Any, Dict
+from typing import Any, Dict, List
 
 from bson import ObjectId
+from flask_restful import fields
 from pymongo.database import Database
 
+from server.exceptions import AlreadyMemberOf, ProjectFull, ProjectNotFound
 from server.models.project import Project
-from flask_restful import fields
 from server.utils.json import ObjectId as ObjectIdMarshaller
 
 profile_fields = {
@@ -71,6 +72,7 @@ class User:
 
     def __init__(self, id: ObjectId, db: Database):
         self._id = id
+        self.db = db
         self.profiles = db.get_collection("profiles")
         self.projects = db.get_collection("projects")
 
@@ -92,6 +94,34 @@ class User:
         Replaces the user's current profile or creates it if it does not exist.
         """
         self.profiles.replace_one({"_id": self._id}, profile, upsert=True)
+
+    def apply_to_project(self, project_id: ObjectId, message: str):
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        # Check if the user isn't already a member or if the project is already full
+        project = Project.from_dict(project)
+        if self._id in project.members:
+            raise AlreadyMemberOf()
+        if project.max_people == project.cur_people:
+            raise ProjectFull()
+
+        doc = {"project_id": project_id, "user_id": self._id}
+        if message is not None:
+            doc["message"] = message
+
+        # May raise DuplicateKeyError if the user_id, project_id pair already exists
+        # in the collection.
+        requests = self.db.get_collection("join_requests")
+        requests.insert_one(doc)
+
+    def delete_project_application(self, project_id: ObjectId):
+        requests = self.db.get_collection("join_requests")
+
+        result = requests.delete_one({"project_id": project_id, "user_id": self._id})
+        if result.deleted_count == 0:
+            raise ProjectNotFound()
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'
