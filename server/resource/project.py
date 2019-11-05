@@ -94,8 +94,6 @@ class ProjectResource(Resource):
         if current_user._id != project.leader:
             return {"message": "only the owner may modify a project"}, 401
 
-        # Create a new Project
-
         # Parse arguments
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument("title", required=True)

@@ -65,3 +65,10 @@ class ProjectList(Resource):
             return marshal(self.project_manager.get_project_listing(), fields)
         else:
             return marshal(self.project_manager.get_project_listing(user_id), fields)
+
+class SearchProjects(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+
+    def get(self):
+        pass
