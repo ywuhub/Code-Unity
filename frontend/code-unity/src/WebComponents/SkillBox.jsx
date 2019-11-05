@@ -2,7 +2,8 @@ import React from 'react';
 import '@/Style';
 
 export const SkillBox = (props) => {
-    let badge_key = props.keyValue * 20;
+    // let badge_key = props.keyValue * 20;
+    let badge_key = 0;
     return(
         <div key={badge_key++}class="col mr-2 mt-2 group-page-box">
             <div class="row group-page-box-header">

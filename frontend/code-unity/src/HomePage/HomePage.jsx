@@ -127,7 +127,9 @@ class HomePage extends React.Component {
                         <Dashboard _id={this.state._id}/>
                       )} />
                     <Route path="/groupchat" component={GroupChat} />
-                    <Route path="/profile-:handle" component={OthersProfile} />
+                    <Route path="/profile-:user" render={(props) => (
+                      <OthersProfile key={props.match.params.user} {...props} />)
+                    } />
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />
                     <Route path="/mygroup" component={MyGroup} />

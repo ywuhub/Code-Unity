@@ -305,13 +305,6 @@ function SearchBy(props) {
             </div>
 
             <div className="d-flex align-items-center row mb-3">
-                <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Technology</div>
-                <div className="col-lg-8">
-                    <TechnologySearch id='technology-filter' processTag={props.addTag} />
-                </div>
-            </div>
-
-            <div className="d-flex align-items-center row mb-3">
                 <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Programming Language</div>
                 <div className="col-lg-8">
                     <ProgrammingLanguageSearch id='planguage-filter' processTag={props.addTag} />

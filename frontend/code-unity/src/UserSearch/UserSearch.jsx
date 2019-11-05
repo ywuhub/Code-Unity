@@ -61,7 +61,7 @@ class UserSearch extends React.Component {
         return (
             <div className="mx-3" style={{'width':'25vw', 'position':'relative'}}>
                 <div id="user-search-bar" className="input-group" tabIndex="0">
-                    <input type="text" id="user-search" className="form-control bg-transparent pr-5 pl-3 border-0" style={{'fontSize':'14px', 'color':'white' }} placeholder="Search for users" onChange={this.handleUserInput.bind(this)} ></input>
+                    <input type="text" id="user-search" className="form-control bg-transparent pr-5 pl-3 border-0" style={{'fontSize':'14px', 'color':'white' }} placeholder="Search for users by username or email" onChange={this.handleUserInput.bind(this)} ></input>
                         <div className="input-group-append">
                         <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
                     </div>
@@ -71,12 +71,14 @@ class UserSearch extends React.Component {
                     {
                         this.state.users.map((user) => {
                             return (
-                                <Link to={"/profile-" + user.username} className="bg-light w-100 p-2" key={user._id} style={{'textDecoration':'none'}} value={user.username} onClick={this.onUserSelect.bind(this)}>
+                                <Link to={{pathname: "/profile-" + user.username, state: { _id: user._id, username: user.username }}} className="bg-light w-100 p-2 user-search-link" key={user._id} style={{'textDecoration':'none'}} value={user.username} onClick={this.onUserSelect.bind(this)}>
                                     <div className="media" value={user.username}>
                                         <img src="https://api.adorable.io/avatars/200/avatar.png" className="p-2 img-fluid img-circle d-block rounded-circle" value={user.username} style={{'width':'50px'}} alt="avatar" />
                                         <div className="media-body" value={user.username}>
-                                            <div className="text-muted" value={user.username}><b value={user.username}>{user.username}</b></div>
-                                            <div className="text-muted" value={user.username}><i value={user.username}><small value={user.username}> {user.email} </small></i></div>
+                                            <div className="d-flex justify-content-start flex-column text-muted">
+                                                <b className="" value={user.username}>{user.username}</b>
+                                                <i className="" value={user.username}><small value={user.username}> {user.email} </small></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>

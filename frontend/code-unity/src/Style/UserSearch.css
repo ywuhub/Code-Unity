@@ -12,8 +12,8 @@
     border-bottom: 1px solid whitesmoke;
 }
 
-.user-button {
-    overflow: hidden;
+.user-search-link {
+  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
