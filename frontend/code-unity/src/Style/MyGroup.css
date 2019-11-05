@@ -24,9 +24,22 @@
 }
 .group-card-box {
 }
+.group-card-box a{
+  text-decoration: none;
+}
 .group-card-box:hover {
   transition: box-shadow 0.3s ease-in-out;
-  box-shadow: 1px 1px 1px rgba(190, 190, 190, 0.35);
+  box-shadow: 2px 2px 2px rgba(190, 190, 190, 0.35);
+}
+.group-card-box:active {
+  transition: box-shadow 0.3s ease-in-out;
+  box-shadow: 10px 10px 10px rgba(190, 190, 190, 0.35);
+  color: purple
+}
+.group-card-box:target {
+  transition: box-shadow 0.3s ease-in-out;
+  box-shadow: 10px 10px 10px rgba(190, 190, 190, 0.35);
+  color: purple
 }
 .group-card-list-setting {
 	margin-left:0px;
@@ -37,6 +50,7 @@
   font-size: 12px;
   color: grey;
 }
+
 .group-card-row-text p{
   font-size: 13px;
   color: black;
@@ -46,6 +60,7 @@
 	font-size: 12px;
 	color: grey;
  }
+
 .group-page-box {
 	height: auto;
 	border-style: solid;
@@ -57,8 +72,8 @@
 }
 
 .group-page-box:hover{
-  transition: box-shadow 0.3s ease-in-out;
-  box-shadow: 1px 1px 1px rgba(190, 190, 190, 0.45);
+  transition: box-shadow 0.15s ease-in-out;
+  box-shadow: 1px 1px 1px rgba(190, 190, 190, 0.35);
 }
 .group-page-box-header {
 	background-color: #F5F5F5;

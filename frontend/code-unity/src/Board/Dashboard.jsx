@@ -9,7 +9,7 @@ import { userService } from '@/_services';
 class Dashboard extends React.Component {
 	constructor(props) {
         super(props);
-           this.state = {
+        this.state = {
             "_id":"??",
             isloading: true,
             projectData:[]
@@ -18,12 +18,6 @@ class Dashboard extends React.Component {
     }
     componentDidMount() {
         console.log("========componentWillReceiveProps")
-        // alert(JSON.parse(this.props.user))
-        this.setState(
-            { 
-                // "_id":Object.values(this.props.user)
-            }
-        );
         if (this.props._id) {
             userService.getUserProject(this.props._id).then(data => {this.setState({ 
                 isloading: false,
