@@ -1,5 +1,5 @@
 import React from 'react';
-import { LanguageSearch, CourseSearch, ProgrammingLanguageSearch } from './SearchFilters';
+import { LanguageSearch, CourseSearch, ProgrammingLanguageSearch, TechnologySearch } from './SearchFilters';
 
 /**
  * Advanced Search component
@@ -212,6 +212,7 @@ class AdvancedSearch extends React.Component {
                         <TagSearch label='Languages' content={<LanguageSearch id='language-tag' processTag={this.addTag.bind(this)} />} />
                         <TagSearch label='Courses' content={<CourseSearch id='course-tag' processTag={this.addTag.bind(this)} />} />
                         <TagSearch label='Programming Languages' content={<ProgrammingLanguageSearch id='planguage-tag' processTag={this.addTag.bind(this)} />} />
+                        <TagSearch label='Technologies' content={<TechnologySearch id='technology-tag' processTag={this.addTag.bind(this)} />} />
                         <TagSearch label='Keywords' content={this.keywordTagComponent()} />
                         <TagSearch label='Excluded Keywords' content={this.keywordTagComponent(true)} />
                     </div>

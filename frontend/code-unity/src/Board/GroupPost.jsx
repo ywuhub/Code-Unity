@@ -1,26 +1,15 @@
 import React from 'react';
-import config from 'config';
-import { authHeader } from '@/_helpers';
-
-function nameClicked(e) {
-    const projects_options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
-    // fetch(`${config.apiUrl}` + '/user/' + e.target.id + '/profile', projects_options)
-    //     .then(response => { return response.json() })
-    //     .then(profile => {
-    //         console.log(profile);
-    //     })
-    //     .catch(err => { console.log(err); });
-}
+import { Router, Route, Link, Switch } from 'react-router-dom';
 
 function ShowMembers(props) {
     let post = props.post;
     return (
         <span>
-            <i class="fas fa-user-friends"></i> <b>Members:</b> <button className="user bg-transparent border-0 p-0" id={post['leader']} onClick={nameClicked}>{post['leader']}</button>
+            <i class="fas fa-user-friends"></i> <b>Members:</b> <Link to={{ pathname: "/profile-" + post['leader'], state: { _id: post['leader'], username: post['leader'] } }} id={post['leader']} style={{ 'textDecoration': 'none' }}>{post['leader']}</Link>
             {post['members'] && post['members'].length > 1 && ', '}
             {post['members'] &&
                 Array.from(post['members']).filter((member) => { return member !== post['leader'] }).map((member) => {
-                    return <button className="user bg-transparent border-0 p-0" key={member} id={member} onClick={nameClicked}>{member}</button>;
+                    return <Link to={{ pathname: "/profile-" + member, state: { _id: member, username: member }}} id={member} key={member} style={{ 'textDecoration': 'none' }}>{member}</Link>
                 })
             }
         </span>

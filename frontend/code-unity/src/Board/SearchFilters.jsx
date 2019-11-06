@@ -45,11 +45,13 @@ class TagSearch extends React.Component {
      * @param {*} e event
      */
     filter(e) {
-        if (/^(\s+|)$/.test(this.props.filter)) return;
-
         let tags = this.state.tags;
         let filter = e.target.value.toLowerCase();
 
+        if (/^(\s+|)$/.test(filter)) {
+            this.setState({ filteredTags: [] });
+            return;
+        }
         tags = this.props.filter(tags, filter); // uses child's filter method
 
         this.setState({ filteredTags: tags });
@@ -207,4 +209,30 @@ function LanguageSearch(props) {
     );
 }
 
-export { CourseSearch, ProgrammingLanguageSearch, LanguageSearch };
+function TechnologySearch(props) {
+    function filterTechnologies(tags, filter) {
+        let tags_ = tags;
+        // no languages for empty/whitespace
+        if (/^(\s+|)$/.test(filter)) {
+            tags_ = [];
+
+        } else {
+            tags_ = tags_.filter((tag) => {
+                let technology = tag.toLowerCase();
+                return technology.indexOf(filter) !== -1;
+                // return language.startsWith(fitler);
+            });
+        }
+        return tags_;
+    }
+
+    function toString(tag) {
+        return tag;
+    }
+
+    return (
+        <TagSearch apiEndpoint='/api/list/technologies' filter={filterTechnologies} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='technologies-search' parent='technologies' searchPlaceholder='Search Technologies' />
+    );
+}
+
+export { CourseSearch, ProgrammingLanguageSearch, LanguageSearch, TechnologySearch };
