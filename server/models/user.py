@@ -4,7 +4,13 @@ from bson import ObjectId
 from flask_restful import fields
 from pymongo.database import Database
 
-from server.exceptions import AlreadyMemberOf, ProjectFull, ProjectNotFound
+from server.exceptions import (
+    AlreadyMemberOf,
+    DocumentNotFound,
+    ProjectFull,
+    ProjectNotFound,
+    UserNotFound,
+)
 from server.models.project import Project
 from server.utils.json import ObjectId as ObjectIdMarshaller
 
@@ -191,6 +197,55 @@ class User:
         for doc in requests.aggregate(pipeline):
             result.append(doc)
         return result
+
+    def invite_to_project(self, user_id: ObjectId, project_id: ObjectId):
+        projects = self.db.get_collection("projects")
+        project = projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        users = self.db.get_collection("users")
+        user = users.find_one({"_id": user_id})
+        if user is None:
+            raise UserNotFound()
+
+        # Check if we're the leader of the project that we're trying to invite
+        # people into.
+        if project["leader"] != self._id:
+            raise PermissionError()
+
+        # Check if the invited user is already a member of the group
+        if user_id in project["members"]:
+            raise AlreadyMemberOf()
+
+        if len(project["members"]) == project["max_people"]:
+            raise ProjectFull()
+
+        invitations = self.db.get_collection("invitations")
+        invitations.insert_one({"project_id": project_id, "user_id": user_id})
+
+    def delete_invitation(self, user_id: ObjectId, project_id: ObjectId):
+        # Check if the user has permissions to delete invitations
+        projects = self.db.get_collection("projects")
+        project = projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        invitations = self.db.get_collection("invitations")
+        n_deleted = invitations.delete_one(
+            {"project_id": project_id, "user_id": user_id}
+        ).deleted_count
+
+        # If the delete_one operation didn't delete anything, the invitation
+        # didn't exist in the first place.
+        if n_deleted != 1:
+            raise DocumentNotFound()
+
+    def get_outgoing_invitations(self):
+        raise NotImplementedError
+
+    def get_incoming_invitations(self):
+        raise NotImplementedError
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'

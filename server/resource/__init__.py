@@ -9,4 +9,5 @@ from .project import ProjectResource
 from .project_join import ProjectJoin
 from .project_join_list import ProjectJoinList
 from .project_list import ProjectList, SearchProjects
+from .user_invite import UserInvite
 from .user_list import UserList
