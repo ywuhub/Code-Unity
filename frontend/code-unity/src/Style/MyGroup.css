@@ -34,12 +34,10 @@
 .group-card-box:active {
   transition: box-shadow 0.3s ease-in-out;
   box-shadow: 10px 10px 10px rgba(190, 190, 190, 0.35);
-  color: purple
 }
 .group-card-box:target {
   transition: box-shadow 0.3s ease-in-out;
   box-shadow: 10px 10px 10px rgba(190, 190, 190, 0.35);
-  color: purple
 }
 .group-card-list-setting {
 	margin-left:0px;

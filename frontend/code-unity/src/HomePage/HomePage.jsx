@@ -132,7 +132,8 @@ class HomePage extends React.Component {
                     <Route path="/CreateGroup" component={CreateGroup} />
                     <Route path="/mygroup" component={() => (
                         <MyGroup _id={this.state._id} />
-                    )} />
+                    )}>
+                    </Route>
                 </Switch>
 
                 </main>

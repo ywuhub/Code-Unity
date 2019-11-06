@@ -49,7 +49,7 @@ class MyGroup extends React.Component {
         let id_value=0;
         let current_project=this.state.projectData[0];
     	return(
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row border-bottom border-gray">
                     <h1 class=" pb-3 pt-3 mb-0 h4">My Groups</h1>
                 </div>
@@ -74,8 +74,8 @@ class MyGroup extends React.Component {
                             }
                         </div>
 					</div>
-                    {this.state.currentProject &&
 					<div class="col-sm-9 pl-1">
+                        {this.state.currentProject &&
                         <div class="my-3 p-3 bg-white rounded shadow-sm">
                             <div class="container pl-4">
                                 <div class="row mt-2">
@@ -119,14 +119,14 @@ class MyGroup extends React.Component {
                                 </div>
                                 }
                                 <div class="row container pt-3 pl-0">
-                                    <SkillBox keyValue={key_id++} title="technologies" data={ ([]||this.state.currentProject.technologies) }/>
-                                    <SkillBox keyValue={key_id++} title="languages" data={ ([]||this.state.currentProject.languages) }/>
-                                    <SkillBox keyValue={key_id++} title="tags" data={ ([]||this.state.currentProject.tags) }/>
+                                    <SkillBox keyValue={key_id++} title="Programming languages" data={this.state.currentProject.technologies }/>
+                                    <SkillBox keyValue={key_id++} title="languages" data={ this.state.currentProject.languages }/>
+                                    <SkillBox keyValue={key_id++} title="tags" data={ this.state.currentProject.tags }/>
                                 </div>
                             </div>
                         </div>
+                        }
 					</div>
-                    }
 				</div>
 			</div>
 		);

@@ -32,15 +32,6 @@ class Dashboard extends React.Component {
         return (
             <div>
                 <div class="my-3 p-3 bg-white rounded shadow-sm">
-                    <h6 class="border-bottom border-gray pb-2 mb-0">Search</h6>
-                    <br></br>
-                    <form class="form-inline md-form form-sm">
-                        <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search for groups or members"
-                            aria-label="Search"></input>
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                    </form>
-                </div>
-                <div class="my-3 p-3 bg-white rounded shadow-sm">
                     <h6 class="border-bottom border-gray pb-2 mb-0">Groups</h6>
                     <div class="row">
                     {
