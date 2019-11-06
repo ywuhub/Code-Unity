@@ -33,7 +33,7 @@ class OthersProfile extends React.Component {
 
     render() {
         return (
-            <div className="container">
+            <div className="container-fluid">
                 {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) ||
                     <div>
                         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

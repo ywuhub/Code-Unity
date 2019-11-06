@@ -1,6 +1,7 @@
 import React from 'react';
 import { LanguageSearch, CourseSearch, ProgrammingLanguageSearch, TechnologySearch } from './SearchFilters';
-
+import config from 'config';
+import { authHeader } from '@/_helpers';
 /**
  * Advanced Search component
  *  Contains input/search boxes for user input
@@ -15,12 +16,10 @@ class AdvancedSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // search_tags: {
-            //     titles: [],
-            //     courses: [],
-            //     technologies: []
-            // },
-            search_tags: [],
+            "title": '',
+            "courses": [],
+            "languages": [],
+            "programming_languages": [],
             filter_tags: [],
             excluded_tags: []
         }
@@ -32,30 +31,95 @@ class AdvancedSearch extends React.Component {
      * @param {*} e event
      */
     filter(e) {
-        const title = document.getElementById('project-title');
-        const course = document.getElementsByClassName('course-search')[0];
-        const language = document.getElementsByClassName('language-search')[0];
-
+        // const title = document.getElementById('project-title');
+        // const course = document.getElementsByClassName('course-search')[0];
+        // const language = document.getElementsByClassName('language-search')[0];
+        const courses = (this.state.courses.toString() || '');
+        const languages = (this.state.languages.toString() || '');
+        const programming_languages = (this.state.programming_languages.toString() || '');
+        let url = `${config.apiUrl}/api/?title=${this.state.title}&courses=${courses}&languages=${languages}&programming_languages=${programming_languages}`;
+        // console.log(url);
         // const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }, body: JSON.stringify(this.state.search_tags) };
-        // fetch(`${config.apiUrl}/api/...`, options)
+        // fetch(url, options)
         //     .then(response => { return response.json() })
         //     .then(filtered_posts => {
         //         // set initial posts and filtered posts in groupList to filtered_post
         //     })
         //     .catch(err => { console.log(err) });
+        this.props.setPosts([]);
+
+
         let appendSwitch = document.getElementById('append-switch');
         if (this.state.filter_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
             this.props.addTags(this.state.filter_tags, this.state.excluded_tags, appendSwitch.checked);   // parent class processes selected tags
         }
 
-        // reset search
-        // title.value = '';
-        // leader.value = '';
-        // course.value = '';
-        // language.value = '';
-        // appendSwitch.checked = false;
-        // this.setState({ filter_tags: [], excluded_tags: [], search_tags: [] });
         this.reset();
+    }
+
+    addSearchTag(tag, id) {
+        tag = tag.toLowerCase();
+        if (id === 'title') {
+            this.setState({ 'title': tag });
+            return;
+        } 
+
+        let tags = this.state[id];
+        // add unique tags
+        if (tags.indexOf(tag) === -1) {
+            tags.push(tag);
+            if (id === 'courses') {
+                this.setState({ 'courses': tags });
+            } else if (id === 'languages') {
+                this.setState({ 'languages': tags });
+            } else if (id === 'programming_languages') {
+                this.setState({ 'programming_languages': tags });
+            }
+        }
+    }
+
+    removeTitleTag(e) {
+        this.setState({ title: '' });
+    }
+
+    removeCourseTag(e) {
+        let courses = this.state.courses;
+        const tagIndex = courses.indexOf(e.target.value);
+        if (tagIndex !== -1) {
+            courses.splice(tagIndex, 1);
+            this.setState({ courses: courses });
+        }
+    }
+
+    removeLanguageTag(e) {
+        let languages = this.state.languages;
+        const tagIndex = languages.indexOf(e.target.value);
+        if (tagIndex !== -1) {
+            languages.splice(tagIndex, 1);
+            this.setState({ languages: languages });
+        }
+    }
+
+    removeProgrammingLanguageTag(e) {
+        let plangs = this.state.programming_languages;
+        const tagIndex = plangs.indexOf(e.target.value);
+        if (tagIndex !== -1) {
+            plangs.splice(tagIndex, 1);
+            this.setState({ programming_languages: plangs });
+        }
+    }
+
+    onKeyPress(e) {
+        if (e.key === 'Enter') {
+            // if (e.target.id === 'project-title') {
+            //     this.setState({ title: e.target.value.toLowerCase() });
+            // } else if (e.target.id === 'course-filter') {
+                
+            // }
+            this.addSearchTag(e.target.value, e.target.id);
+            // this.setState({ title: e.target.value.toLowerCase() });
+            document.getElementById(e.target.id).value = '';
+        }
     }
 
     /**
@@ -72,16 +136,6 @@ class AdvancedSearch extends React.Component {
                 else this.addExcludedTag(keyword);
             }
             e.target.value = '';
-        }
-    }
-
-    addSearchTag(tag) {
-        let tags = this.state.search_tags;
-        tag = tag.toLowerCase();
-        // add unique tags
-        if (this.state.search_tags.indexOf(tag) === -1) {
-            tags.push(tag);
-            this.setState({ search_tags: tags });
         }
     }
 
@@ -139,22 +193,6 @@ class AdvancedSearch extends React.Component {
         }
     }
 
-    removeSearchTag(e) {
-        let tags = this.state.search_tags;
-        const tagIndex = tags.indexOf(e.target.value);
-        if (tagIndex !== -1) {
-            tags.splice(tagIndex, 1);
-            this.setState({ search_tags: tags });
-        }
-    }
-
-    onKeyPress(e) {
-        if (e.key === 'Enter') {
-            this.addSearchTag(e.target.value);
-            document.getElementById(e.target.id).value = '';
-        }
-    }
-
     /**
      * Clear advanced search form
      * @param {*} e event
@@ -164,7 +202,7 @@ class AdvancedSearch extends React.Component {
             input.value = '';
         });
         document.getElementById('append-switch').checked = false;
-        this.setState({ filter_tags: [], excluded_tags: [], search_tags: [] });
+        this.setState({ filter_tags: [], excluded_tags: [], title: '', courses: [], languages: [], programming_languages: [] });
     }
 
     keywordTagComponent(excluded = false) {
@@ -196,7 +234,66 @@ class AdvancedSearch extends React.Component {
 
                     {/* Show Tags */}
                     <div className="card-footer rounded mb-5 border-0 shadow-sm">
-                        <TagList label='Search Tags' list={this.state.search_tags} badge='badge-success' removeTag={this.removeSearchTag.bind(this)} />
+                        {/* <TagList label='Search Tags' list={this.state.search_tags} badge='badge-success' removeTag={this.removeSearchTag.bind(this)} /> */}
+                        <div>
+                            <i className="mr-4 p-1 text-muted"> Title: </i>
+                            <div className="tags">
+                                { this.state.title !== '' && 
+                                    <span className={`badge badge-pill badge-success p-2 mx-1 my-2`} key={this.state.title}>
+                                        {this.state.title}
+                                        <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={this.state.title} style={{ 'outline': 'none' }} onClick={this.removeTitleTag.bind(this)}></button>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <i className="mr-4 p-1 text-muted"> Courses: </i>
+                            <div className="tags">
+                                {
+                                    this.state.courses.map((tag) => {
+                                        return (
+                                            <span className={`badge badge-pill badge-success p-2 mx-1 my-2`} key={tag}>
+                                                {tag}
+                                                <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeCourseTag.bind(this)}></button>
+                                            </span>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <i className="mr-4 p-1 text-muted"> Languages: </i>
+                            <div className="tags">
+                                {
+                                   this.state.languages.map((tag) => {
+                                        return (
+                                            <span className={`badge badge-pill badge-success p-2 mx-1 my-2`} key={tag}>
+                                                {tag}
+                                                <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeLanguageTag.bind(this)}></button>
+                                            </span>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <i className="mr-4 p-1 text-muted"> Programming Languages: </i>
+                            <div className="tags">
+                                {
+                                    this.state.programming_languages.map((tag) => {
+                                        return (
+                                            <span className={`badge badge-pill badge-success p-2 mx-1 my-2`} key={tag}>
+                                                {tag}
+                                                <button className="fa fa-times bg-transparent border-0 p-0 pl-1" value={tag} style={{ 'outline': 'none' }} onClick={this.removeProgrammingLanguageTag.bind(this)}></button>
+                                            </span>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     <div className="d-flex justify-content-between mb-3">
@@ -286,28 +383,28 @@ function SearchBy(props) {
                 <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Project Title</div>
 
                 <div className="col-lg-8">
-                    <input type='text' id='project-title' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Project Title" onKeyPress={props.onEnter}></input>
+                    <input type='text' id='title' className="form-control bg-dark border-0 shadow-sm rounded advanced-input my-auto" style={{ 'color': 'white', 'fontSize': '14px' }} placeholder="Enter Project Title" onKeyPress={props.onEnter}></input>
                 </div>
             </div>
 
             <div className="d-flex align-items-center row mb-3">
                 <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Course</div>
                 <div className="col-lg-8">
-                    <CourseSearch id='course-filter' processTag={props.addTag} />
+                    <CourseSearch id='courses' processTag={props.addTag} />
                 </div>
             </div>
             
             <div className="d-flex align-items-center row mb-3">
                 <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Language</div>
                 <div className="col-lg-8">
-                    <LanguageSearch id='language-filter' processTag={props.addTag} />
+                    <LanguageSearch id='languages' processTag={props.addTag} />
                 </div>
             </div>
 
             <div className="d-flex align-items-center row mb-3">
                 <div className="col-lg-4 bg-transparent border-0 text-muted" style={{ 'wordBreak': 'keep-all' }}>Programming Language</div>
                 <div className="col-lg-8">
-                    <ProgrammingLanguageSearch id='planguage-filter' processTag={props.addTag} />
+                    <ProgrammingLanguageSearch id='programming_languages' processTag={props.addTag} />
                 </div>
             </div>
         </div>

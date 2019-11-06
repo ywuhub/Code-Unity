@@ -190,6 +190,13 @@ class GroupList extends React.Component {
       .catch(error => { console.log(error) });
   }
 
+  setPosts(posts) {
+    this.setState({
+      initialPosts: posts,
+      filteredPosts: posts
+    })
+  }
+
   /**
    * Removes tag selected
    * @param {*} e event
@@ -306,7 +313,7 @@ class GroupList extends React.Component {
 
           {/* Advanced Search Column */}
           <div className="col-sm-4">
-            <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} />
+            <AdvancedSearch addTags={this.addTags} setPosts={this.setPosts.bind(this)} filterByKey={this.filterByKey.bind(this)} />
           </div>
         </div>  {/* row end */}
 
