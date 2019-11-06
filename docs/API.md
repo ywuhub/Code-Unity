@@ -41,7 +41,7 @@ Expects:
     }
 ```
 
-### `/api/user/<int:uid>/profile`
+### `/api/user/<str:uid>/profile`
 
 #### GET
 Returns user profile information for a specified user if the current user is authenticated. Will return 401/422 if user is not authenticated.
@@ -213,6 +213,85 @@ Lists all the COMP courses available in UNSW.
     {
         "code": string,
         "name": string,
+    }
+]
+```
+
+### `/api/project/<str:project_id>/request`
+#### POST
+Request to join a group. The owner of the project will have to accept the
+user before they are actually considered part of the group.
+
+Expects:
+```json
+{
+    # Can be an omitted if the user provides no join message.
+    "message": string
+}
+```
+
+Examples:
+```
+POST /api/project/<str:project_id>/request ->
+(200 OK) <-
+
+# If user is already in the project
+(400 BAD REQUEST) <-
+{
+    "message": "already a member"
+}
+
+# If user has already sent a request
+(400 BAD REQUEST) <-
+{
+    "message": "request already pending"
+}
+
+# If project is already full
+(400 BAD REQUEST) <-
+{
+    "message": "project is full"
+}
+```
+
+#### DELETE
+Removes a join request. Will return with status code 400 if the user does
+not have a pending request for the project.
+
+Example:
+```
+DELETE /api/project/<str:project_id>/request ->
+(200 OK) <-
+```
+
+### `/api/project/requests`
+#### GET
+Allows a user to get a list of pending join requests that they have sent,
+i.e., join requests that are outgoing. If the "incoming" parameter is set
+to true, then the endpoint will return a list of pending incoming join
+requests to the projects that they own. 
+
+Example:
+```
+GET ->
+(200 OK) <-
+[
+    {
+        "project_id": string,
+        "project_title": string,
+        "message": string
+    }
+]
+
+GET ?incoming=true ->
+(200 OK) <-
+[
+    {
+        "project_id": string,
+        "project_title": string,
+        "user_id": string,
+        "user_name": string,
+        "message": string
     }
 ]
 ```

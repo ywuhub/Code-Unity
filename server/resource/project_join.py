@@ -16,14 +16,13 @@ class ProjectJoin(Resource):
     @jwt_required
     def post(self, project_id: str):
         """
-        Allows a user to request membership of a specified project based on its ID.
-        The owner of the project will have to accept the user before they are actually
-        considered part of the group.
+        Request to join a group. The owner of the project will have to accept the
+        user before they are actually considered part of the group.
 
         Expects:
         ```json
         {
-            # Can be an empty string if the user provides no join message.
+            # Can be omitted if the user provides no join message.
             "message": string
         }
         ```
