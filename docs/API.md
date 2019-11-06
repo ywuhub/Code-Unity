@@ -44,7 +44,34 @@ Expects:
 ### `/api/user/<str:uid>/profile`
 
 #### GET
-Returns user profile information for a specified user if the current user is authenticated. Will return 401/422 if user is not authenticated.
+Login required. Returns a profile for the user specified. Will return reduced
+information if the profile specified is marked as private.
+
+Example:
+```
+GET ->
+# If the profile is public
+(200 OK) <-
+{
+    "_id": "string",
+    "username": "string",
+    "name": "string",
+    "email": "string",
+    "visibility": "string",
+    "description": "string",
+    "interests": ["string"],
+    "programming_languages": ["string"],
+    "languages": ["string"],
+    "github": "string"
+}
+# If the profile is private
+(200 OK) <-
+{
+    "_id": "string",
+    "username": "string",
+    "visibility": "string"
+}
+```
 
 ### `/api/auth`
 
