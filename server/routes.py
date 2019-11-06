@@ -1,24 +1,20 @@
 """
 This file provides routing for static and server generated files.
 """
-import json
+from flask import send_file
 
-from bson.json_util import dumps
-from bson.objectid import ObjectId
-from flask import render_template, send_from_directory, send_file
-
-from server import app, db
+from server import app
 
 
 @app.route("/")
 @app.route("/login")
 def index():
-    return send_from_directory("static", "index.html")
+    return send_file("static/index.html")
 
 
 @app.route("/main.js")
 def mainjs():
-    return send_from_directory("static", "main.js")
+    return send_file("static/main.js")
 
 
 @app.route("/api/list/languages")

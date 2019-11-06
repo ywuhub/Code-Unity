@@ -7,8 +7,14 @@ export const userService = {
     getProjectDetail,
     getAll,
     putProfile,
-    getUserProject
+    getUserProject,
+    getUserProfile
 };
+
+function getUserProfile(id) {
+    const requestOptions = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };
+    return fetch(`${config.apiUrl}/api/user/${id}/profile`, requestOptions).then(handleResponse);
+}
 
 function getProfile() {
     const requestOptions = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };

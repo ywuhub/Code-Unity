@@ -6,6 +6,7 @@ from .other_profile import OtherProfile
 from .profile import ProfileResource
 from .programming_languages import ProgrammingLanguages
 from .project import ProjectResource
-from .project_list import ProjectList
-from .project_list import SearchProjects
+from .project_join import ProjectJoin
+from .project_join_list import ProjectJoinList
+from .project_list import ProjectList, SearchProjects
 from .user_list import UserList
