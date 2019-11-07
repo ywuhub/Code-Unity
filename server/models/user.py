@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from bson import ObjectId
 from flask_restful import fields
@@ -10,6 +10,7 @@ from server.utils.json import ObjectId as ObjectIdMarshaller
 
 profile_fields = {
     "_id": ObjectIdMarshaller,
+    "username": fields.String(default=None),
     "name": fields.String(default=None),
     "email": fields.String(),
     "visibility": fields.String,
