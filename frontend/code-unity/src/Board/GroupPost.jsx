@@ -28,7 +28,7 @@ function GroupPost(props) {
                 {/* header */}
                 <div className="d-flex justify-content-between w-100">
                     <h6><strong className="text-dark">{post['title']} </strong></h6>
-                    <div><i className="fas fa-users"></i> <b>{post['cur_people']} / {post['max_people']}</b> <br /> {!group_full && <a href="#" className="d-flex justify-content-end"> Join </a>}{group_full && <span className="d-flex justify-content-end"> Full </span>} </div>
+                    <div><i className="fas fa-users"></i> <b>{post['cur_people']} / {post['max_people']}</b> <br /> {!group_full && <Link to={{ pathname: "/group-" + post['project_id'], state: { _id: post['project_id'] } }} style={{ 'textDecoration': 'none' }}> View Group </Link>}{group_full && <span className="d-flex justify-content-end"> Full </span>} </div>
                 </div>
 
                 {/* details (members, course, language spoken, tags) */}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
-import { Dashboard, GroupList, GroupChat, Profile, MyGroup } from '@/Board';
+import { Dashboard, GroupList, GroupChat, Profile, MyGroup, GroupPage } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 import { OthersProfile } from '@/UserSearch';
 
@@ -135,6 +135,9 @@ class HomePage extends React.Component {
                     <Route path="/mygroup" component={() => (
                         <MyGroup _id={this.state._id} />
                     )} />
+                    <Route path="/group-:project" render={(props) => (
+                        <GroupPage key={props.match.params.project} {...props} />)
+                    } />
                 </Switch>
 
                 </main>
