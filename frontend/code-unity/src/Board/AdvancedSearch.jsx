@@ -12,6 +12,7 @@ import { authHeader } from '@/_helpers';
  *      Search Posts By: filled in fields in this section makes a fetch call to api to get a set of posts based on these input values
  *      Then Filter Tags By: fields in this section filters posts obtained from Search Posts By
  */
+// add check -> union 
 class AdvancedSearch extends React.Component {
     constructor(props) {
         super(props);
@@ -31,30 +32,42 @@ class AdvancedSearch extends React.Component {
      * @param {*} e event
      */
     filter(e) {
-        // const title = document.getElementById('project-title');
-        // const course = document.getElementsByClassName('course-search')[0];
-        // const language = document.getElementsByClassName('language-search')[0];
         const courses = (this.state.courses.toString() || '');
         const languages = (this.state.languages.toString() || '');
         const programming_languages = (this.state.programming_languages.toString() || '');
-        let url = `${config.apiUrl}/api/?title=${this.state.title}&courses=${courses}&languages=${languages}&programming_languages=${programming_languages}`;
-        // console.log(url);
-        // const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }, body: JSON.stringify(this.state.search_tags) };
-        // fetch(url, options)
-        //     .then(response => { return response.json() })
-        //     .then(filtered_posts => {
-        //         // set initial posts and filtered posts in groupList to filtered_post
-        //     })
-        //     .catch(err => { console.log(err) });
-        this.props.setPosts([]);
+        const union = document.getElementById('union-switch').checked;
 
+        // dont fetch posts with all empty fields
+        if (this.state.title !== '' || courses !== '' || languages !== '' || programming_languages !== '') {
+            this.props.setLoading();
+            let url = `${config.apiUrl}/api/project/search?title=${this.state.title}&courses=${courses}&languages=${languages}&programming_languages=${programming_languages}&group_crit=${union}`;
+            // console.log(url);
+            const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }, body: JSON.stringify(this.state.search_tags) };
+            fetch(url, options)
+            .then(response => { return response.json() })
+            .then(filtered_posts => {
+                // console.log(filtered_posts);
+                // set initial posts and filtered posts in groupList to filtered_post
+                this.props.setPosts(filtered_posts);
+            })
+            .then(foo => {
+                // after fetching posts, filter by tags
+                let appendSwitch = document.getElementById('append-switch');
+                if (this.state.filter_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
+                    this.props.addTags(this.state.filter_tags, this.state.excluded_tags, appendSwitch.checked);   // parent class processes selected tags
+                }
+                this.reset();
+            })
+            .catch(err => { console.log(err) });
 
-        let appendSwitch = document.getElementById('append-switch');
-        if (this.state.filter_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
-            this.props.addTags(this.state.filter_tags, this.state.excluded_tags, appendSwitch.checked);   // parent class processes selected tags
+        } else {
+            // filter current posts by tags
+            let appendSwitch = document.getElementById('append-switch');
+            if (this.state.filter_tags.length !== 0 || this.state.excluded_tags.length !== 0) {
+                this.props.addTags(this.state.filter_tags, this.state.excluded_tags, appendSwitch.checked);   // parent class processes selected tags
+            }
+            this.reset();
         }
-
-        this.reset();
     }
 
     addSearchTag(tag, id) {
@@ -202,6 +215,7 @@ class AdvancedSearch extends React.Component {
             input.value = '';
         });
         document.getElementById('append-switch').checked = false;
+        document.getElementById('union-switch').checked = false;
         this.setState({ filter_tags: [], excluded_tags: [], title: '', courses: [], languages: [], programming_languages: [] });
     }
 
@@ -226,7 +240,13 @@ class AdvancedSearch extends React.Component {
                     <h4 className="card-title text-muted p-1 mb-4"> Advanced Search </h4>
 
                     <div>
-                        <h6 className="mb-3">Search Posts By {'<Under Construction>'} </h6>
+                        <div className="d-flex justify-content-between">
+                            <h6 className="mb-3">Search Posts By</h6>
+                            <div className="custom-control custom-switch">
+                                <input type="checkbox" className="custom-control-input my-auto" value="false" id="union-switch"></input>
+                                <label className="custom-control-label text-muted my-auto" htmlFor="union-switch">Union</label>
+                            </div>
+                        </div>
                         <SearchBy addTag={this.addSearchTag.bind(this)} onEnter={this.onKeyPress.bind(this)} />
                     </div>
 
