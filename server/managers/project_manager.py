@@ -32,8 +32,63 @@ class ProjectManager:
 
         return ret
 
-    def search_project_listing(self):
-        pass
+    def search_project_listing(self, title: str = None, 
+                                     courses: list = None,
+                                     languages: list = None,
+                                     programming_languages: list = None,
+                                     group_crit: str = None):
+        ret = []
+        
+        # create queries
+        q_title = None
+        if title:
+            q_title = {"title": {"$regex": title, "$options": "i"}}
+
+        q_courses = None
+        if courses:
+            q_courses = {"course": {"$in": list(map(lambda x: x.upper(), courses))}}
+        
+        q_languages = None
+        if languages:
+            q_languages = {"languages": {"$in": list(map(lambda x: x.title(), languages))}}
+        
+        q_programming_languages = None
+        if programming_languages:
+            q_programming_languages = {"technologies": { "$in": list(map(lambda x: x.title(), programming_languages)) }}
+
+        # check if we are doing a union or disjoin query
+        if (group_crit.lower() == "true"):
+            group_crit = True
+        else:
+            group_crit = None
+
+        # check if there is any criteria to search for
+        param_list = [q_title, q_courses, q_languages, q_programming_languages]
+        q_list = []
+        for q in param_list:
+            if q != None:
+                q_list.append(q)
+        
+        # check if search criterias are grouped or disjoint
+        if group_crit:
+            # union search (i.e. AND query has to satisfy all of the criterias)
+            if q_list:
+                result = self.db.find({"$and": q_list})
+            else:
+                result = self.db.find({})
+        else:
+            # disjoint search (i.e. OR query has to satisfy any of the criterias)            
+            if q_list:
+                result = self.db.find({"$or": q_list})
+            else:
+                result = self.db.find({})
+
+        # append documents of search results to return list
+        if result:
+            for doc in result:
+                ret.append(doc)
+
+        return ret
 
     def delete_project(self, project: Project):
         self.db.delete_one({"_id": project._id})
