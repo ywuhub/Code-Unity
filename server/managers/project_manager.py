@@ -57,10 +57,10 @@ class ProjectManager:
             q_programming_languages = {"technologies": { "$in": list(map(lambda x: x.title(), programming_languages)) }}
 
         # check if we are doing a union or disjoin query
-        if (group_crit.lower() == "true"):
-            group_crit = True
-        else:
-            group_crit = None
+        q_group_crit = None
+        if group_crit:
+            if (group_crit.lower() == "true"):
+                q_group_crit = True    
 
         # check if there is any criteria to search for
         param_list = [q_title, q_courses, q_languages, q_programming_languages]
@@ -70,7 +70,7 @@ class ProjectManager:
                 q_list.append(q)
         
         # check if search criterias are grouped or disjoint
-        if group_crit:
+        if q_group_crit:
             # union search (i.e. AND query has to satisfy all of the criterias)
             if q_list:
                 result = self.db.find({"$and": q_list})
