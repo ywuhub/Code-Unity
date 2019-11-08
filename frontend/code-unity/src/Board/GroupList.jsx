@@ -193,7 +193,9 @@ class GroupList extends React.Component {
   setPosts(posts) {
     this.setState({
       initialPosts: posts,
-      filteredPosts: posts, 
+      filteredPosts: posts,
+      tags: [],
+      excluded_tags: [],
       isLoading: false
     })
   }

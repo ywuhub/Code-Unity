@@ -49,22 +49,22 @@ class App extends React.Component {
                             <div className="navbar-nav">
                                 <Link to="/" className="nav-item nav-link">Home</Link>
                                 <Link to="/" className="nav-item nav-link">Projects</Link>
-                                <li class="nav-item">
-                                    <div class="dropdown">
-                                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+                                <li className="nav-item">
+                                    <div className="dropdown">
+                                        <button className="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
                                             Menu
                                     </button>
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="user">
-                                            <a class="dropdown-item" href="/profile">Profile</a>
-                                            <a class="dropdown-item" href="#">Messages</a>
-                                            <a class="dropdown-item" href="#">My Favourites</a>
+                                        <div className="dropdown-menu dropdown-menu-right" aria-labelledby="user">
+                                            <a className="dropdown-item" href="/profile">Profile</a>
+                                            <a className="dropdown-item" href="#">Messages</a>
+                                            <a className="dropdown-item" href="#">My Favourites</a>
 
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Applications</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="#">Applications</a>
 
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Settings</a>
-                                            <a onClick={this.logout} class="dropdown-item">Logout</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="#">Settings</a>
+                                            <a onClick={this.logout} className="dropdown-item">Logout</a>
                                         </div>
                                     </div>
                                 </li>

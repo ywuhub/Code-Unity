@@ -5,17 +5,17 @@ import '@/Style';
 
 export const GroupCard = (props) => {
     return(
-        <div class="group-card-box">
-            <div class="my-3 p-3  bg-white rounded shadow-sm" key={props.keyValue}>
+        <div className="group-card-box">
+            <div className="my-3 p-3  bg-white rounded shadow-sm" key={props.keyValue}>
                 <div className="row mr-1">
-                    <strong class="d-block text-gray-dark ml-4">{props.title}</strong>
+                    <strong className="d-block text-gray-dark ml-4">{props.title}</strong>
                 </div>
                 <div className="row group-card-member-text mt-1 mb-1">
                     <span className="ml-4"> </span>
-                    <p class="d-block text-gray-dark">{props.current_number}</p>
-                    <p class="d-block text-gray-dark  ml-2"> Members</p>
-                    <p class="d-block text-gray-dark ml-5">max: </p>
-                    <p class="d-block text-gray-dark ml-2">{props.max_number}</p>
+                    <p className="d-block text-gray-dark">{props.current_number}</p>
+                    <p className="d-block text-gray-dark  ml-2"> Members</p>
+                    <p className="d-block text-gray-dark ml-5">max: </p>
+                    <p className="d-block text-gray-dark ml-2">{props.max_number}</p>
                     {/*<img src={peopleIcon} className="icon-setting"/>*/}
                 </div>
                 <div className="row group-card-row-text avatar-div-setting">
@@ -25,7 +25,7 @@ export const GroupCard = (props) => {
                     <img src={UserIcon} className="avatar rounded-circle"/>
                 </div>
                 <div className="row group-card-row-text ">
-                    <p class="d-block text-gray-dark ml-4 mt-2">{props.description}</p>
+                    <p className="d-block text-gray-dark ml-4 mt-2">{props.description}</p>
                     {/*<img src={peopleIcon} className="icon-setting"/>*/}
                 </div>
             </div>
