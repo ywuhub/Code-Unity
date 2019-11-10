@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 import peopleIcon from '@/Assert/peopleIcon.png';
 import '@/Style';
-import { SkillBox,GroupCard } from '@/WebComponents';
+import { SkillBox,GroupCard,GroupPage } from '@/WebComponents';
 import { userService } from '@/_services';
 
 class MyGroup extends React.Component {
@@ -14,13 +14,15 @@ class MyGroup extends React.Component {
             hasLoaded: false,
             projectData:[],
             currentProject: null,
-            isLoading: false
+            isLoading: false,
+            isRedirect: false
             // isEditing: false
         };
     }
 
     componentDidMount() {
         console.log("========componentDidMount")
+        console.log(this.props.match.params.project_id)
         if (!this.state.hasLoaded && this.props._id) {
             this.setState({ isLoading: true });
             userService.getUserProject(this.props._id).then(data => {
@@ -32,6 +34,18 @@ class MyGroup extends React.Component {
                     isLoading: false
                 });
             })
+        }
+    }
+    componentDidUpdate(){
+        if (this.props.match.params.project_id && this.state.hasLoaded && !this.state.isRedirect) {
+            for (var i=0; i < this.state.projectData.length; i++) {
+                if (this.state.projectData[i].project_id == this.props.match.params.project_id) {
+                    this.setState({ 
+                        currentProject: this.state.projectData[i],
+                        isRedirect : true
+                    });
+                }
+            } 
         }
     }
 
@@ -47,15 +61,23 @@ class MyGroup extends React.Component {
         let id_value=0;
         let current_project=this.state.projectData[0];
     	return(
-            <div className="container">
-                <div className="row border-bottom border-gray">
-                    <h1 className=" pb-3 pt-3 mb-0 h4">My Groups</h1>
-                </div>
-                {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) || 
+            <div className="container-fluid">
 				<div className="row mt-1">
-					{/* My Group List*/}
-					<div className="col-sm-3 pl-0">
-                    	<div className="ml-0 mr-auto">
+					<div className="col-sm-9 pl-1">
+                        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 className="h4 ml-2">My Group</h1>
+                            <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
+                        </div>
+                        {
+                        this.state.currentProject &&
+                        <div className="my-3 p-3 bg-white rounded shadow-sm">
+                            <GroupPage data={this.state.currentProject} key_id_outer={key_id}/>
+                        </div>
+                        }
+					</div>
+                    {/* My Group List*/}
+                    <div className="col-sm-3 pl-0">
+                        <div className="ml-0 mr-auto">
                             {
                             (this.state.projectData || []).map((item, index) => {
                                 return(
@@ -72,63 +94,8 @@ class MyGroup extends React.Component {
                                 })
                             }
                         </div>
-					</div>
-                    {this.state.currentProject &&
-					<div className="col-sm-9 pl-1">
-                        <div className="my-3 p-3 bg-white rounded shadow-sm">
-                            <div className="container pl-4">
-                                <div className="row mt-2">
-                                    <h4 className="h1">{this.state.currentProject.title}</h4>
-                                </div>
-                                <div className="row mt-4 border-bottom border-grey">
-                                    <div className="col-9">
-                                        <div className="row">
-                                            <p>Leader: </p>
-                                            <p>{this.state.currentProject.leader}</p>
-                                        </div>
-                                        <div className="row">
-                                            <p>Member: </p>
-                                            <p>somebody</p>
-                                        </div>
-                                    </div>
-                                    <div className="col-3 group-page-member-setting text-left">
-                                        <div className="row">
-                                            <p className="d-block text-gray-dark"> Member number:</p>
-                                            <p className="d-block text-gray-dark">{this.state.currentProject.cur_people}</p>
-                                        </div>
-                                        <div className="row">
-                                            <p className="d-block text-gray-dark">max: </p>
-                                            <p className="d-block text-gray-dark">{this.state.currentProject.max_people}</p>
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                <div className="row mt-4 border-bottom border-grey">
-                                    <div className="col-12">
-                                        <h6 className="row h6">About This Group</h6>
-                                        <p className="row pt-2">{this.state.currentProject.description}</p>
-                                    </div>
-                                </div>
-                                {this.state.currentProject.course &&
-                                <div className="row mt-3 border-bottom border-grey">
-                                    <div className="col-12 row">
-                                        <p>Courses:</p>
-                                        <p>{this.state.currentProject.course}</p>
-                                    </div>
-                                </div>
-                                }
-                                <div className="row container pt-3 pl-0">
-                                    <SkillBox keyValue={key_id++} title="technologies" data={ (this.state.currentProject.technologies) }/>
-                                    <SkillBox keyValue={key_id++} title="languages" data={ (this.state.currentProject.languages) }/>
-                                    <SkillBox keyValue={key_id++} title="tags" data={ (this.state.currentProject.tags) }/>
-                                </div>
-                            </div>
-                        </div>
-					</div>
-                    }
+                    </div>
 				</div>
-            }
-
 			</div>
 		);
     }

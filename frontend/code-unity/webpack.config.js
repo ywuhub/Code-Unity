@@ -31,9 +31,6 @@ module.exports = {
             '@': path.resolve(__dirname, 'src/'),
         }
     },
-    plugins: [new HtmlWebpackPlugin({
-        template: './src/index.html'
-    })],
     devServer: {
         historyApiFallback: true,
         proxy: {
@@ -53,6 +50,12 @@ module.exports = {
             'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Methods': '*',
         },
+    },
+    plugins: [new HtmlWebpackPlugin({
+        template: './src/index.html'
+    })],
+    output: {
+        publicPath: '/'
     },
     externals: {
         // global app config object

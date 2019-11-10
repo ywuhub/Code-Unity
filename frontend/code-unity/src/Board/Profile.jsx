@@ -170,7 +170,6 @@ class Profile extends React.Component {
             <div className="container-fluid">
                 <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 className="h4">My Profile</h1>
-
                     <div className="nav nav-tabs btn-group mr-2" role="tablist">
                         <button type="button" className="btn btn-sm btn-outline-secondary nav-item active" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
                         <button type="button" className="btn btn-sm btn-outline-secondary nav-item" data-toggle="tab" href="#nav-edit" role="tab" aria-controls="nav-edit" aria-selected="false">Edit Profile</button>

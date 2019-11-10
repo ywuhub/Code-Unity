@@ -43,15 +43,6 @@ class Dashboard extends React.Component {
         return (
             <div>
                 <div className="my-3 p-3 bg-white rounded shadow-sm">
-                    <h6 className="border-bottom border-gray pb-2 mb-0">Search</h6>
-                    <br></br>
-                    <form className="form-inline md-form form-sm">
-                        <input className="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search for groups or members"
-                            aria-label="Search"></input>
-                        <i className="fas fa-search" aria-hidden="true"></i>
-                    </form>
-                </div>
-                <div className="my-3 p-3 bg-white rounded shadow-sm">
                     <h6 className="border-bottom border-gray pb-2 mb-0">Groups</h6>
                     <div className="row">
                     {(this.state.isloading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) ||
@@ -59,6 +50,7 @@ class Dashboard extends React.Component {
                             return(
                                 <div key={key++} className="col-3">
                                     <GroupCard title={item.title}
+                                                address={"/mygroup/"+item.project_id}
                                                 current_number={item.cur_people}
                                                 max_number={item.max_people}
                                                 description={item.description}/>
