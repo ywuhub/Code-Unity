@@ -113,8 +113,10 @@ class SearchProjects(Resource):
         group_crit = request.args.get("group_crit")
 
         # return resultant filtered projects
-        return marshal(self.project_manager.search_project_listing(title,
-                                                                   courses,
-                                                                   languages,
-                                                                   programming_languages,
-                                                                   group_crit), fields) 
+        ret = self.project_manager.search_project_listing(
+            title, courses, languages, programming_languages, group_crit
+        )
+
+        _stringify_objectids(ret)
+
+        return ret

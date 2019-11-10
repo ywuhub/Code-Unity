@@ -3,8 +3,40 @@ from typing import List
 from bson import ObjectId
 from flask import Flask
 from pymongo.database import Database
+from copy import deepcopy
 
 from server.models.project import Project
+
+# Common pipeline for listing projects. Joins userids with the Users table while
+# omitting their email and password fields.
+_list_pipeline = [
+    {
+        "$lookup": {
+            "from": "users",
+            "localField": "leader",
+            "foreignField": "_id",
+            "as": "leader",
+        }
+    },
+    {
+        "$lookup": {
+            "from": "users",
+            "localField": "members",
+            "foreignField": "_id",
+            "as": "members",
+        }
+    },
+    {"$unwind": "$leader"},
+    # omit unnecessary information about users
+    {
+        "$project": {
+            "leader.password": 0,
+            "members.password": 0,
+            "leader.email": 0,
+            "members.email": 0,
+        }
+    },
+]
 
 
 class ProjectManager:
@@ -21,35 +53,7 @@ class ProjectManager:
     def get_project_listing(self, user_id: str = None):
         ret = []
 
-        pipeline = [
-            {
-                "$lookup": {
-                    "from": "users",
-                    "localField": "leader",
-                    "foreignField": "_id",
-                    "as": "leader",
-                }
-            },
-            {
-                "$lookup": {
-                    "from": "users",
-                    "localField": "members",
-                    "foreignField": "_id",
-                    "as": "members",
-                }
-            },
-            {"$unwind": "$leader"},
-            {"$limit": 10},
-            # omit unnecessary information about users
-            {
-                "$project": {
-                    "leader.password": 0,
-                    "members.password": 0,
-                    "leader.email": 0,
-                    "members.email": 0,
-                }
-            },
-        ]
+        pipeline = deepcopy(_list_pipeline)
 
         # check if getting a project list for the current user or in general
         if user_id:
@@ -106,24 +110,21 @@ class ProjectManager:
             if q != None:
                 q_list.append(q)
 
+        pipeline = deepcopy(_list_pipeline)
+
         # check if search criterias are grouped or disjoint
         if q_group_crit:
             # union search (i.e. AND query has to satisfy all of the criterias)
             if q_list:
-                result = self.db.find({"$and": q_list})
-            else:
-                result = self.db.find({})
+                pipeline.insert(0, {"$match": {"$and": q_list}})
         else:
             # disjoint search (i.e. OR query has to satisfy any of the criterias)
             if q_list:
-                result = self.db.find({"$or": q_list})
-            else:
-                result = self.db.find({})
+                pipeline.insert(0, {"$match": {"$or": q_list}})
 
         # append documents of search results to return list
-        if result:
-            for doc in result:
-                ret.append(doc)
+        for doc in self.db.aggregate(pipeline):
+            ret.append(doc)
 
         return ret
 
