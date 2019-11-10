@@ -14,13 +14,15 @@ class MyGroup extends React.Component {
             hasLoaded: false,
             projectData:[],
             currentProject: null,
-            isLoading: false
+            isLoading: false,
+            isRedirect: false
             // isEditing: false
         };
     }
 
     componentDidMount() {
         console.log("========componentDidMount")
+        console.log(this.props.match.params.project_id)
         if (!this.state.hasLoaded && this.props._id) {
             this.setState({ isLoading: true });
             userService.getUserProject(this.props._id).then(data => {
@@ -32,6 +34,18 @@ class MyGroup extends React.Component {
                     isLoading: false
                 });
             })
+        }
+    }
+    componentDidUpdate(){
+        if (this.props.match.params.project_id && this.state.hasLoaded && !this.state.isRedirect) {
+            for (var i=0; i < this.state.projectData.length; i++) {
+                if (this.state.projectData[i].project_id == this.props.match.params.project_id) {
+                    this.setState({ 
+                        currentProject: this.state.projectData[i],
+                        isRedirect : true
+                    });
+                }
+            } 
         }
     }
 

@@ -50,6 +50,7 @@ class Dashboard extends React.Component {
                             return(
                                 <div key={key++} className="col-3">
                                     <GroupCard title={item.title}
+                                                address={"/mygroup/"+item.project_id}
                                                 current_number={item.cur_people}
                                                 max_number={item.max_people}
                                                 description={item.description}/>

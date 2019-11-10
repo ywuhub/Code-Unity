@@ -40,7 +40,17 @@ class HomePage extends React.Component {
 
     render() {
         // const { currentUser, users } = this.state;
-
+        const myGroupRouter = ( () =>  (
+            <Switch>
+                    <Route exact path="/mygroup" render={(props) => (
+                        <MyGroup _id={this.state.currentUserId} {...props}/>
+                      )}/>
+                    <Route exact path="/mygroup/:project_id" render={(props) => (
+                        <MyGroup _id={this.state.currentUserId} {...props}/>
+                      )}/>
+            </Switch>
+          )
+        )
         return (
             <div className="container-fluid">
                 <div className="row">
@@ -134,16 +144,7 @@ class HomePage extends React.Component {
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />
 
-                    <Route path="/mygroup" render={(props) => {
-                          return (
-                            <div>
-                              <MyGroup _id={this.state.currentUserId} {...props}/>
-                              <Route path="/mygroup/aaa" component={Profile}/>
-                            </div>
-                          )
-                        }
-                    }>
-                    </Route>
+                    <Route path="/mygroup" component={myGroupRouter}/>
                     <Route path="/group-:project" render={(props) => (
                         <GroupPage {...props} />)
                     } />

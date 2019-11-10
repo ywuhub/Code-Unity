@@ -24,8 +24,11 @@
 }
 .group-card-box {
 }
+.group-card-box-title {
+  color:black;
+}
 .group-card-box a{
-  text-decoration: none;
+  text-decoration: none!important;
 }
 .group-card-box:hover {
   transition: box-shadow 0.3s ease-in-out;
@@ -47,6 +50,7 @@
   display: inline-flex;
   font-size: 12px;
   color: grey;
+  text-decoration:none;
 }
 
 .group-card-row-text p{
