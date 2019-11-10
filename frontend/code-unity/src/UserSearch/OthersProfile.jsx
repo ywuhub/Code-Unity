@@ -41,10 +41,10 @@ class OthersProfile extends React.Component {
 
                             <div className="btn-group">
                                 <button className="btn btn-primary border rounded">
-                                    <i class="fas fa-user-plus"></i> Invite to group
+                                    <i className="fas fa-user-plus"></i> Invite to group
                                 </button>
                                 <button className="btn btn-primary border rounded">
-                                    <i class="fas fa-envelope"></i>
+                                    <i className="fas fa-envelope"></i>
                                 </button>
                             </div>
                         </div>
