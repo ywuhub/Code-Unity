@@ -21,24 +21,55 @@ class ProjectManager:
     def get_project_listing(self, user_id: str = None):
         ret = []
 
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "leader",
+                    "foreignField": "_id",
+                    "as": "leader",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "members",
+                    "foreignField": "_id",
+                    "as": "members",
+                }
+            },
+            {"$unwind": "$leader"},
+            {"$limit": 10},
+            # omit unnecessary information about users
+            {
+                "$project": {
+                    "leader.password": 0,
+                    "members.password": 0,
+                    "leader.email": 0,
+                    "members.email": 0,
+                }
+            },
+        ]
+
         # check if getting a project list for the current user or in general
         if user_id:
-            project_list = self.db.find({"members": {"$eq": ObjectId(user_id)}})
-        else:
-            project_list = self.db.find().limit(10)
+            pipeline.insert(0, {"$match": {"members": ObjectId(user_id)}})
 
-        for doc in project_list:
+        for doc in self.db.aggregate(pipeline):
             ret.append(doc)
 
         return ret
 
-    def search_project_listing(self, title: str = None, 
-                                     courses: list = None,
-                                     languages: list = None,
-                                     programming_languages: list = None,
-                                     group_crit: str = None):
+    def search_project_listing(
+        self,
+        title: str = None,
+        courses: list = None,
+        languages: list = None,
+        programming_languages: list = None,
+        group_crit: str = None,
+    ):
         ret = []
-        
+
         # create queries
         q_title = None
         if title:
@@ -47,20 +78,26 @@ class ProjectManager:
         q_courses = None
         if courses:
             q_courses = {"course": {"$in": list(map(lambda x: x.upper(), courses))}}
-        
+
         q_languages = None
         if languages:
-            q_languages = {"languages": {"$in": list(map(lambda x: x.title(), languages))}}
-        
+            q_languages = {
+                "languages": {"$in": list(map(lambda x: x.title(), languages))}
+            }
+
         q_programming_languages = None
         if programming_languages:
-            q_programming_languages = {"technologies": { "$in": list(map(lambda x: x.title(), programming_languages)) }}
+            q_programming_languages = {
+                "technologies": {
+                    "$in": list(map(lambda x: x.title(), programming_languages))
+                }
+            }
 
         # check if we are doing a union or disjoin query
         q_group_crit = None
         if group_crit:
-            if (group_crit.lower() == "true"):
-                q_group_crit = True    
+            if group_crit.lower() == "true":
+                q_group_crit = True
 
         # check if there is any criteria to search for
         param_list = [q_title, q_courses, q_languages, q_programming_languages]
@@ -68,7 +105,7 @@ class ProjectManager:
         for q in param_list:
             if q != None:
                 q_list.append(q)
-        
+
         # check if search criterias are grouped or disjoint
         if q_group_crit:
             # union search (i.e. AND query has to satisfy all of the criterias)
@@ -77,7 +114,7 @@ class ProjectManager:
             else:
                 result = self.db.find({})
         else:
-            # disjoint search (i.e. OR query has to satisfy any of the criterias)            
+            # disjoint search (i.e. OR query has to satisfy any of the criterias)
             if q_list:
                 result = self.db.find({"$or": q_list})
             else:
