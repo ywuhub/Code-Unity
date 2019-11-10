@@ -1,16 +1,20 @@
 import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import '@/Style';
 import { SkillBox, GroupCard } from '@/WebComponents';
 import { userService } from '@/_services';
+import { projectService } from '../_services';
 
 class GroupPage extends React.Component {
     constructor(props) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             _id: '',
             details: {},
-            not_found: false,
+            description: '',
+            applied: false,
             isLoading: false
         }
     }
@@ -20,26 +24,32 @@ class GroupPage extends React.Component {
         const { _id } = this.props.location.state;
         userService.getProjectDetail(_id).then(data => {
             this.setState({
-                id_: _id,
+                _id: _id,
                 details: data,
-                isLoading: false
+                isLoading: false,
             })
         })
             .catch(err => {
                 this.setState({
-                    not_found: true,
                     isLoading: false
                 })
             });
+        /*
+        projectService.join_requests().then(requests => {
+            this.setState({
+                applied: true
+            })
+        })*/
+    }
+
+    handleChange(event) {
+        this.setState({ description: event.target.value });
     }
 
     render() {
         let key_id = 0;
         return (
             <div class="container">
-                <div class="row border-bottom border-gray">
-                    <h1 class=" pb-3 pt-3 mb-0 h4">My Groups</h1>
-                </div>
                 <div class="row mt-1">
                     <div class="col-sm-9 pl-1">
                         <div class="my-3 p-3 bg-white rounded shadow-sm">
@@ -48,7 +58,7 @@ class GroupPage extends React.Component {
                                     <h4 class="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
-                                            <button type="button" className="btn btn-sm btn-outline-secondary">Join Group</button>
+                                            {!this.state.applied && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
                                         </div>
                                     </div>
                                 </div>
@@ -98,6 +108,47 @@ class GroupPage extends React.Component {
                         </div>
                     </div>
                 </div>
+
+                {/* Create group modal */}
+                <div className="modal fade" id="joinForm" tabIndex="-1" role="dialog" aria-labelledby="joinFormTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="joinFormTitle">Join Group</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <Formik
+                                    onSubmit={() => {
+                                        projectService.join_group(this.state._id, this.state.description)
+                                            .then(
+                                                user => {
+                                                    const { from } = this.props.location.state || { from: { pathname: "/" } };
+                                                    this.props.history.push(from);
+                                                }
+                                            );
+                                    }}
+                                    render={() => (
+                                        <Form>
+                                            <div className="form-group">
+                                                <label htmlFor="title" className="pb-2 mb-0">Application Message:</label>
+                                                <div className="form-group input-group">
+                                                    <textarea name="description" value={this.state.description} onChange={this.handleChange} type="text" id="description" rows="4" className={'form-control'} placeholder="Write a message" />
+                                                </div>
+                                            </div>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" className="btn btn-primary">Submit</button>
+                                            </div>
+                                        </Form>
+                                    )}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div> {/* Create group modal end */}
             </div>
         );
     }
