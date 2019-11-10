@@ -190,6 +190,20 @@ class GroupList extends React.Component {
       .catch(error => { console.log(error) });
   }
 
+  setPosts(posts) {
+    this.setState({
+      initialPosts: posts,
+      filteredPosts: posts,
+      tags: [],
+      excluded_tags: [],
+      isLoading: false
+    })
+  }
+
+  setLoading() {
+    this.setState({ isLoading: true });
+  }
+
   /**
    * Removes tag selected
    * @param {*} e event
@@ -293,7 +307,7 @@ class GroupList extends React.Component {
 
             {/* Shows all group listings */}
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
-            {!this.isLoading &&
+            {!this.state.isLoading &&
               this.state.filteredPosts.map((post) => {
                 return <div key={post_key++}><GroupPost post={post} hidePosts={this.state.hidePosts} /></div>;
               })
@@ -306,7 +320,7 @@ class GroupList extends React.Component {
 
           {/* Advanced Search Column */}
           <div className="col-sm-4">
-            <AdvancedSearch addTags={this.addTags} filterByKey={this.filterByKey.bind(this)} />
+            <AdvancedSearch addTags={this.addTags} setPosts={this.setPosts.bind(this)} setLoading={this.setLoading.bind(this)} filterByKey={this.filterByKey.bind(this)} />
           </div>
         </div>  {/* row end */}
 

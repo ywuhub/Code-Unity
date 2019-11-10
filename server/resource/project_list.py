@@ -67,8 +67,30 @@ class ProjectList(Resource):
             return marshal(self.project_manager.get_project_listing(user_id), fields)
 
 class SearchProjects(Resource):
+    """
+    Fetches the projects according to the search filter
+    Parameter:
+    - title: string (title of the group project)
+    - courses: list (list of courses)
+    - languages: list (languages spoken by group)
+    - programming_languages: list (programming languages used in project)
+    - group_crit: "true" or "false" or else it will default to "None"
+                  (group the four criterias above as a union condition for the search or not)
+    """
     def __init__(self, project_manager: ProjectManager):
         self.project_manager = project_manager
 
     def get(self):
-        pass
+        # assign the url encoded parameters into python variables
+        title = request.args.get('title')
+        courses = request.args.getlist('courses')
+        languages = request.args.getlist('languages')
+        programming_languages = request.args.getlist('programming_languages')
+        group_crit = request.args.get('group_crit')
+
+        # return resultant filtered projects
+        return marshal(self.project_manager.search_project_listing(title,
+                                                                   courses,
+                                                                   languages,
+                                                                   programming_languages,
+                                                                   group_crit), fields) 

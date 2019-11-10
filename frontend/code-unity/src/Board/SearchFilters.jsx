@@ -64,8 +64,8 @@ class TagSearch extends React.Component {
      */
     onTagSelect(e) {
         this.setState({ filteredTags: [] });
-        const tag = (this.props.parent === 'course') ? e.target.innerHTML.split(' ')[0] : e.target.innerHTML;
-        this.props.processTag(tag); // child processes selection option
+        const tag = (this.props.parent === 'courses') ? e.target.innerHTML.split(' ')[0] : e.target.innerHTML;
+        this.props.processTag(tag, this.props.parent); // child processes selection option
         document.getElementById(this.props.searchID).value = '';
     }
 
@@ -77,8 +77,8 @@ class TagSearch extends React.Component {
     onKeyPress(e) {
         if (e.key === 'Enter' && this.state.filteredTags.length > 0) {
             this.setState({ filteredTags: [] });
-            const tag = (this.props.parent === 'course') ? this.props.tagValue(this.state.filteredTags[0]).split(' ')[0] : this.props.tagValue(this.state.filteredTags[0]);
-            this.props.processTag(tag); // child processes selected option
+            const tag = (this.props.parent === 'courses') ? this.props.tagValue(this.state.filteredTags[0]).split(' ')[0] : this.props.tagValue(this.state.filteredTags[0]);
+            this.props.processTag(tag, this.props.parent); // child processes selected option
             e.target.value = '';
         }
     }
@@ -147,7 +147,7 @@ function CourseSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/course_list' filter={filterCourses} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='course-search' parent='course' searchPlaceholder='Search Course' />
+        <TagSearch apiEndpoint='/api/course_list' filter={filterCourses} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='course-search' parent='courses' searchPlaceholder='Search Course' />
     );
 }
 
@@ -179,7 +179,7 @@ function ProgrammingLanguageSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='language-search' parent='p-lang' searchPlaceholder='Search Programming Language' />
+        <TagSearch apiEndpoint='/api/programming_languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='language-search' parent='programming_languages' searchPlaceholder='Search Programming Language' />
     );
 }
 
@@ -205,7 +205,7 @@ function LanguageSearch(props) {
     }
 
     return (
-        <TagSearch apiEndpoint='/api/list/languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='speaking-language-search' parent='lang' searchPlaceholder='Search Language' />
+        <TagSearch apiEndpoint='/api/list/languages' filter={filterLanguages} processTag={props.processTag} tagValue={toString} searchID={props.id} searchClass='speaking-language-search' parent='languages' searchPlaceholder='Search Language' />
     );
 }
 

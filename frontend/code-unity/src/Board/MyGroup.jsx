@@ -13,7 +13,8 @@ class MyGroup extends React.Component {
             "_id":"??",
             hasLoaded: false,
             projectData:[],
-            currentProject: null
+            currentProject: null,
+            isLoading: false
             // isEditing: false
         };
     }
@@ -21,54 +22,52 @@ class MyGroup extends React.Component {
     componentDidMount() {
         console.log("========componentDidMount")
         if (!this.state.hasLoaded && this.props._id) {
+            this.setState({ isLoading: true });
             userService.getUserProject(this.props._id).then(data => {
                 this.setState({ 
                     _id:"-----",
                     hasLoaded: true,
-                    projectData: data
+                    projectData: data,
+                    currentProject: data[0],
+                    isLoading: false
                 });
-                if (data.length > 0) {
-                    userService.getProjectDetail(data[0].project_id).then(projectData => {
-                        this.setState({ 
-                            currentProject:projectData
-                        });
-                    });
-                }
-        })}
+            })
+        }
     }
 
-    changeCurrentProject(project_id) {
-        userService.getProjectDetail(project_id).then(projectData => {
-            this.setState({ 
-                currentProject:projectData
-            });
+    changeCurrentProject(index) {
+        const changeTo = this.state.projectData[index];
+        this.setState({ 
+            currentProject: changeTo
         });
     }
+
     render() {
         let key_id=0;
         let id_value=0;
         let current_project=this.state.projectData[0];
     	return(
-            <div class="container-fluid">
-				<div class="row mt-1">
-					<div class="col-sm-9 pl-1">
-                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 class="h4 ml-2">My Group</h1>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Edit Group</button>
+            <div className="container-fluid">
+				<div className="row mt-1">
+					<div className="col-sm-9 pl-1">
+                        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 className="h4 ml-2">My Group</h1>
+                            <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
                         </div>
-                        {this.state.currentProject &&
-                        <div class="my-3 p-3 bg-white rounded shadow-sm">
+                        {
+                        this.state.currentProject &&
+                        <div className="my-3 p-3 bg-white rounded shadow-sm">
                             <GroupPage data={this.state.currentProject} key_id_outer={key_id}/>
                         </div>
                         }
 					</div>
                     {/* My Group List*/}
-                    <div class="col-sm-3 pl-0">
-                        <div class="ml-0 mr-auto">
+                    <div className="col-sm-3 pl-0">
+                        <div className="ml-0 mr-auto">
                             {
-                            (this.state.projectData || []).map((item) => {
+                            (this.state.projectData || []).map((item, index) => {
                                 return(
-                                        <div value={item.project_id} onClick={this.changeCurrentProject.bind(this,item.project_id)}>
+                                        <div key={item.project_id} value={item.project_id} onClick={this.changeCurrentProject.bind(this,index)}>
                                            <GroupCard   key={key_id++}
                                                         href="javascript:void(0)"
                                                         title={item.title}
@@ -82,7 +81,6 @@ class MyGroup extends React.Component {
                             }
                         </div>
                     </div>
-
 				</div>
 			</div>
 		);
