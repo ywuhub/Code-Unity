@@ -1,3 +1,9 @@
+from server.exceptions import (
+    ProjectNotFound,
+    UserNotFound,
+    AlreadyMemberOf,
+    ProjectFull,
+)
 from typing import List
 
 from bson import ObjectId
@@ -42,12 +48,15 @@ _list_pipeline = [
 class ProjectManager:
     def __init__(self, app: Flask, db: Database):
         self.app = app
-        self.db = db.get_collection("projects")
+        self.projects = db.get_collection("projects")
+        self.users = db.get_collection("users")
+        self.invitations = db.get_collection("invitations")
+        self.requests = db.get_collection("join_requests")
 
     def get_project(self, id: ObjectId):
         pipeline = deepcopy(_list_pipeline)
         pipeline.insert(0, {"$match": {"_id": id}})
-        for doc in self.db.aggregate(pipeline):
+        for doc in self.projects.aggregate(pipeline):
             return doc
 
     def get_project_listing(self, user_id: str = None):
@@ -59,7 +68,7 @@ class ProjectManager:
         if user_id:
             pipeline.insert(0, {"$match": {"members": ObjectId(user_id)}})
 
-        for doc in self.db.aggregate(pipeline):
+        for doc in self.projects.aggregate(pipeline):
             ret.append(doc)
 
         return ret
@@ -123,13 +132,56 @@ class ProjectManager:
                 pipeline.insert(0, {"$match": {"$or": q_list}})
 
         # append documents of search results to return list
-        for doc in self.db.aggregate(pipeline):
+        for doc in self.projects.aggregate(pipeline):
             ret.append(doc)
 
         return ret
 
-    def delete_project(self, project: Project):
-        self.db.delete_one({"_id": project._id})
+    def delete_project(self, project_id: ObjectId):
+        """
+        Removes the project and all its references from the database.
+        """
+        self.invitations.delete_many({"project_id": project_id})
+        self.requests.delete_many({"project_id": project_id})
+        self.projects.delete_one({"_id": project_id})
 
     def replace_project(self, old_project: Project, new_project: Project):
-        self.db.replace_one({"_id": old_project._id}, new_project.to_dict())
+        self.projects.replace_one({"_id": old_project._id}, new_project.to_dict())
+
+    def add_user_to_project(self, user_id: ObjectId, project_id: ObjectId):
+        # TODO: this operation should be atomic.
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        user = self.users.find_one({"_id": user_id})
+        if user is None:
+            raise UserNotFound()
+
+        if user_id in project["members"]:
+            raise AlreadyMemberOf()
+
+        if len(project["members"]) == project["max_people"]:
+            raise ProjectFull()
+
+        project["members"].append(user_id)
+        self.projects.replace_one({"_id": project_id}, project)
+
+    def remove_invitation_request(self, user_id: ObjectId, project_id: ObjectId):
+        """
+        Removes all invitations or requests pertaining to the user and project.
+        """
+        self.invitations.delete_one({"user_id": user_id, "project_id": project_id})
+        self.requests.delete_one({"user_id": user_id, "project_id": project_id})
+
+    def is_request_exist(self, user_id: ObjectId, project_id: ObjectId) -> bool:
+        n = self.requests.count_documents(
+            {"user_id": user_id, "project_id": project_id}
+        )
+        return n == 1
+
+    def is_invitation_exist(self, user_id: ObjectId, project_id: ObjectId) -> bool:
+        n = self.invitations.count_documents(
+            {"user_id": user_id, "project_id": project_id}
+        )
+        return n == 1

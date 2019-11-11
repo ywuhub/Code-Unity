@@ -13,5 +13,6 @@ class AlreadyMemberOf(Exception):
 class UserNotFound(Exception):
     pass
 
+
 class DocumentNotFound(Exception):
     pass
