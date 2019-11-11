@@ -71,3 +71,11 @@ class ProfileResource(Resource):
 
         cast(User, current_user).update_profile(profile_dict)
         return {"message": "success"}
+
+"""
+class AccountResource(Resource):
+    @jwt_required
+    def get(self):
+        account = cast(User, current_user).account
+        pass
+"""
