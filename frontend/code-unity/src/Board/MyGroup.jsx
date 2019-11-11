@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 import peopleIcon from '@/Assert/peopleIcon.png';
 import '@/Style';
-import { SkillBox,GroupCard,GroupPage } from '@/WebComponents';
+import { SkillBox, GroupCard, GroupPage, GroupEditPage} from '@/WebComponents';
 import { userService } from '@/_services';
 
 class MyGroup extends React.Component {
@@ -15,14 +15,15 @@ class MyGroup extends React.Component {
             projectData:[],
             currentProject: null,
             isLoading: false,
-            isRedirect: false
+            isRedirect: false,
+            isEdit: false
             // isEditing: false
         };
     }
 
     componentDidMount() {
         console.log("========componentDidMount")
-        console.log(this.props.match.params.project_id)
+        console.log(this.props)
         if (!this.state.hasLoaded && this.props._id) {
             this.setState({ isLoading: true });
             userService.getUserProject(this.props._id).then(data => {
@@ -37,6 +38,8 @@ class MyGroup extends React.Component {
         }
     }
     componentDidUpdate(){
+        console.log("========componentDidUpdate")
+
         if (this.props.match.params.project_id && this.state.hasLoaded && !this.state.isRedirect) {
             for (var i=0; i < this.state.projectData.length; i++) {
                 if (this.state.projectData[i].project_id == this.props.match.params.project_id) {
@@ -50,10 +53,12 @@ class MyGroup extends React.Component {
     }
 
     changeCurrentProject(index) {
-        const changeTo = this.state.projectData[index];
-        this.setState({ 
-            currentProject: changeTo
-        });
+        if (!this.props.isEdit) {
+            const changeTo = this.state.projectData[index];
+            this.setState({ 
+                currentProject: changeTo
+            });
+        }
     }
 
     render() {
@@ -66,14 +71,27 @@ class MyGroup extends React.Component {
 					<div className="col-sm-9 pl-1">
                         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                             <h1 className="h4 ml-2">My Group</h1>
-                            <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
+                            {
+                                this.state.currentProject&&
+                                (this.props._id==this.state.currentProject.leader)
+                                &&<a href={"/mygroup/edit/"+this.state.currentProject.project_id}>
+                                    <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
+                                </a>
+                            }
                         </div>
                         {
-                        this.state.currentProject &&
+                        this.state.currentProject && !this.props.isEdit &&
                         <div className="my-3 p-3 bg-white rounded shadow-sm">
                             <GroupPage data={this.state.currentProject} key_id_outer={key_id}/>
                         </div>
                         }
+                        {
+                        this.state.currentProject && this.state.isRedirect&&this.props.isEdit&&
+                        <div className="my-3 p-3 bg-white rounded shadow-sm">
+                            <GroupEditPage data={this.state.currentProject} key_id_outer={key_id}/>
+                        </div>
+                        }
+
 					</div>
                     {/* My Group List*/}
                     <div className="col-sm-3 pl-0">
@@ -83,6 +101,7 @@ class MyGroup extends React.Component {
                                 return(
                                         <div key={item.project_id} value={item.project_id} onClick={this.changeCurrentProject.bind(this,index)}>
                                            <GroupCard   key={key_id++}
+                                                        isAdmin={this.props._id == item.leader ? true:false}
                                                         href="javascript:void(0)"
                                                         title={item.title}
                                                         current_number={item.cur_people}
