@@ -20,8 +20,9 @@ class GroupList extends React.Component {
     this.removeTag = this.removeTag.bind(this);
     this.addTags = this.addTags.bind(this);
     this.state = {
-      initialPosts: [],
-      filteredPosts: [],
+      initialPosts: [],   // all posts
+      filteredPosts: [],  // initial posts matching the tags inputted from user 
+      posts: [],          // posts shown for each page
       postsLength: 0,
       page: 1,
       tags: [],
@@ -46,7 +47,7 @@ class GroupList extends React.Component {
     fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(posts => {
-        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts.slice(0, POSTS_PER_PAGE), postsLength: posts.length });
+        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), postsLength: posts.length });
       })
       .then(() => {
         if (this.isMounted_) this.setState({ isLoading: false });
@@ -81,14 +82,14 @@ class GroupList extends React.Component {
     // filtering posts when input filter is empty
     if (/^(\s+|)$/.test(filter)) {
       if (this.state.tags.length !== 0) this.filterByTag();
-      else this.setState({ filteredPosts: posts });
+      else this.setState({ filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), page: 1, postsLength: posts.length }); //TODO
 
       // filter posts acorrding to input filter
     } else {
       posts = posts.filter((post) => {
         return this.containsFilter(post, filter);
       });
-      this.setState({ filteredPosts: posts });
+      this.setState({ filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), page: 1, postsLength: posts.length });    //TODO
     }
   }
 
@@ -124,24 +125,7 @@ class GroupList extends React.Component {
       });
     }
 
-    this.setState({ filteredPosts: posts });
-  }
-
-  /**
-   * Filters based on specific key/part of post e.g. title, leader, course, etc
-   * @param {*} key   
-   * @param {*} name 
-   */
-  filterByKey(key, name) {
-    // let posts = this.state.initialPosts;
-    let posts = this.state.filteredPosts;
-    name = name.toLowerCase();
-
-    posts = posts.filter((post) => {
-      return post[key].toLowerCase().indexOf(name) !== -1;
-    });
-
-    this.setState({ filteredPosts: posts });
+    this.setState({ filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), page: 1, postsLength: posts.length });  //TODO
   }
 
   /**
@@ -200,7 +184,10 @@ class GroupList extends React.Component {
   setPosts(posts) {
     this.setState({
       initialPosts: posts,
-      filteredPosts: posts,
+      filteredPosts: posts, //TODO
+      posts: posts.slice(0, POSTS_PER_PAGE),
+      postsLength: posts.length, 
+      page: 1,
       tags: [],
       excluded_tags: [],
       isLoading: false
@@ -249,10 +236,8 @@ class GroupList extends React.Component {
     const startIndex = (page_clicked - 1) * POSTS_PER_PAGE;
     const endIndex = page_clicked * POSTS_PER_PAGE;
 
-    const posts = this.state.initialPosts;
-
     this.setState({ page: page_clicked })
-    this.setState({ filteredPosts: posts.slice(startIndex, endIndex) });
+    this.setState({ posts: this.state.filteredPosts.slice(startIndex, endIndex) });
   }
 
   /**
@@ -329,7 +314,7 @@ class GroupList extends React.Component {
             {/* Shows all group listings */}
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
             {!this.state.isLoading &&
-              this.state.filteredPosts.map((post) => {
+              this.state.posts.map((post) => {
                 return <div key={post_key++}><GroupPost post={post} hidePosts={this.state.hidePosts} /></div>;
               })
             }
@@ -341,7 +326,7 @@ class GroupList extends React.Component {
 
           {/* Advanced Search Column */}
           <div className="col-sm-4">
-            <AdvancedSearch addTags={this.addTags} setPosts={this.setPosts.bind(this)} setLoading={this.setLoading.bind(this)} filterByKey={this.filterByKey.bind(this)} />
+            <AdvancedSearch addTags={this.addTags} setPosts={this.setPosts.bind(this)} setLoading={this.setLoading.bind(this)} />
           </div>
         </div>  {/* row end */}
 
