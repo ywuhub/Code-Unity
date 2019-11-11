@@ -3,6 +3,11 @@ import AdvancedSearch from './AdvancedSearch';
 import GroupPost from './GroupPost';
 import config from 'config';
 import { authHeader } from '@/_helpers';
+
+import '@/Style';
+
+const POSTS_PER_PAGE = 5;
+
 /**
  * Search bar that filters and shows group postings
  */
@@ -17,6 +22,8 @@ class GroupList extends React.Component {
     this.state = {
       initialPosts: [],
       filteredPosts: [],
+      postsLength: 0,
+      page: 1,
       tags: [],
       excluded_tags: [],
       hidePosts: false,
@@ -39,7 +46,7 @@ class GroupList extends React.Component {
     fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(posts => {
-        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts });
+        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts.slice(0, POSTS_PER_PAGE), postsLength: posts.length });
       })
       .then(() => {
         if (this.isMounted_) this.setState({ isLoading: false });
@@ -234,6 +241,20 @@ class GroupList extends React.Component {
     this.setState({ hidePosts: hide });
   }
 
+  paginationClick(e) {
+    const page_clicked = parseInt(e.target.innerText);
+
+    if (page_clicked === this.state.page) return;
+
+    const startIndex = (page_clicked - 1) * POSTS_PER_PAGE;
+    const endIndex = page_clicked * POSTS_PER_PAGE;
+
+    const posts = this.state.initialPosts;
+
+    this.setState({ page: page_clicked })
+    this.setState({ filteredPosts: posts.slice(startIndex, endIndex) });
+  }
+
   /**
    * Shows group listing page
    */
@@ -313,9 +334,9 @@ class GroupList extends React.Component {
               })
             }
 
-            <small className="d-block text-right my-3">
-              <a href="#">All Groups</a>
-            </small>
+            {!this.state.isLoading && 
+              <Pagination posts_length={this.state.postsLength} page={this.state.page} onClick={this.paginationClick.bind(this)} />
+            }
           </div> {/* Group Listings Column End */}
 
           {/* Advanced Search Column */}
@@ -355,10 +376,34 @@ class GroupList extends React.Component {
             </div>
           </div>
         </div> {/* Create group modal end */}
-
+        
       </div>
     );
   }
+}
+
+function Pagination(props) {
+  const page = props.page;
+
+  const len = props.posts_length;
+  const num_pages = Math.ceil(len / POSTS_PER_PAGE);
+
+  let numbers = [];
+  for (let i = 1; i <= num_pages; ++i) {
+    if (i === page) {
+      numbers.push(<button key={i} className="btn btn-custom btn-active" onClick={props.onClick}>{i}</button>);
+    } else {
+      numbers.push(<button key={i} className="btn btn-custom" onClick={props.onClick}>{i}</button>);
+    }
+  }
+
+  return (
+    <div className="pagination my-4">
+      <button className="btn btn-custom"><i className="fas fa-angle-double-left"></i></button>
+      {numbers}
+      <button className="btn btn-custom"><i className="fas fa-angle-double-right"></i></button>
+    </div>
+  );
 }
 
 export { GroupList };
