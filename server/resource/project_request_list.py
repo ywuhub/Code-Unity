@@ -20,7 +20,7 @@ incoming_fields = {
 }
 
 
-class ProjectJoinList(Resource):
+class ProjectRequestList(Resource):
     def __init__(self, project_manager: ProjectManager):
         self.project_manager = project_manager
 

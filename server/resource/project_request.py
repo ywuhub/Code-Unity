@@ -9,7 +9,7 @@ from server.exceptions import AlreadyMemberOf, ProjectFull, ProjectNotFound
 from server.managers.project_manager import ProjectManager
 
 
-class ProjectJoin(Resource):
+class ProjectRequest(Resource):
     def __init__(self, project_manager: ProjectManager):
         self.project_manager = project_manager
 
