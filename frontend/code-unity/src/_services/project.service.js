@@ -6,6 +6,8 @@ const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('
 
 export const projectService = {
     create_group,
+    join_group,
+    join_requests,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
@@ -18,5 +20,26 @@ function create_group(title, max_people, course, description, languages, prog_la
     };
 
     return fetch(`${config.apiUrl}/api/project`, requestOptions)
+        .then(handleResponse);
+}
+
+function join_group(project_id, message) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        body: JSON.stringify({ message: message})
+    };
+
+    return fetch(`${config.apiUrl}/api/project/${project_id}/request`, requestOptions)
+        .then(handleResponse);
+}
+
+function join_requests() {
+    const requestOptions = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+    };
+
+    return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
         .then(handleResponse);
 }

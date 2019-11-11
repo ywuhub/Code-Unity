@@ -162,3 +162,22 @@ class UserManager:
         except StopIteration:
             # UID not found
             return None
+
+    def get_user_account(self, uid: ObjectId):
+        pipeline = [
+            {"$match": {"_id": uid}},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                }
+            },
+            {"$unwind": "$user"},
+        ]
+        try:
+            return self.users.aggregate(pipeline).next()
+        except StopIteration:
+            # Invalid UserID
+            return None
