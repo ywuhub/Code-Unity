@@ -233,6 +233,7 @@ class ProjectLeave(Resource):
             user.leave_project(self.project_manager, project_id)
         except ProjectNotFound:
             return {"message": "project not found"}, 404
+        except Exception as exp:
+            return {"message": str(exp)}, 400
 
-        raise NotImplementedError
         return {"status": "success"}

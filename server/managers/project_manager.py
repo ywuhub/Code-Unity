@@ -165,6 +165,8 @@ class ProjectManager:
             raise ProjectFull()
 
         project["members"].append(user_id)
+        project["cur_people"] = len(project["members"])
+
         self.projects.replace_one({"_id": project_id}, project)
 
     def remove_invitation_request(self, user_id: ObjectId, project_id: ObjectId):
