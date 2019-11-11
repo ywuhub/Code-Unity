@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Any, Dict, List
 
 from bson import ObjectId
@@ -223,7 +224,9 @@ class User:
             raise ProjectFull()
 
         invitations = self.db.get_collection("invitations")
-        invitations.insert_one({"project_id": project_id, "user_id": user_id})
+        invitations.insert_one(
+            {"project_id": project_id, "user_id": user_id, "leader_id": self._id}
+        )
 
     def delete_invitation(self, user_id: ObjectId, project_id: ObjectId):
         # Check if the user has permissions to delete invitations
@@ -231,6 +234,8 @@ class User:
         project = projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
+        if project["leader"] != self._id:
+            raise PermissionError()
 
         invitations = self.db.get_collection("invitations")
         n_deleted = invitations.delete_one(
@@ -243,10 +248,80 @@ class User:
             raise DocumentNotFound()
 
     def get_outgoing_invitations(self):
-        raise NotImplementedError
+        pipeline = [
+            {"$match": {"leader_id": self._id}},
+            {
+                "$lookup": {
+                    "from": "projects",
+                    "localField": "project_id",
+                    "foreignField": "_id",
+                    "as": "project",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                }
+            },
+            {"$unwind": "$project"},
+            {"$unwind": "$user"},
+            {
+                "$project": {
+                    "project_id": 1,
+                    "project_title": "$project.title",
+                    "user_id": 1,
+                    "user_name": "$user.username",
+                }
+            },
+        ]
+
+        res = []
+        invitations = self.db.get_collection("invitations")
+        for doc in invitations.aggregate(pipeline):
+            res.append(doc)
+
+        return res
 
     def get_incoming_invitations(self):
-        raise NotImplementedError
+        pipeline = [
+            {"$match": {"user_id": self._id}},
+            {
+                "$lookup": {
+                    "from": "projects",
+                    "localField": "project_id",
+                    "foreignField": "_id",
+                    "as": "project",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "leader_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                }
+            },
+            {"$unwind": "$project"},
+            {"$unwind": "$user"},
+            {
+                "$project": {
+                    "project_id": 1,
+                    "project_title": "$project.title",
+                    "user_id": 1,
+                    "user_name": "$user.username",
+                }
+            },
+        ]
+
+        res = []
+        invitations = self.db.get_collection("invitations")
+        for doc in invitations.aggregate(pipeline):
+            res.append(doc)
+
+        return res
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'

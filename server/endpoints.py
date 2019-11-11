@@ -18,6 +18,7 @@ from server.resource import (
     ProjectResource,
     SearchProjects,
     UserInvite,
+    UserInviteList,
     UserList,
 )
 
@@ -31,6 +32,7 @@ def register_endpoints(
     api.prefix = "/api"
     api.add_resource(ProfileResource, "/user/profile")
     api.add_resource(UserInvite, "/user/<string:uid>/invite/")
+    api.add_resource(UserInviteList, "/user/invite/list")
     api.add_resource(OtherProfile, "/user/<string:uid>/profile", resource_class_args=[user_manager])
     api.add_resource(ProgrammingLanguages, "/programming_languages", resource_class_args=[db])
     api.add_resource(Auth, "/auth", resource_class_args=[user_manager])
