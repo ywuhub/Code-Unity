@@ -1,31 +1,9 @@
 from flask import request
 from flask_restful import Resource, fields
 
+from server.models.project import project_fields
 from server.managers.project_manager import ProjectManager
 from server.utils.json import ObjectId, marshal
-
-fields = {
-    "project_id": ObjectId(attribute="_id"),
-    "title": fields.String,
-    "leader": ObjectId,
-    "cur_people": fields.Integer,
-    "max_people": fields.Integer,
-    "members": fields.List(ObjectId),
-    "description": fields.String(default=None),
-    "course": fields.String(default=None),
-    "tags": fields.List(fields.String),
-    "languages": fields.List(fields.String),
-    "technologies": fields.List(fields.String),
-}
-
-
-def _stringify_objectids(data):
-    for project in data:
-        project["_id"] = str(project["_id"])
-        project["leader"]["_id"] = str(project["leader"]["_id"])
-        for mem in project["members"]:
-            mem["_id"] = str(mem["_id"])
-
 
 class ProjectList(Resource):
     def __init__(self, project_manager: ProjectManager):
@@ -84,9 +62,7 @@ class ProjectList(Resource):
         else:
             ret = self.project_manager.get_project_listing(user_id)
 
-        _stringify_objectids(ret)
-
-        return ret
+        return marshal(ret, project_fields)
 
 
 class SearchProjects(Resource):
@@ -117,6 +93,4 @@ class SearchProjects(Resource):
             title, courses, languages, programming_languages, group_crit
         )
 
-        _stringify_objectids(ret)
-
-        return ret
+        return marshal(ret, project_fields)

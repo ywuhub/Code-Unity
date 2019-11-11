@@ -44,11 +44,11 @@ class ProjectManager:
         self.app = app
         self.db = db.get_collection("projects")
 
-    def get_project(self, id: ObjectId) -> Project:
-        doc = self.db.find_one({"_id": id})
-        if doc is None:
+    def get_project(self, id: ObjectId):
+        pipeline = deepcopy(_list_pipeline)
+        pipeline.insert(0, {"$match": {"_id": id}})
+        for doc in self.db.aggregate(pipeline):
             return doc
-        return Project.from_dict(doc)
 
     def get_project_listing(self, user_id: str = None):
         ret = []
