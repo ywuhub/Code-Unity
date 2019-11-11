@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from bson import ObjectId
 from flask_restful import fields
@@ -16,6 +16,7 @@ from server.utils.json import ObjectId as ObjectIdMarshaller
 
 profile_fields = {
     "_id": ObjectIdMarshaller,
+    "username": fields.String(default=None),
     "name": fields.String(default=None),
     "email": fields.String(),
     "visibility": fields.String,
@@ -131,6 +132,7 @@ class User:
 
     def get_outgoing_join_requests(self):
         pipeline = [
+            {"$match": {"user_id": self._id}},
             {
                 "$lookup": {
                     "from": "projects",
@@ -139,7 +141,6 @@ class User:
                     "as": "project",
                 }
             },
-            {"$match": {"user_id": self._id}},
             # The $lookup stage causes every project that matches the project_id
             # to be included as an array in the project field, thus we unwind it
             # to maintain a sane structure.

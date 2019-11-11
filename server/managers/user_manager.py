@@ -88,12 +88,8 @@ class UserManager:
         try:
             # add user to 'users' database
             _id = self.users.insert_one(
-                    {   
-                        "username": username, 
-                        "password": pwd_hash, 
-                        "email": email
-                    }
-                  )
+                {"username": username, "password": pwd_hash, "email": email}
+            )
             # initiate blank profile for newly registered user
             self.profiles.insert_one(
                 {
@@ -105,7 +101,7 @@ class UserManager:
                     "interests": [],
                     "programming_languages": [],
                     "languages": [],
-                    "github": ""
+                    "github": "",
                 }
             )
         except DuplicateKeyError as err:
@@ -147,3 +143,22 @@ class UserManager:
         """
         jti: str = get_raw_jwt()["jti"]
         self.revoked_tokens.add(jti)
+
+    def get_user_profile(self, uid: ObjectId):
+        pipeline = [
+            {"$match": {"_id": uid}},
+            {
+                "$lookup": {
+                    "from": "profiles",
+                    "localField": "_id",
+                    "foreignField": "_id",
+                    "as": "profile",
+                }
+            },
+            {"$unwind": "$profile"},
+        ]
+        try:
+            return self.users.aggregate(pipeline).next()
+        except StopIteration:
+            # UID not found
+            return None

@@ -134,7 +134,7 @@ class CreateGroup extends React.Component {
 
         return (
             <div id="page-start">
-                <div class="my-3 p-3 bg-white rounded shadow-sm">
+                <div className="my-3 p-3 bg-white rounded shadow-sm">
                     <h2 className="card-title text-muted p-1 mb-4"> Create a Group </h2>
 
                     <Formik
@@ -177,7 +177,7 @@ class CreateGroup extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="course" className="pb-2 mb-0">Course</label>
-                                    <select class="custom-select" data-dropup-auto="false" onChange={event => this.handleCourseChange(event)}>
+                                    <select className="custom-select" data-dropup-auto="false" onChange={event => this.handleCourseChange(event)}>
                                         {courseMenu}
                                     </select>
                                 </div>
@@ -190,7 +190,7 @@ class CreateGroup extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="title" className="pb-2 mb-0">Languages</label>
-                                    <select class="custom-select" data-dropup-auto="false" name="lang-menu" onChange={event => this.handleMenuChange(event)}>
+                                    <select className="custom-select" data-dropup-auto="false" name="lang-menu" onChange={event => this.handleMenuChange(event)}>
                                         {langMenu}
                                     </select>
                                     {/* Show tags */}
@@ -210,7 +210,7 @@ class CreateGroup extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="title" className="pb-2 mb-0">Programming Languages</label>
-                                    <select class="custom-select" data-dropup-auto="false" name="prog-menu" onChange={event => this.handleMenuChange(event)}>
+                                    <select className="custom-select" data-dropup-auto="false" name="prog-menu" onChange={event => this.handleMenuChange(event)}>
                                         {progMenu}
                                     </select>
                                     {/* Show tags */}
@@ -230,7 +230,7 @@ class CreateGroup extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="title" className="pb-2 mb-0">Tags</label>
-                                    <select class="custom-select" data-dropup-auto="false" name="tag-menu" onChange={event => this.handleMenuChange(event)}>
+                                    <select className="custom-select" data-dropup-auto="false" name="tag-menu" onChange={event => this.handleMenuChange(event)}>
                                         {tagMenu}
                                     </select>
                                     {/* Show tags */}
