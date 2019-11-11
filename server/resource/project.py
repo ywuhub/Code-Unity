@@ -156,8 +156,9 @@ class ProjectJoin(Resource):
     @jwt_required
     def post(self, project_id: str):
         """
-        Consumes a pending invitation or pending request to allow a user into
-        a project.
+        Allows a user to accept a pending invitation to join a project, or by a
+        project leader to accept another user's request to join their project.
+        This consumes the pending invitation and/or pending request.
 
         Expects:
         ```
@@ -169,6 +170,25 @@ class ProjectJoin(Resource):
             # leader is accepting into the project.
             "user_id": string
         }
+        ```
+
+        Examples:
+        ```
+        # To accept an invitation to join a project.
+        POST ->
+        {
+            "join_from": "invitation"
+        }
+        # If the user has an invitation for the project.
+        (200 OK) <-
+
+        # To accept an incoming request from a user.
+        POST ->
+        {
+            "join_from": "request",
+            "user_id": "5daa6efd8805c462ef0d16e1"
+        }
+        (200 OK) <-
         ```
         """
         parser = RequestParser()
@@ -223,6 +243,10 @@ class ProjectLeave(Resource):
 
     @jwt_required
     def post(self, project_id: str):
+        """
+        Removes the logged in user from the specified project. If the user is the
+        leader of the project, the project is subsequently disbanded.
+        """
         user = cast(User, current_user)
         try:
             project_id = ObjectId(project_id)
@@ -233,7 +257,7 @@ class ProjectLeave(Resource):
             user.leave_project(self.project_manager, project_id)
         except ProjectNotFound:
             return {"message": "project not found"}, 404
-        except Exception as exp:
-            return {"message": str(exp)}, 400
+        except UserNotFound:
+            return {"message": "cannot leave group that user is not part of"}, 400
 
         return {"status": "success"}

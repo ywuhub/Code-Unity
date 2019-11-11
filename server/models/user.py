@@ -336,7 +336,7 @@ class User:
         try:
             project["members"].remove(self._id)
         except ValueError:
-            raise Exception("cannot leave group that user is not part of")
+            raise UserNotFound()
     
         project["cur_people"] = len(project["members"])
 
