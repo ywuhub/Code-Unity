@@ -20,6 +20,23 @@ from server.models.user import User
 class UserInvite(Resource):
     @jwt_required
     def post(self, uid: str):
+        """
+        Invite a user to join a group. The user will have to accept the invitation
+        before they are actually considered part of the group.
+
+        Expects:
+        ```
+        {
+            "project_id": string  # required
+        }
+        ```
+
+        Examples:
+        ```
+        POST ->
+        (200 OK) <-
+        ```
+        """
         user = cast(User, current_user)
         parser = RequestParser()
         parser.add_argument("project_id", required=True)
@@ -53,6 +70,16 @@ class UserInvite(Resource):
 
     @jwt_required
     def delete(self, uid: str):
+        """
+        Removes an invitation that was sent to a user.
+
+        Expects:
+        ```
+        {
+            "project_id": string,  # required
+        }
+        ```
+        """
         user = cast(User, current_user)
         parser = RequestParser()
         parser.add_argument("project_id", required=True)

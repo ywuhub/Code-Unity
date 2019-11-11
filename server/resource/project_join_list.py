@@ -61,9 +61,9 @@ class ProjectJoinList(Resource):
         parser.add_argument("incoming")
         incoming = parser.parse_args(strict=True)["incoming"]
 
-        if incoming is None or incoming.lower() == "false":
-            result = current_user.get_outgoing_join_requests()
-            return marshal(result, outgoing_fields)
+        if incoming is not None and incoming.lower() == "true":
+            result = current_user.get_incoming_join_requests()
+            return marshal(result, incoming_fields)
 
-        result = current_user.get_incoming_join_requests()
-        return marshal(result, incoming_fields)
+        result = current_user.get_outgoing_join_requests()
+        return marshal(result, outgoing_fields)
