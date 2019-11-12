@@ -151,7 +151,21 @@ class User:
         the username or password being updated.
         """
         if account:
+            # check if new username is already taken in the database
+            if 'username' in account.keys():
+                doc = self.accounts.find_one({"username": account['username']}, {"_id": 1, "username": 1})
+                
+                # if duplicate username is found return error depending on if 
+                # its the current user's one or other users
+                if doc:
+                    if doc['_id'] == self._id:
+                        return "Error: Cannot change to your current username!"
+                    else:
+                        return "Error: Username already taken!"
+
             self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
+        
+        return "success"
 
     def apply_to_project(self, project_id: ObjectId, message: str):
         project = self.projects.find_one({"_id": project_id})

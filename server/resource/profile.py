@@ -120,6 +120,6 @@ class AccountResource(Resource):
             account_dict["password"] = ph.hash(account_dict["password"])
 
         # update account information
-        cast(User, current_user).update_account(account_dict)
-
-        return {"message": "success"}
+        result = cast(User, current_user).update_account(account_dict)
+        print(result)
+        return {"message": result}
