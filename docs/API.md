@@ -8,7 +8,7 @@ Returns user profile information for an authenticated user. Will return 401/422 
 
 
 Returns:
-```json
+```
     {
         "_id": string,
         "name": string,
@@ -28,7 +28,7 @@ All fields are optional. Will return 401/422 if user is not authenticated. 400 i
 
 
 Expects:
-```json
+```
     {
         "name": string,
         "email": string,
@@ -80,7 +80,7 @@ Logs a user in. Will return 400 if username or password is not provided, and 401
 
 Expects:
 
-```json
+```
 {
     "username": string, # required
     "password": string, # required
@@ -89,7 +89,7 @@ Expects:
 
 On success, returns:
 
-```json
+```
 {
     "uid":   number,
     "token": string,
@@ -203,7 +203,7 @@ logged in user does not own the specified project.
 #### GET
 Returns a list of 10 project's and their full details.
 
-```json
+```
 [
  {
         "project_id": "5dac029b8b819e584ff36f8d",
@@ -235,7 +235,7 @@ Returns a list of 10 project's and their full details.
 ### `/api/course_list`
 #### GET
 Lists all the COMP courses available in UNSW.
-```json
+```
 [
     {
         "code": string,
@@ -250,7 +250,7 @@ Request to join a group. The owner of the project will have to accept the
 user before they are actually considered part of the group.
 
 Expects:
-```json
+```
 {
     # Can be an omitted if the user provides no join message.
     "message": string
@@ -319,6 +319,60 @@ GET ?incoming=true ->
         "user_id": string,
         "user_name": string,
         "message": string
+    }
+]
+```
+
+### `/api/user/<string:uid>/invite`
+#### POST
+Invite a user to join a group. The user will have to accept the invitation
+before they are actually considered part of the group.
+
+Expects:
+```
+{
+    "project_id": string  # required
+}
+```
+
+#### DELETE
+Removes an invitation that was sent to a user.
+
+Expects:
+```
+{
+    "project_id": string,  # required
+}
+```
+
+### `/api/user/invite/list`
+#### GET
+Allows a user to list the invites that they've sent out or the invites
+that other people have sent them if the incoming parameter is set to true.
+
+Example:
+```
+# Gets invitations that the user has sent out
+GET ->
+(200 OK) <-
+[
+    {
+        "project_id": string,
+        "project_title": string,
+        "user_id": string,
+        "user_name": "testuser"  # username of the user invited
+    }
+]
+
+# Gets invitations that the user has received from others
+GET ?incoming=true ->
+(200 OK) <- 
+[
+    {
+        "project_id": string,
+        "project_title": string,
+        "user_id": string,
+        "user_name": "testuser"  # username of the user who invited the current user
     }
 ]
 ```

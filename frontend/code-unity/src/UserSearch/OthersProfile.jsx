@@ -1,6 +1,8 @@
 import React from 'react';
 import { SkillBox } from '@/WebComponents';
-import { userService } from '@/_services';
+import { userService, authenticationService } from '@/_services';
+import config from 'config';
+import { authHeader } from '@/_helpers';
 
 class OthersProfile extends React.Component {
     constructor(props) {
@@ -8,6 +10,7 @@ class OthersProfile extends React.Component {
         this.state = {
             _id: '',
             details: {},
+            myProjects: [],
             not_found: false,
             isLoading: false
         }
@@ -23,12 +26,38 @@ class OthersProfile extends React.Component {
                 isLoading: false
             })
         })
-        .catch(err => {
-            this.setState({
-                not_found: true,
-                isLoading: false
+            .catch(err => {
+                this.setState({
+                    not_found: true,
+                    isLoading: false
+                })
+            });
+
+        const currentUser = authenticationService.currentUserValue.uid;
+        userService.getUserProject(currentUser)
+            .then(json => {
+                this.setState({ myProjects: json });
             })
-        });
+    }
+
+    inviteUser(e) {
+        const group = document.getElementById('group-name').value;
+        const message = document.getElementById('message-text').value;
+        
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+            body: JSON.stringify({ project_id: group })
+        };
+    
+        fetch(`${config.apiUrl}/api/user/${this.state.id_}/invite`, options)
+            .then(response => {
+                console.log(response);
+                if (response.status) {
+                    alert(response.status);
+                }
+            })
+            .catch(err => { console.log(err); })
     }
 
     render() {
@@ -40,24 +69,21 @@ class OthersProfile extends React.Component {
                             <h1 className="h4">{this.state.details.username} Profile</h1>
 
                             <div className="btn-group">
-                                <button className="btn btn-primary border rounded">
-                                    <i class="fas fa-user-plus"></i> Invite to group
-                                </button>
-                                <button className="btn btn-primary border rounded">
-                                    <i class="fas fa-envelope"></i>
+                                <button className="btn btn-primary border rounded" data-toggle="modal" data-target="#exampleModalCenter" disabled={this.state.myProjects.length <= 0}>
+                                    <i className="fas fa-user-plus"></i> Invite to group
                                 </button>
                             </div>
                         </div>
-                        {  (this.state.not_found && 
+                        {(this.state.not_found &&
                             <div>
                                 <h2>Profile Not Found!</h2>
                             </div>) ||
-                            
+
                             // private profile pages
                             (this.state.details.visibility === 'private' &&
-                            <div> 
-                                <h2>{this.state.details.username}'s profile is private</h2> 
-                            </div>) ||
+                                <div>
+                                    <h2>{this.state.details.username}'s profile is private</h2>
+                                </div>) ||
 
                             // public profile pages
                             <div className="tab-content" id="nav-tabContent">
@@ -106,6 +132,39 @@ class OthersProfile extends React.Component {
                         }
                     </div>
                 }
+                {/* invite to group modal */}
+                <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Group Invitation</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <form>
+                                    <label htmlFor="group-name" className="col-form-label">Group Name:</label>
+                                    <select className="form-control mb-3" id="group-name">
+                                        {
+                                            this.state.myProjects.map(project => {
+                                                return <option key={project.project_id} value={project.project_id}>{project.title}</option>;
+                                            })
+                                        }
+                                    </select>
+                                    <div className="form-group">
+                                        <label htmlFor="message-text" className="col-form-label">Message:</label>
+                                        <textarea className="form-control" id="message-text"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={this.inviteUser.bind(this)} data-dismiss="modal" >Invite</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> {/* invite to group modal end */}
             </div>
         )
     }

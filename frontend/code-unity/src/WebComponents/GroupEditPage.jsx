@@ -46,7 +46,7 @@ export const GroupEditPage = (props) => {
                     <div className="col-9">
                         <div className="row">
                             <p>Leader: </p>
-                            <p>{props.data.leader}</p>
+                            <p>{props.data.leader.username}</p>
                         </div>
                         <div className="row">
                             <p>Member: </p>

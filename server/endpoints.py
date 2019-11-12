@@ -13,12 +13,14 @@ from server.resource import (
     ProfileResource,
     AccountResource,
     ProgrammingLanguages,
+    ProjectRequest,
+    ProjectRequestList,
     ProjectList,
-    ProjectJoin,
-    ProjectJoinList,
     ProjectResource,
     SearchProjects,
-    UserList
+    UserInvite,
+    UserInviteList,
+    UserList,
 )
 
 
@@ -31,6 +33,8 @@ def register_endpoints(
     api.prefix = "/api"
     api.add_resource(AccountResource, "/user/account")
     api.add_resource(ProfileResource, "/user/profile")
+    api.add_resource(UserInvite, "/user/<string:uid>/invite")
+    api.add_resource(UserInviteList, "/user/invite/list")
     api.add_resource(OtherProfile, "/user/<string:uid>/profile", resource_class_args=[user_manager])
     api.add_resource(ProgrammingLanguages, "/programming_languages", resource_class_args=[db])
     api.add_resource(Auth, "/auth", resource_class_args=[user_manager])
@@ -38,8 +42,8 @@ def register_endpoints(
     api.add_resource(NewProject, "/project")
     api.add_resource(ProjectResource, "/project/<string:project_id>", resource_class_args=[project_manager])
     api.add_resource(ProjectList, "/project/list", resource_class_args=[project_manager])
-    api.add_resource(ProjectJoin, "/project/<string:project_id>/request", resource_class_args=[project_manager])
-    api.add_resource(ProjectJoinList, "/project/requests", resource_class_args=[project_manager])
+    api.add_resource(ProjectRequest, "/project/<string:project_id>/request", resource_class_args=[project_manager])
+    api.add_resource(ProjectRequestList, "/project/requests", resource_class_args=[project_manager])
     api.add_resource(SearchProjects, "/project/search", resource_class_args=[project_manager])
     api.add_resource(CourseList, "/course_list", resource_class_args=[db])
     api.add_resource(UserList, "/user_list", resource_class_args=[db])

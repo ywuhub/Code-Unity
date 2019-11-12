@@ -66,11 +66,11 @@ class GroupPage extends React.Component {
                                     <div class="col-9">
                                         <div class="row">
                                             <p>Leader: </p>
-                                            <p>{this.state.details.leader}</p>
+                                            {/* <p>{this.state.details.leader}</p> */}
                                         </div>
                                         <div class="row">
                                             <p>Member: </p>
-                                            <p>{this.state.details.members && Array.from(this.state.details.members).join(', ')}</p>
+                                            {/* <p>{this.state.details.members && Array.from(this.state.details.members).join(', ')}</p> */}
                                         </div>
                                     </div>
                                     <div class="col-3 group-page-member-setting text-left">

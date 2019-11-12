@@ -8,3 +8,10 @@ class ProjectFull(Exception):
 
 class AlreadyMemberOf(Exception):
     pass
+
+
+class UserNotFound(Exception):
+    pass
+
+class DocumentNotFound(Exception):
+    pass
