@@ -11,6 +11,7 @@ from server.resource import (
     NewProject,
     OtherProfile,
     ProfileResource,
+    AccountResource,
     ProgrammingLanguages,
     ProjectRequest,
     ProjectRequestList,
@@ -32,6 +33,7 @@ def register_endpoints(
 
     # Inject resource dependencies with the `resource_class_args` kwarg.
     api.prefix = "/api"
+    api.add_resource(AccountResource, "/user/account")
     api.add_resource(ProfileResource, "/user/profile")
     api.add_resource(UserInvite, "/user/<string:uid>/invite")
     api.add_resource(UserInviteList, "/user/invite/list")

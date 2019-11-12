@@ -42,7 +42,7 @@ class AdvancedSearch extends React.Component {
             this.props.setLoading();
             let url = `${config.apiUrl}/api/project/search?title=${this.state.title}&courses=${courses}&languages=${languages}&programming_languages=${programming_languages}&group_crit=${union}`;
             // console.log(url);
-            const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }, body: JSON.stringify(this.state.search_tags) };
+            const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }};
             fetch(url, options)
             .then(response => { return response.json() })
             .then(filtered_posts => {

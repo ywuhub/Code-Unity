@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Any, Dict, List
 
 from bson import ObjectId
@@ -28,6 +29,11 @@ profile_fields = {
     "github": fields.String(default=None),
 }
 
+account_fields = {
+    "_id": ObjectIdMarshaller,
+    "username": fields.String(default=None),
+    "password": fields.String(default=None),
+}
 
 class Profile:
     _id: ObjectId
@@ -75,6 +81,40 @@ class Profile:
         return Profile(**d)
 
 
+class Account:
+    _id: ObjectId
+    username: str
+    password: str
+
+    account_fields = frozenset(
+        (
+            "_id",
+            "username",
+            "password",
+        )
+    )
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            if k not in Account.account_fields:
+                continue
+            setattr(self, k, v)
+
+    def to_dict(self):
+        d: Dict[str, Any] = {}
+
+        for k, v in self.__dict__.items():
+            if k not in Account.account_fields:
+                continue
+            d[k] = v
+
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]):
+        return Account(**d)
+
+
 class User:
     _id: ObjectId
 
@@ -83,6 +123,7 @@ class User:
         self.db = db
         self.profiles = db.get_collection("profiles")
         self.projects = db.get_collection("projects")
+        self.accounts = db.get_collection("users")
 
     def create_project(self, title: str, max_people: int, **kwargs):
         new_project = Project(self._id, title, max_people, **kwargs)
@@ -97,11 +138,42 @@ class User:
 
         return Profile.from_dict(ret)
 
+    @property
+    def account(self) -> Account:
+        ret = self.accounts.find_one({"_id": self._id})
+
+        if ret is None:
+            return Account()
+
+        return Account.from_dict(ret)
+
     def update_profile(self, profile: Dict):
         """
-        Replaces the user's current profile or creates it if it does not exist.
+        Replace the user's current profile or creates it if it does not exist.
         """
         self.profiles.replace_one({"_id": self._id}, profile, upsert=True)
+
+    def update_account(self, account: Dict):
+        """
+        Replace the user's current account information with an update on either
+        the username or password being updated.
+        """
+        if account:
+            # check if new username is already taken in the database
+            if 'username' in account.keys():
+                doc = self.accounts.find_one({"username": account['username']}, {"_id": 1, "username": 1})
+                
+                # if duplicate username is found return error depending on if 
+                # its the current user's one or other users
+                if doc:
+                    if doc['_id'] == self._id:
+                        return "Error: Cannot change to your current username!"
+                    else:
+                        return "Error: Username already taken!"
+
+            self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
+        
+        return "success"
 
     def apply_to_project(self, project_id: ObjectId, message: str):
         project = self.projects.find_one({"_id": project_id})
