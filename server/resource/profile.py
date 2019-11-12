@@ -121,5 +121,4 @@ class AccountResource(Resource):
 
         # update account information
         result = cast(User, current_user).update_account(account_dict)
-        print(result)
         return {"message": result}
