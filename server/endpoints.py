@@ -17,6 +17,8 @@ from server.resource import (
     ProjectRequestList,
     ProjectList,
     ProjectResource,
+    ProjectJoin,
+    ProjectLeave,
     SearchProjects,
     UserInvite,
     UserInviteList,
@@ -41,6 +43,8 @@ def register_endpoints(
     api.add_resource(LogOut, "/auth/logout", resource_class_args=[user_manager])
     api.add_resource(NewProject, "/project")
     api.add_resource(ProjectResource, "/project/<string:project_id>", resource_class_args=[project_manager])
+    api.add_resource(ProjectJoin, "/project/<string:project_id>/join", resource_class_args=[project_manager])
+    api.add_resource(ProjectLeave, "/project/<string:project_id>/leave", resource_class_args=[project_manager])
     api.add_resource(ProjectList, "/project/list", resource_class_args=[project_manager])
     api.add_resource(ProjectRequest, "/project/<string:project_id>/request", resource_class_args=[project_manager])
     api.add_resource(ProjectRequestList, "/project/requests", resource_class_args=[project_manager])
