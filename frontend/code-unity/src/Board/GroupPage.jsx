@@ -70,14 +70,14 @@ class GroupPage extends React.Component {
                                             {!this.state.isLoading && <p><Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} id={leader._id} style={{ 'textDecoration': 'none' }}>&nbsp; {leader.username}</Link></p>}
                                         </div>
                                         <div class="row">
-                                            <p>Member: </p>
+                                            <p>Members: </p>
                                             {!this.state.isLoading && <p>
                                                 {
                                                     this.state.details.members.filter((member) => { return member.username !== leader.username }).map((member, index) => {
                                                         return (
                                                             <span key={member._id}>
                                                                 <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} id={member._id} style={{ 'textDecoration': 'none' }}>{member.username}</Link>
-                                                                {index !== members.length - 2 && <span>,&nbsp;</span>}
+                                                                {index !== this.state.details.members.length - 2 && <span>,&nbsp;</span>}
                                                             </span>
                                                         )
                                                     })
