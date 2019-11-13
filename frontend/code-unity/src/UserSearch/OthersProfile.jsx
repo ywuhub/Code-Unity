@@ -42,7 +42,6 @@ class OthersProfile extends React.Component {
 
     inviteUser(e) {
         const group = document.getElementById('group-name').value;
-        const message = document.getElementById('message-text').value;
         
         const options = {
             method: 'POST',
@@ -51,10 +50,10 @@ class OthersProfile extends React.Component {
         };
     
         fetch(`${config.apiUrl}/api/user/${this.state.id_}/invite`, options)
-            .then(response => {
-                console.log(response);
-                if (response.status) {
-                    alert(response.status);
+            .then(response => { return response.json(); })
+            .then(json => {
+                if (json.message) {
+                    alert(json.message);
                 }
             })
             .catch(err => { console.log(err); })
@@ -144,6 +143,9 @@ class OthersProfile extends React.Component {
                             </div>
                             <div className="modal-body">
                                 <form>
+                                    <div className="error">
+                                        
+                                    </div>
                                     <label htmlFor="group-name" className="col-form-label">Group Name:</label>
                                     <select className="form-control mb-3" id="group-name">
                                         {
@@ -152,10 +154,6 @@ class OthersProfile extends React.Component {
                                             })
                                         }
                                     </select>
-                                    <div className="form-group">
-                                        <label htmlFor="message-text" className="col-form-label">Message:</label>
-                                        <textarea className="form-control" id="message-text"></textarea>
-                                    </div>
                                 </form>
                             </div>
                             <div className="modal-footer">
