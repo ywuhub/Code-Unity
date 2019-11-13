@@ -48,6 +48,10 @@ class HomePage extends React.Component {
                     <Route exact path="/mygroup/:project_id" render={(props) => (
                         <MyGroup _id={this.state.currentUserId} {...props}/>
                       )}/>
+                    <Route exact path="/mygroup/edit/:project_id" render={(props) => (
+                        <MyGroup _id={this.state.currentUserId}
+                                  isEdit={true} {...props}/>
+                      )}/>
             </Switch>
           )
         )

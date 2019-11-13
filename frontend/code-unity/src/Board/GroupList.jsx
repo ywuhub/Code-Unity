@@ -6,7 +6,7 @@ import { authHeader } from '@/_helpers';
 
 import '@/Style';
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 1;
 
 /**
  * Search bar that filters and shows group postings
@@ -230,8 +230,23 @@ class GroupList extends React.Component {
 
   paginationClick(e) {
     const page_clicked = parseInt(e.target.innerText);
-
     if (page_clicked === this.state.page) return;
+    
+    if (e.target.className.indexOf('l-arrow') !== -1) {
+      this.setState({ page: 1 });
+      this.setState({ posts: this.state.filteredPosts.slice(0, POSTS_PER_PAGE) });
+      return;
+    }
+
+    if (e.target.className.indexOf('r-arrow') !== -1) {
+      const pages = Math.ceil(this.state.postsLength/POSTS_PER_PAGE);
+      this.setState({ page: pages });
+      
+      const startIndex = (pages - 1) * POSTS_PER_PAGE;
+      const endIndex = pages * POSTS_PER_PAGE;
+      this.setState({ posts: this.state.filteredPosts.slice(startIndex, endIndex) })
+      return;
+    }
 
     const startIndex = (page_clicked - 1) * POSTS_PER_PAGE;
     const endIndex = page_clicked * POSTS_PER_PAGE;
@@ -384,9 +399,9 @@ function Pagination(props) {
 
   return (
     <div className="pagination my-4">
-      <button className="btn btn-custom"><i className="fas fa-angle-double-left"></i></button>
+      <button className="btn btn-custom l-arrow" onClick={props.onClick}><i className="fas fa-angle-double-left l-arrow"></i></button>
       {numbers}
-      <button className="btn btn-custom"><i className="fas fa-angle-double-right"></i></button>
+      <button className="btn btn-custom r-arrow" onClick={props.onClick}><i className="fas fa-angle-double-right r-arrow"></i></button>
     </div>
   );
 }

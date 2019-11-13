@@ -6,10 +6,12 @@ import '@/Style';
 export const GroupCard = (props) => {
     return(
         <div className="group-card-box">
-            <a href={props.address} class="text-decoration-none">
+            <a href={props.address} className="text-decoration-none">
                 <div className="my-3 p-3  bg-white rounded shadow-sm" key={props.keyValue}>
                     <div className="row mr-1 group-card-box-title">
                         <strong className="d-block text-gray-dark ml-4 ">{props.title}</strong>
+                        {props.isAdmin&&<font color="#F1C40F">&nbsp;<i className="fas fa-crown"></i></font>
+                        }
                     </div>
                     <div className="row group-card-member-text mt-1 mb-1">
                         <span className="ml-4"> </span>
