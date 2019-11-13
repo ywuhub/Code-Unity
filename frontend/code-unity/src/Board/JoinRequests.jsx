@@ -26,9 +26,13 @@ class JoinRequests extends React.Component {
         })
     }
 
+    handleAccept(project_id, user_id) {
+        projectService.accept_request(project_id, user_id, "request");
+    }
 
     render() {
         let key = 0;
+        console.log(this.state.projectRequests);
         return (
             <div>
                 <div className="my-3 p-3 bg-white rounded shadow-sm">
@@ -42,7 +46,7 @@ class JoinRequests extends React.Component {
                                 <i className="fas fa-tags"></i> <b>Message: </b> {request.message}
                             </p>
                             <small className="d-block text-right mt-3 ">
-                                <a href="#">Accept</a>
+                                <button onClick={() => {this.handleAccept(request.project_id, request.user_id)}}>Accept</button>
                             </small>
                             &nbsp;&nbsp;
                             <small className="d-block text-right mt-3 ">

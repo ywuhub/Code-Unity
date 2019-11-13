@@ -1,0 +1,11 @@
+.pagination {
+    display: inline-block;
+}
+  
+.btn-custom:hover:not(.btn-active) {
+    background-color: lightgray;
+}
+
+.btn-active {
+    background-color: rgb(0, 123, 255);
+}
