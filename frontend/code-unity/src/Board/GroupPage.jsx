@@ -50,27 +50,27 @@ class GroupPage extends React.Component {
         let key_id = 0;
         let leader = this.state.details.leader;
         return (
-            <div class="container">
-                <div class="row mt-1">
-                    <div class="col-sm-9 pl-1">
-                        <div class="my-3 p-3 bg-white rounded shadow-sm">
-                            <div class="container pl-4">
+            <div className="container">
+                <div className="row mt-1">
+                    <div className="col-sm-9 pl-1">
+                        <div className="my-3 p-3 bg-white rounded shadow-sm">
+                            <div className="container pl-4">
                                 <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                                    <h4 class="h1">{this.state.details.title}</h4>
+                                    <h4 className="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
                                             {!this.state.applied && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-4 border-bottom border-grey">
-                                    <div class="col-9">
-                                        <div class="row">
-                                            <p>Leader: </p>
-                                            {!this.state.isLoading && <p><Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} id={leader._id} style={{ 'textDecoration': 'none' }}>&nbsp; {leader.username}</Link></p>}
+                                <div className="row mt-4 border-bottom border-grey">
+                                    <div className="col-9">
+                                        <div className="row">
+                                            <p>Leader:&nbsp;</p>
+                                            {!this.state.isLoading && <p><Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} id={leader._id} style={{ 'textDecoration': 'none' }}>{leader.username}</Link></p>}
                                         </div>
-                                        <div class="row">
-                                            <p>Members: </p>
+                                        <div className="row">
+                                            <p>Members:&nbsp;</p>
                                             {!this.state.isLoading && <p>
                                                 {
                                                     this.state.details.members.filter((member) => { return member.username !== leader.username }).map((member, index) => {
@@ -85,33 +85,33 @@ class GroupPage extends React.Component {
                                             </p>}
                                         </div>
                                     </div>
-                                    <div class="col-3 group-page-member-setting text-left">
-                                        <div class="row">
-                                            <p class="d-block text-gray-dark"> Member number:</p>
-                                            <p class="d-block text-gray-dark">{this.state.details.cur_people}</p>
+                                    <div className="col-3 group-page-member-setting text-left">
+                                        <div className="row">
+                                            <p className="d-block text-gray-dark"> Member number:</p>
+                                            <p className="d-block text-gray-dark">{this.state.details.cur_people}</p>
                                         </div>
-                                        <div class="row">
-                                            <p class="d-block text-gray-dark">max: </p>
-                                            <p class="d-block text-gray-dark">{this.state.details.max_people}</p>
+                                        <div className="row">
+                                            <p className="d-block text-gray-dark">max: </p>
+                                            <p className="d-block text-gray-dark">{this.state.details.max_people}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row mt-4 border-bottom border-grey">
-                                    <div class="col-12">
-                                        <h6 class="row h6">About This Group</h6>
-                                        <p class="row pt-2">{this.state.details.description}</p>
+                                <div className="row mt-4 border-bottom border-grey">
+                                    <div className="col-12">
+                                        <h6 className="row h6">About This Group</h6>
+                                        <p className="row pt-2">{this.state.details.description}</p>
                                     </div>
                                 </div>
                                 {this.state.details.course &&
-                                    <div class="row mt-3 border-bottom border-grey">
-                                        <div class="col-12 row">
+                                    <div className="row mt-3 border-bottom border-grey">
+                                        <div className="col-12 row">
                                             <p>Courses:</p>
                                             <p>{this.state.details.course}</p>
                                         </div>
                                     </div>
                                 }
-                                <div class="row container pt-3 pl-0">
+                                <div className="row container pt-3 pl-0">
                                     <SkillBox keyValue={key_id++} title="technologies" data={( this.state.details.technologies)} />
                                     <SkillBox keyValue={key_id++} title="languages" data={( this.state.details.languages)} />
                                     <SkillBox keyValue={key_id++} title="tags" data={( this.state.details.tags)} />

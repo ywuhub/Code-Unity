@@ -5,6 +5,7 @@ import { userService, authenticationService } from '@/_services';
 import { Dashboard, GroupList, GroupChat, Profile, MyGroup, GroupPage, JoinRequests } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 import { OthersProfile } from '@/UserSearch';
+import { Inbox } from '@/Inbox';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -81,7 +82,7 @@ class HomePage extends React.Component {
                         </a>
                       </li>
                       <li className="nav-item">
-                        <a className="nav-link" href="#">
+                        <a className="nav-link" href="/inbox">
                           <span data-feather="shopping-cart"></span>
                           Messages
                         </a>
@@ -154,6 +155,7 @@ class HomePage extends React.Component {
                     <Route path="/group-:project" render={(props) => (
                         <GroupPage {...props} />)
                     } />
+                    <Route path="/inbox" component={Inbox}/>
                 </Switch>
 
                 </main>
