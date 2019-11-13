@@ -145,8 +145,8 @@ class ProjectManager:
         self.requests.delete_many({"project_id": project_id})
         self.projects.delete_one({"_id": project_id})
 
-    def replace_project(self, old_project: Project, new_project: Project):
-        self.projects.replace_one({"_id": old_project._id}, new_project.to_dict())
+    def update_project(self, project: Project, updated_details: dict):
+        self.projects.update({"_id": project._id}, {"$set": updated_details}, upsert=False)
 
     def add_user_to_project(self, user_id: ObjectId, project_id: ObjectId):
         # TODO: this operation should be atomic.
