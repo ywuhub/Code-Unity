@@ -93,5 +93,5 @@ class ProjectManager:
     def delete_project(self, project: Project):
         self.db.delete_one({"_id": project._id})
 
-    def replace_project(self, old_project: Project, new_project: Project):
-        self.db.replace_one({"_id": old_project._id}, new_project.to_dict())
+    def update_project(self, project: Project, updated_details: dict):
+        self.db.update({"_id": project._id}, {"$set": updated_details}, upsert=False)
