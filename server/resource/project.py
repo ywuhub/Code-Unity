@@ -1,10 +1,20 @@
+from typing import cast
+
 from bson import ObjectId
 from bson.errors import InvalidId
 from flask_jwt_extended import current_user, jwt_required
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
+from flask_restful.reqparse import RequestParser
 
+from server.exceptions import (
+    AlreadyMemberOf,
+    ProjectFull,
+    ProjectNotFound,
+    UserNotFound,
+)
 from server.managers.project_manager import ProjectManager
 from server.models.project import Project, project_fields
+from server.models.user import User
 from server.utils.json import marshal
 
 
@@ -33,7 +43,7 @@ class ProjectResource(Resource):
                 "course": "4920",
                 "technologies": [
                     "assembly",
-                    "python",
+    projects              "python",
                     "mongoDB",
                     "react"
                 ],
@@ -116,6 +126,7 @@ class ProjectResource(Resource):
         parser.add_argument("languages", action="append", store_missing=False)
         project_details = parser.parse_args(strict=True)
 
+        # When parameters are parsed back so no blank fields
         if project_details:
             # check if new max_people is greater than the current amount of members
             if 'max_people' in project_details.keys():
@@ -146,5 +157,119 @@ class ProjectResource(Resource):
         if current_user._id != project.leader:
             return {"message": "only the owner may delete a project"}, 401
 
-        self.project_manager.delete_project(project)
+        self.project_manager.delete_project(project._id)
         return {"message": "successfully deleted the project"}
+
+
+class ProjectJoin(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+
+    @jwt_required
+    def post(self, project_id: str):
+        """
+        Allows a user to accept a pending invitation to join a project, or by a
+        project leader to accept another user's request to join their project.
+        This consumes the pending invitation and/or pending request.
+
+        Expects:
+        ```
+        {
+            "join_from": string,  # "request" or "invitation", required
+
+            # if the purpose is to allow a project leader to accept a request,
+            # then the "user_id" field must be passed in to denote what user the
+            # leader is accepting into the project.
+            "user_id": string
+        }
+        ```
+
+        Examples:
+        ```
+        # To accept an invitation to join a project.
+        POST ->
+        {
+            "join_from": "invitation"
+        }
+        # If the user has an invitation for the project.
+        (200 OK) <-
+
+        # To accept an incoming request from a user.
+        POST ->
+        {
+            "join_from": "request",
+            "user_id": "5daa6efd8805c462ef0d16e1"
+        }
+        (200 OK) <-
+        ```
+        """
+        parser = RequestParser()
+        parser.add_argument("join_from", required=True)
+        parser.add_argument("user_id")
+        args = parser.parse_args(strict=True)
+
+        if args["join_from"] not in ("request", "invitation"):
+            return {"message": "join_from must be 'request' or 'invitation'"}, 400
+
+        try:
+            project = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 422
+
+        if args["join_from"] == "request":
+            if args["user_id"] is None:
+                return {"message": "'user_id' field required for 'request' type"}, 400
+            try:
+                user = ObjectId(args["user_id"])
+            except InvalidId:
+                return {"message": "invalid user_id"}, 422
+            # verification of request
+            if not self.project_manager.is_request_exist(user, project):
+                return {"message": "request does not exist"}, 404
+        else:
+            user = current_user._id
+            # verification of invitation
+            if not self.project_manager.is_invitation_exist(user, project):
+                return {"message": "invitation does not exist"}, 404
+
+        try:
+            self.project_manager.add_user_to_project(user, project)
+        except ProjectNotFound:
+            return {"message": "project not found"}, 404
+        except UserNotFound:
+            return {"message": "user not found"}, 404
+        except AlreadyMemberOf:
+            return {"message": "already a member"}, 400
+        except ProjectFull:
+            return {"message": "project is already full"}, 400
+        finally:
+            # Consume the invitation/request
+            self.project_manager.remove_invitation_request(user, project)
+
+        return {"status": "success"}
+
+
+class ProjectLeave(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+
+    @jwt_required
+    def post(self, project_id: str):
+        """
+        Removes the logged in user from the specified project. If the user is the
+        leader of the project, the project is subsequently disbanded.
+        """
+        user = cast(User, current_user)
+        try:
+            project_id = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 422
+
+        try:
+            user.leave_project(self.project_manager, project_id)
+        except ProjectNotFound:
+            return {"message": "project not found"}, 404
+        except UserNotFound:
+            return {"message": "cannot leave group that user is not part of"}, 400
+
+        return {"status": "success"}

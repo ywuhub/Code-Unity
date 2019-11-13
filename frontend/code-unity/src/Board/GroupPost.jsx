@@ -5,13 +5,19 @@ function ShowMembers(props) {
     let post = props.post;
     return (
         <span>
-            <i className="fas fa-user-friends"></i> <b>Members:</b> <Link to={{ pathname: "/profile-" + post['leader'], state: { _id: post['leader'], username: post['leader'] } }} id={post['leader']} style={{ 'textDecoration': 'none' }}>{post['leader']}</Link>
+            <i className="fas fa-user-friends"></i> <b>Members:</b> <Link to={{ pathname: "/profile-" + post['leader'].username, state: { _id: post['leader']._id, username: post['leader'].username } }} id={post['leader']._id} style={{ 'textDecoration': 'none' }}>{post['leader'].username}</Link>
             {post['members'] && post['members'].length > 1 && ', '}
             {post['members'] &&
-                Array.from(post['members']).filter((member) => { return member !== post['leader'] }).map((member) => {
-                    return <Link to={{ pathname: "/profile-" + member, state: { _id: member, username: member }}} id={member} key={member} style={{ 'textDecoration': 'none' }}>{member}</Link>
+                Array.from(post['members']).filter((member) => { return member.username !== post['leader'].username }).map((member, index) => {
+                    return (
+                        <span key={member._id}>
+                            <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} id={member._id} style={{ 'textDecoration': 'none' }}>{member.username}</Link>
+                            {index !== post['members'].length - 2 && <span>,&nbsp;</span>}
+                        </span>
+                    )
                 })
             }
+
         </span>
     );
 }

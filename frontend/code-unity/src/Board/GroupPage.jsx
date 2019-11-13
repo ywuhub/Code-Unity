@@ -15,7 +15,7 @@ class GroupPage extends React.Component {
             details: {},
             description: '',
             applied: false,
-            isLoading: false
+            isLoading: true
         }
     }
 
@@ -48,6 +48,7 @@ class GroupPage extends React.Component {
 
     render() {
         let key_id = 0;
+        let leader = this.state.details.leader;
         return (
             <div class="container">
                 <div class="row mt-1">
@@ -66,11 +67,22 @@ class GroupPage extends React.Component {
                                     <div class="col-9">
                                         <div class="row">
                                             <p>Leader: </p>
-                                            <p>{this.state.details.leader}</p>
+                                            {!this.state.isLoading && <p><Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} id={leader._id} style={{ 'textDecoration': 'none' }}>&nbsp; {leader.username}</Link></p>}
                                         </div>
                                         <div class="row">
                                             <p>Member: </p>
-                                            <p>{this.state.details.members && Array.from(this.state.details.members).join(', ')}</p>
+                                            {!this.state.isLoading && <p>
+                                                {
+                                                    this.state.details.members.filter((member) => { return member.username !== leader.username }).map((member, index) => {
+                                                        return (
+                                                            <span key={member._id}>
+                                                                <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} id={member._id} style={{ 'textDecoration': 'none' }}>{member.username}</Link>
+                                                                {index !== members.length - 2 && <span>,&nbsp;</span>}
+                                                            </span>
+                                                        )
+                                                    })
+                                                }
+                                            </p>}
                                         </div>
                                     </div>
                                     <div class="col-3 group-page-member-setting text-left">
