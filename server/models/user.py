@@ -12,6 +12,7 @@ from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
 )
+from server.managers.project_manager import ProjectManager
 from server.models.project import Project
 from server.utils.json import ObjectId as ObjectIdMarshaller
 
@@ -393,6 +394,25 @@ class User:
             res.append(doc)
 
         return res
+
+    def leave_project(self, project_manager: ProjectManager, project_id: ObjectId):
+        # TODO: this operation should be atomic
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        # The group is disbanded if the leader leaves
+        if self._id == project["leader"]:
+            project_manager.delete_project(project_id)
+
+        try:
+            project["members"].remove(self._id)
+        except ValueError:
+            raise UserNotFound()
+    
+        project["cur_people"] = len(project["members"])
+
+        self.projects.replace_one({"_id": project_id}, project)
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'

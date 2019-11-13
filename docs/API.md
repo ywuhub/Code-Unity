@@ -376,3 +376,45 @@ GET ?incoming=true ->
     }
 ]
 ```
+
+### `/api/project/<string:project_id>/join`
+#### POST
+Allows a user to accept a pending invitation to join a project, or by a
+project leader to accept another user's request to join their project.
+This consumes the pending invitation and/or pending request.
+
+Expects:
+```
+{
+    "join_from": string,  # "request" or "invitation", required
+
+    # if the purpose is to allow a project leader to accept a request,
+    # then the "user_id" field must be passed in to denote what user the
+    # leader is accepting into the project.
+    "user_id": string
+}
+```
+
+Examples:
+```
+# To accept an invitation to join a project.
+POST ->
+{
+    "join_from": "invitation"
+}
+# If the user has an invitation for the project.
+(200 OK) <-
+
+# To accept an incoming request from a user.
+POST ->
+{
+    "join_from": "request",
+    "user_id": "5daa6efd8805c462ef0d16e1"
+}
+(200 OK) <-
+```
+
+### `/project/<string:project_id>/leave`
+#### POST
+Removes the logged in user from the specified project. If the user is the
+leader of the project, the project is subsequently disbanded.
