@@ -8,6 +8,7 @@ export const projectService = {
     create_group,
     join_group,
     join_requests,
+    accept_request,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
@@ -34,12 +35,28 @@ function join_group(project_id, message) {
         .then(handleResponse);
 }
 
-function join_requests() {
+function join_requests(incoming) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        headers: { 'Authorization': authHeader() },
     };
 
-    return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
+    if (incoming) {
+        return fetch(`${config.apiUrl}/api/project/requests?incoming=true`, requestOptions)
+            .then(handleResponse);
+    } else {
+        return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
+            .then(handleResponse);
+    }
+}
+
+function accept_request(project_id, user_id, join_from) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        body: JSON.stringify({ user_id: user_id, join_from: join_from })
+    };
+
+    return fetch(`${config.apiUrl}/api/project/${project_id}/join`, requestOptions)
         .then(handleResponse);
 }

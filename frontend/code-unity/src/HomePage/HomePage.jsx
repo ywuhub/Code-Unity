@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
-import { Dashboard, GroupList, GroupChat, Profile, MyGroup, GroupPage } from '@/Board';
+import { Dashboard, GroupList, GroupChat, Profile, MyGroup, GroupPage, JoinRequests } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 import { OthersProfile } from '@/UserSearch';
 
@@ -120,9 +120,9 @@ class HomePage extends React.Component {
                         </a>
                       </li>
                       <li className="nav-item">
-                        <a className="nav-link" href="#">
+                        <a className="nav-link" href="/JoinRequests">
                           <span data-feather="file-text"></span>
-                          Coming Soon...
+                          Join Requests
                         </a>
                       </li>
                       <li className="nav-item">
@@ -147,7 +147,9 @@ class HomePage extends React.Component {
                     } />
                     <Route path="/profile" component={Profile} />
                     <Route path="/CreateGroup" component={CreateGroup} />
-
+                    <Route path="/JoinRequests" render={(props) => (
+                        <JoinRequests _id={this.state.currentUserId} {...props}/>)
+                    } />
                     <Route path="/mygroup" component={myGroupRouter}/>
                     <Route path="/group-:project" render={(props) => (
                         <GroupPage {...props} />)

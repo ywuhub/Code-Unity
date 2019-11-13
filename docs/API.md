@@ -191,7 +191,18 @@ with the data passed in. Returns 422 if the project_id is invalid, 404 if
 the project_id is not found, and 401 if the logged in user does not owned
 the specified project.
 
-Expects the same JSON format as POST /api/project.
+Expects the JSON format:
+{
+    "title": "",
+    "max_people": ,
+    "course": "",
+    "description": "",
+    "tags": [],
+    "technologies": [ ], # programming languages
+    "languages": []
+}
+
+But all parameters are optional.
 
 #### DELETE
 Deletes a project that is owned by the logged in user. Returns 422 if the

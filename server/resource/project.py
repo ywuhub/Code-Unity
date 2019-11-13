@@ -87,10 +87,21 @@ class ProjectResource(Resource):
         """
         Updates a project that is owned by the logged in user by replacing it
         with the data passed in. Returns 422 if the project_id is invalid, 404 if
-        the project_id is not found, and 401 if the logged in user does not owned
+        the project_id is not found, and 401 if the logged in user does not own
         the specified project.
 
-        Expects the same JSON format as POST /api/project.
+        Expects the JSON format:
+        {
+            "title": "",
+            "max_people": ,
+            "course": "",
+            "description": "",
+            "tags": [],
+            "technologies": [ ], # programming languages
+            "languages": []
+        }
+
+        But all parameters are optional.
         """
         try:
             id = ObjectId(project_id)
@@ -103,28 +114,29 @@ class ProjectResource(Resource):
             return {"message": f"project_id {project_id} not found"}, 404
         if current_user._id != project.leader:
             return {"message": "only the owner may modify a project"}, 401
-
+        
         # Parse arguments
         parser = RequestParser(bundle_errors=True)
-        parser.add_argument("title", required=True)
-        parser.add_argument("max_people", type=int, required=True)
+        parser.add_argument("title", store_missing=False)
+        parser.add_argument("max_people", type=int, store_missing=False)
+        parser.add_argument("course", store_missing=False)
+        parser.add_argument("description", store_missing=False)
+        parser.add_argument("tags", action="append", store_missing=False)
+        parser.add_argument("technologies", action="append", store_missing=False)
+        parser.add_argument("languages", action="append", store_missing=False)
+        project_details = parser.parse_args(strict=True)
 
-        for k in Project.single_valued_keys:
-            parser.add_argument(k)
-        for k in Project.multi_valued_keys:
-            parser.add_argument(k, action="append")
-        args = parser.parse_args(strict=True)
+        # When parameters are parsed back so no blank fields
+        if project_details:
+            # check if new max_people is greater than the current amount of members
+            if 'max_people' in project_details.keys():
+                if (project_details['max_people'] < project.cur_people):
+                    return {"message": "new maximum number of members value is less than current amount of members"}
 
-        # Pop out the required arguments to instantiate a new project
-        title = args.pop("title")
-        max_people = args.pop("max_people")
-        try:
-            new_project = Project(current_user._id, title, max_people, **args)
-        except ValueError as err:
-            return {"message": str(err)}, 400
-
-        self.project_manager.replace_project(project, new_project)
-        return {"message": "successfully replaced project"}
+            # update details in project mamanger
+            self.project_manager.update_project(project, project_details)
+        
+        return {"message": "successfully updated project"}
 
     @jwt_required
     def delete(self, project_id: str):
