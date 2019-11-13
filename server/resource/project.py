@@ -116,7 +116,7 @@ class ProjectResource(Resource):
             return {"message": "only the owner may modify a project"}, 401
         
         # Parse arguments
-        parser = reqparse.RequestParser(bundle_errors=True)
+        parser = RequestParser(bundle_errors=True)
         parser.add_argument("title", store_missing=False)
         parser.add_argument("max_people", type=int, store_missing=False)
         parser.add_argument("course", store_missing=False)
