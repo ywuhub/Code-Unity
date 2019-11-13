@@ -34,12 +34,17 @@ function join_group(project_id, message) {
         .then(handleResponse);
 }
 
-function join_requests() {
+function join_requests(incoming) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        headers: { 'Authorization': authHeader() },
     };
 
-    return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
-        .then(handleResponse);
+    if (incoming) {
+        return fetch(`${config.apiUrl}/api/project/requests?incoming=true`, requestOptions)
+            .then(handleResponse);
+    } else {
+        return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
+            .then(handleResponse);
+    }
 }
