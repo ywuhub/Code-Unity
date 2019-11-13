@@ -1,5 +1,6 @@
 import React from 'react';
 import { inboxService } from '@/_services';
+import { Route, Link, Switch } from 'react-router-dom';
 
 class InviteSentComponent extends React.Component {
     constructor(props) {
@@ -42,8 +43,8 @@ class InviteSentComponent extends React.Component {
                                 <div className="d-inline-flex">
                                     <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
                                     <div className="flex-column">
-                                        <div><strong className="text-gray-dark">To: {invite.user_name}</strong></div>
-                                        <div><b>Group:</b> {invite.project_title}</div>
+                                        <div><strong className="text-dark-gray">To:</strong> <Link to={{ pathname: "/profile-" + invite.user_name, state: { _id: invite.user_id, username: invite.user_name } }} id={invite.user_id} style={{ 'textDecoration': 'none' }}>{invite.user_name}</Link></div>
+                                        <div><b>Group:</b> <Link to={{ pathname: "/group-" + invite.project_id, state: { _id: invite.project_id } }} style={{ 'textDecoration': 'none' }}> {invite.project_title} </Link></div>
                                         <div><span className="badge badge-primary p-2 mt-2">Invite Sent</span></div>
                                     </div>
                                 </div>
@@ -79,9 +80,9 @@ class InviteReceivedComponent extends React.Component {
         let received = this.state.received;
         received.splice(e.target.value, 1);
         inboxService.accept_join_invitation(e.target.id)
-            .then(json => { 
+            .then(json => {
                 if (json.status === "success") {
-                    this.setState({ received: received }); 
+                    this.setState({ received: received });
                 } else {
                     console.log(json.message);
                 }
@@ -114,8 +115,8 @@ class InviteReceivedComponent extends React.Component {
                                 <div className="d-inline-flex">
                                     <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
                                     <div className="flex-column">
-                                        <div><strong className="text-gray-dark">From: {invite.user_name}</strong></div>
-                                        <div><b>Group:</b> {invite.project_title}</div>
+                                        <div><strong className="text-dark-gray">From:</strong> <Link to={{ pathname: "/profile-" + invite.user_name, state: { _id: invite.user_id, username: invite.user_name } }} id={invite.user_id} style={{ 'textDecoration': 'none' }}>{invite.user_name}</Link></div>
+                                        <div><b>Group:</b> <Link to={{ pathname: "/group-" + invite.project_id, state: { _id: invite.project_id } }} style={{ 'textDecoration': 'none' }}> {invite.project_title} </Link></div>
                                         <div><span className="badge badge-info p-2 mt-2">Invite Received</span></div>
                                     </div>
                                 </div>
