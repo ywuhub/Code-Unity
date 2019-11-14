@@ -11,15 +11,40 @@ class Inbox extends React.Component {
     render() {
         return (
             <div className="container-fluid">
-                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-2 border-bottom">
-                    <h4>Inbox</h4>
+                <div className="d-flex flex-column pt-3 pb-2 mb-2 ">
+                    <h4 className="border-bottom pb-2">Inbox</h4>
+                    <ul className="nav nav-tabs nav-justified mt-3" role="tablist">
+                        <li className="nav-item">
+                            <a className="nav-link active" data-toggle="tab" href="#invites-sent">Invites Sent</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" data-toggle="tab" href="#invites-received">Invites Received</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" data-toggle="tab" href="#requests-sent">Join Requests Sent</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" data-toggle="tab" href="#requests-received">Join Requests Received</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" data-toggle="tab" href="#requests-received">Group Notifications</a>
+                        </li>
+                    </ul>
                 </div>
                 <div className="p-3 bg-white rounded shadow-sm">
-                    <div>
-                        <InviteSentComponent />
-                        <InviteReceivedComponent />
-                        <JoinRequestsSent />
-                        <JoinRequestsReceived />
+                    <div className="tab-content">
+                        <div id="invites-sent" className="container-fluid tab-pane active"><br />
+                            <InviteSentComponent />
+                        </div>
+                        <div id="invites-received" className="container-fluid tab-pane fade"><br />
+                            <InviteReceivedComponent />
+                        </div>
+                        <div id="requests-sent" className="container-fluid tab-pane fade"><br />
+                            <JoinRequestsSent />
+                        </div>
+                        <div id="requests-received" className="container-fluid tab-pane fade"><br />
+                            <JoinRequestsReceived />
+                        </div>
                     </div>
                 </div>
             </div>
