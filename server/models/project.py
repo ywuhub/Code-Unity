@@ -6,12 +6,15 @@ from flask_restful import fields
 from server.utils.json import ObjectId as ObjectIdUnmarshaller
 
 project_fields = {
+    "project_id": ObjectIdUnmarshaller(attribute="_id"),
     "title": fields.String(),
-    "leader": ObjectIdUnmarshaller,
+    "leader": fields.Nested({"_id": ObjectIdUnmarshaller, "username": fields.String}),
     "max_people": fields.Integer,
     "cur_people": fields.Integer,
-    "members": fields.List(ObjectIdUnmarshaller),
-    "description": fields.String,
+    "members": fields.List(
+        fields.Nested({"_id": ObjectIdUnmarshaller, "username": fields.String})
+    ),
+    "description": fields.String(default=None),
     "course": fields.String(default=None),
     "technologies": fields.List(fields.String),
     "languages": fields.List(fields.String),

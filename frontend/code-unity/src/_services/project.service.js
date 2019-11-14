@@ -7,7 +7,9 @@ const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('
 export const projectService = {
     create_group,
     join_group,
+    leave_group,
     join_requests,
+    accept_request,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
@@ -34,12 +36,38 @@ function join_group(project_id, message) {
         .then(handleResponse);
 }
 
-function join_requests() {
-    const requestOptions = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+function leave_group(project_id) {
+    const options = {
+        method: 'POST',
+        headers: { 'Authorization': authHeader() },
     };
 
-    return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
+    return fetch(`${config.apiUrl}/api/project/${project_id}/leave`, options)
+        .then(response => {return response.json()});
+}
+
+function join_requests(incoming) {
+    const requestOptions = {
+        method: 'GET',
+        headers: { 'Authorization': authHeader() },
+    };
+
+    if (incoming) {
+        return fetch(`${config.apiUrl}/api/project/requests?incoming=true`, requestOptions)
+            .then(handleResponse);
+    } else {
+        return fetch(`${config.apiUrl}/api/project/requests`, requestOptions)
+            .then(handleResponse);
+    }
+}
+
+function accept_request(project_id, user_id, join_from) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        body: JSON.stringify({ user_id: user_id, join_from: join_from })
+    };
+
+    return fetch(`${config.apiUrl}/api/project/${project_id}/join`, requestOptions)
         .then(handleResponse);
 }

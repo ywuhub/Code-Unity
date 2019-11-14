@@ -1,17 +1,30 @@
 import React from 'react';
 import { Router, Route, Link, Switch } from 'react-router-dom';
+import { authenticationService } from '@/_services';
 
 function ShowMembers(props) {
     let post = props.post;
+    const curr_id = authenticationService.currentUserValue.uid;
     return (
         <span>
-            <i className="fas fa-user-friends"></i> <b>Members:</b> <Link to={{ pathname: "/profile-" + post['leader'], state: { _id: post['leader'], username: post['leader'] } }} id={post['leader']} style={{ 'textDecoration': 'none' }}>{post['leader']}</Link>
+            <i className="fas fa-user-friends"></i> <b>Members:&nbsp;</b> 
+            {(curr_id === post['leader']._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{post['leader'].username}</Link>) ||
+                <Link to={{ pathname: "/profile-" + post['leader'].username, state: { _id: post['leader']._id, username: post['leader'].username } }} id={post['leader']._id} style={{ 'textDecoration': 'none' }}>{post['leader'].username}</Link>
+            }
             {post['members'] && post['members'].length > 1 && ', '}
             {post['members'] &&
-                Array.from(post['members']).filter((member) => { return member !== post['leader'] }).map((member) => {
-                    return <Link to={{ pathname: "/profile-" + member, state: { _id: member, username: member }}} id={member} key={member} style={{ 'textDecoration': 'none' }}>{member}</Link>
+                Array.from(post['members']).filter((member) => { return member.username !== post['leader'].username }).map((member, index) => {
+                    return (
+                        <span key={member._id}>
+                            {(curr_id === member._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{member.username}</Link>) ||
+                                <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} id={member._id} style={{ 'textDecoration': 'none' }}>{member.username}</Link>
+                            }
+                            {index !== post['members'].length - 2 && <span>,&nbsp;</span>}
+                        </span>
+                    )
                 })
             }
+
         </span>
     );
 }

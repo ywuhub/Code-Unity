@@ -1,7 +1,7 @@
 import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import '@/Style';
-import { userService } from '@/_services';
+import { userService, projectService } from '@/_services';
 
 
 class GroupEditPage extends React.Component {
@@ -136,6 +136,15 @@ class GroupEditPage extends React.Component {
         }
     }
 
+    leaveProject(e) {
+        projectService.leave_group(this.state.currentProject.project_id)
+            .then(json => {
+                console.log(json);
+                window.location.reload();
+            })
+            .catch(err => console.log(err));
+    }
+
     render() {
         let key_id = this.props.key_id_outer;
         const EditSkillBox = (props) => {
@@ -207,7 +216,7 @@ class GroupEditPage extends React.Component {
                                 <div className="col-9">
                                     <div className="row">
                                         <p>Leader: </p>
-                                        <p>{this.props.data.leader}</p>
+                                        <p>{this.props.data.leader.username}</p>
                                     </div>
                                     <div className="row">
                                         <p>Member: </p>
@@ -216,7 +225,7 @@ class GroupEditPage extends React.Component {
                                            (this.props.data.members || []).map((member) => {
                                             return(
                                                 <div key={key_id++} className="row ml-1">
-                                                    <p>{member}</p>
+                                                    <p>{member.username}</p>
                                                 </div>
                                                 )
                                             }) 
@@ -247,7 +256,7 @@ class GroupEditPage extends React.Component {
                                           ref="edit_description"
                                           defaultValue={this.props.data.description}></textarea>
                             </div>
-                            {this.props.data.course &&
+                            {
                             <div className="row mt-3 border-bottom border-grey">
                                 <div className="col-12 row">
                                     <p>Courses:</p>

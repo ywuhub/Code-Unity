@@ -59,7 +59,7 @@ class UserSearch extends React.Component {
 
     render() {
         return (
-            <div className="mx-3" style={{'width':'25vw', 'position':'relative'}}>
+            <div className="mx-3" style={{'width':'300px', 'position':'relative'}}>
                 <div id="user-search-bar" className="input-group" tabIndex="0">
                     <input type="text" id="user-search" className="form-control bg-transparent pr-5 pl-3 border-0" style={{'fontSize':'14px', 'color':'white' }} placeholder="Search for users by username or email" onChange={this.handleUserInput.bind(this)} ></input>
                         <div className="input-group-append">

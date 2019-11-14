@@ -1,10 +1,18 @@
+from copy import deepcopy
 from typing import Any, Dict, List
 
 from bson import ObjectId
 from flask_restful import fields
 from pymongo.database import Database
 
-from server.exceptions import AlreadyMemberOf, ProjectFull, ProjectNotFound
+from server.exceptions import (
+    AlreadyMemberOf,
+    DocumentNotFound,
+    ProjectFull,
+    ProjectNotFound,
+    UserNotFound,
+)
+from server.managers.project_manager import ProjectManager
 from server.models.project import Project
 from server.utils.json import ObjectId as ObjectIdMarshaller
 
@@ -197,6 +205,7 @@ class User:
 
     def get_outgoing_join_requests(self):
         pipeline = [
+            {"$match": {"user_id": self._id}},
             {
                 "$lookup": {
                     "from": "projects",
@@ -205,7 +214,6 @@ class User:
                     "as": "project",
                 }
             },
-            {"$match": {"user_id": self._id}},
             # The $lookup stage causes every project that matches the project_id
             # to be included as an array in the project field, thus we unwind it
             # to maintain a sane structure.
@@ -263,6 +271,148 @@ class User:
         for doc in requests.aggregate(pipeline):
             result.append(doc)
         return result
+
+    def invite_to_project(self, user_id: ObjectId, project_id: ObjectId):
+        projects = self.db.get_collection("projects")
+        project = projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        users = self.db.get_collection("users")
+        user = users.find_one({"_id": user_id})
+        if user is None:
+            raise UserNotFound()
+
+        # Check if we're the leader of the project that we're trying to invite
+        # people into.
+        if project["leader"] != self._id:
+            raise PermissionError()
+
+        # Check if the invited user is already a member of the group
+        if user_id in project["members"]:
+            raise AlreadyMemberOf()
+
+        if len(project["members"]) == project["max_people"]:
+            raise ProjectFull()
+
+        invitations = self.db.get_collection("invitations")
+        invitations.insert_one(
+            {"project_id": project_id, "user_id": user_id, "leader_id": self._id}
+        )
+
+    def delete_invitation(self, user_id: ObjectId, project_id: ObjectId):
+        # Check if the user has permissions to delete invitations
+        projects = self.db.get_collection("projects")
+        project = projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+        if project["leader"] != self._id:
+            raise PermissionError()
+
+        invitations = self.db.get_collection("invitations")
+        n_deleted = invitations.delete_one(
+            {"project_id": project_id, "user_id": user_id}
+        ).deleted_count
+
+        # If the delete_one operation didn't delete anything, the invitation
+        # didn't exist in the first place.
+        if n_deleted != 1:
+            raise DocumentNotFound()
+
+    def get_outgoing_invitations(self):
+        pipeline = [
+            {"$match": {"leader_id": self._id}},
+            {
+                "$lookup": {
+                    "from": "projects",
+                    "localField": "project_id",
+                    "foreignField": "_id",
+                    "as": "project",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                }
+            },
+            {"$unwind": "$project"},
+            {"$unwind": "$user"},
+            {
+                "$project": {
+                    "project_id": 1,
+                    "project_title": "$project.title",
+                    "user_id": 1,
+                    "user_name": "$user.username",
+                }
+            },
+        ]
+
+        res = []
+        invitations = self.db.get_collection("invitations")
+        for doc in invitations.aggregate(pipeline):
+            res.append(doc)
+
+        return res
+
+    def get_incoming_invitations(self):
+        pipeline = [
+            {"$match": {"user_id": self._id}},
+            {
+                "$lookup": {
+                    "from": "projects",
+                    "localField": "project_id",
+                    "foreignField": "_id",
+                    "as": "project",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "leader_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                }
+            },
+            {"$unwind": "$project"},
+            {"$unwind": "$user"},
+            {
+                "$project": {
+                    "project_id": 1,
+                    "project_title": "$project.title",
+                    "user_id": 1,
+                    "user_name": "$user.username",
+                }
+            },
+        ]
+
+        res = []
+        invitations = self.db.get_collection("invitations")
+        for doc in invitations.aggregate(pipeline):
+            res.append(doc)
+
+        return res
+
+    def leave_project(self, project_manager: ProjectManager, project_id: ObjectId):
+        # TODO: this operation should be atomic
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        # The group is disbanded if the leader leaves
+        if self._id == project["leader"]:
+            project_manager.delete_project(project_id)
+
+        try:
+            project["members"].remove(self._id)
+        except ValueError:
+            raise UserNotFound()
+    
+        project["cur_people"] = len(project["members"])
+
+        self.projects.replace_one({"_id": project_id}, project)
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'

@@ -81,6 +81,8 @@ class UserList(Resource):
             # fetch the usernames and emails
             user_list = []
             for doc in self.db["users"].find({}, {"password": 0}):
+                if (len(doc) < 3):
+                    continue
                 user_list.append({
                                     "_id": str(doc["_id"]), 
                                     "username": doc["username"], 

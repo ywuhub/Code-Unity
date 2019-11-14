@@ -56,7 +56,7 @@ class App extends React.Component {
                                     </button>
                                         <div className="dropdown-menu dropdown-menu-right" aria-labelledby="user">
                                             <a className="dropdown-item" href="/profile">Profile</a>
-                                            <a className="dropdown-item" href="#">Messages</a>
+                                            <a className="dropdown-item" href="/inbox">Messages</a>
                                             <a className="dropdown-item" href="#">My Favourites</a>
 
                                             <div className="dropdown-divider"></div>

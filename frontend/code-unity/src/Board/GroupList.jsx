@@ -3,6 +3,11 @@ import AdvancedSearch from './AdvancedSearch';
 import GroupPost from './GroupPost';
 import config from 'config';
 import { authHeader } from '@/_helpers';
+
+import '@/Style';
+
+const POSTS_PER_PAGE = 1;
+
 /**
  * Search bar that filters and shows group postings
  */
@@ -15,8 +20,11 @@ class GroupList extends React.Component {
     this.removeTag = this.removeTag.bind(this);
     this.addTags = this.addTags.bind(this);
     this.state = {
-      initialPosts: [],
-      filteredPosts: [],
+      initialPosts: [],   // all posts
+      filteredPosts: [],  // initial posts matching the tags inputted from user 
+      posts: [],          // posts shown for each page
+      postsLength: 0,
+      page: 1,
       tags: [],
       excluded_tags: [],
       hidePosts: false,
@@ -39,7 +47,7 @@ class GroupList extends React.Component {
     fetch(`${config.apiUrl}` + '/api/project/list', projects_options)
       .then(response => { return response.json() })
       .then(posts => {
-        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts });
+        if (this.isMounted_) this.setState({ initialPosts: posts, filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), postsLength: posts.length });
       })
       .then(() => {
         if (this.isMounted_) this.setState({ isLoading: false });
@@ -74,14 +82,14 @@ class GroupList extends React.Component {
     // filtering posts when input filter is empty
     if (/^(\s+|)$/.test(filter)) {
       if (this.state.tags.length !== 0) this.filterByTag();
-      else this.setState({ filteredPosts: posts });
+      else this.setState({ filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), page: 1, postsLength: posts.length }); //TODO
 
       // filter posts acorrding to input filter
     } else {
       posts = posts.filter((post) => {
         return this.containsFilter(post, filter);
       });
-      this.setState({ filteredPosts: posts });
+      this.setState({ filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), page: 1, postsLength: posts.length });    //TODO
     }
   }
 
@@ -117,24 +125,7 @@ class GroupList extends React.Component {
       });
     }
 
-    this.setState({ filteredPosts: posts });
-  }
-
-  /**
-   * Filters based on specific key/part of post e.g. title, leader, course, etc
-   * @param {*} key   
-   * @param {*} name 
-   */
-  filterByKey(key, name) {
-    // let posts = this.state.initialPosts;
-    let posts = this.state.filteredPosts;
-    name = name.toLowerCase();
-
-    posts = posts.filter((post) => {
-      return post[key].toLowerCase().indexOf(name) !== -1;
-    });
-
-    this.setState({ filteredPosts: posts });
+    this.setState({ filteredPosts: posts, posts: posts.slice(0, POSTS_PER_PAGE), page: 1, postsLength: posts.length });  //TODO
   }
 
   /**
@@ -193,7 +184,10 @@ class GroupList extends React.Component {
   setPosts(posts) {
     this.setState({
       initialPosts: posts,
-      filteredPosts: posts,
+      filteredPosts: posts, //TODO
+      posts: posts.slice(0, POSTS_PER_PAGE),
+      postsLength: posts.length, 
+      page: 1,
       tags: [],
       excluded_tags: [],
       isLoading: false
@@ -232,6 +226,33 @@ class GroupList extends React.Component {
   toggleHidePost(e) {
     const hide = !this.state.hidePosts;
     this.setState({ hidePosts: hide });
+  }
+
+  paginationClick(e) {
+    const page_clicked = parseInt(e.target.innerText);
+    if (page_clicked === this.state.page) return;
+    
+    if (e.target.className.indexOf('l-arrow') !== -1) {
+      this.setState({ page: 1 });
+      this.setState({ posts: this.state.filteredPosts.slice(0, POSTS_PER_PAGE) });
+      return;
+    }
+
+    if (e.target.className.indexOf('r-arrow') !== -1) {
+      const pages = Math.ceil(this.state.postsLength/POSTS_PER_PAGE);
+      this.setState({ page: pages });
+      
+      const startIndex = (pages - 1) * POSTS_PER_PAGE;
+      const endIndex = pages * POSTS_PER_PAGE;
+      this.setState({ posts: this.state.filteredPosts.slice(startIndex, endIndex) })
+      return;
+    }
+
+    const startIndex = (page_clicked - 1) * POSTS_PER_PAGE;
+    const endIndex = page_clicked * POSTS_PER_PAGE;
+
+    this.setState({ page: page_clicked })
+    this.setState({ posts: this.state.filteredPosts.slice(startIndex, endIndex) });
   }
 
   /**
@@ -308,19 +329,19 @@ class GroupList extends React.Component {
             {/* Shows all group listings */}
             {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
             {!this.state.isLoading &&
-              this.state.filteredPosts.map((post) => {
+              this.state.posts.map((post) => {
                 return <div key={post_key++}><GroupPost post={post} hidePosts={this.state.hidePosts} /></div>;
               })
             }
 
-            <small className="d-block text-right my-3">
-              <a href="#">All Groups</a>
-            </small>
+            {!this.state.isLoading && 
+              <Pagination posts_length={this.state.postsLength} page={this.state.page} onClick={this.paginationClick.bind(this)} />
+            }
           </div> {/* Group Listings Column End */}
 
           {/* Advanced Search Column */}
           <div className="col-sm-4">
-            <AdvancedSearch addTags={this.addTags} setPosts={this.setPosts.bind(this)} setLoading={this.setLoading.bind(this)} filterByKey={this.filterByKey.bind(this)} />
+            <AdvancedSearch addTags={this.addTags} setPosts={this.setPosts.bind(this)} setLoading={this.setLoading.bind(this)} />
           </div>
         </div>  {/* row end */}
 
@@ -355,10 +376,34 @@ class GroupList extends React.Component {
             </div>
           </div>
         </div> {/* Create group modal end */}
-
+        
       </div>
     );
   }
+}
+
+function Pagination(props) {
+  const page = props.page;
+
+  const len = props.posts_length;
+  const num_pages = Math.ceil(len / POSTS_PER_PAGE);
+
+  let numbers = [];
+  for (let i = 1; i <= num_pages; ++i) {
+    if (i === page) {
+      numbers.push(<button key={i} className="btn btn-custom btn-active" onClick={props.onClick}>{i}</button>);
+    } else {
+      numbers.push(<button key={i} className="btn btn-custom" onClick={props.onClick}>{i}</button>);
+    }
+  }
+
+  return (
+    <div className="pagination my-4">
+      <button className="btn btn-custom l-arrow" onClick={props.onClick}><i className="fas fa-angle-double-left l-arrow"></i></button>
+      {numbers}
+      <button className="btn btn-custom r-arrow" onClick={props.onClick}><i className="fas fa-angle-double-right r-arrow"></i></button>
+    </div>
+  );
 }
 
 export { GroupList };
