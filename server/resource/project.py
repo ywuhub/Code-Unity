@@ -112,7 +112,7 @@ class ProjectResource(Resource):
 
         if project is None:
             return {"message": f"project_id {project_id} not found"}, 404
-        if current_user._id != project.leader:
+        if current_user._id != project["leader"]["_id"]:
             return {"message": "only the owner may modify a project"}, 401
         
         # Parse arguments
@@ -130,7 +130,7 @@ class ProjectResource(Resource):
         if project_details:
             # check if new max_people is greater than the current amount of members
             if 'max_people' in project_details.keys():
-                if (project_details['max_people'] < project.cur_people):
+                if (project_details['max_people'] < project["cur_people"]):
                     return {"message": "new maximum number of members value is less than current amount of members"}
 
             # update details in project mamanger
