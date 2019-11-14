@@ -49,6 +49,8 @@ class GroupPage extends React.Component {
     render() {
         let key_id = 0;
         return (
+
+
             <div class="container">
                 <div class="row mt-1">
                     <div class="col-sm-9 pl-1">

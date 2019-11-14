@@ -8,7 +8,8 @@ export const userService = {
     getAll,
     putProfile,
     getUserProject,
-    getUserProfile
+    getUserProfile,
+    putProjectDetail
 };
 
 function getUserProfile(id) {
@@ -22,8 +23,6 @@ function getProfile() {
 };
 function putProfile(name, email, visibility, description, interests, 
                         programming_languages, languages, github) {
-
-
     const requestOptions = {
         method: 'PUT',
         headers: {'Content-Type': 'application/json',
@@ -64,3 +63,21 @@ function getProjectDetail(id) {
                         };
     return fetch(`${config.apiUrl}/api/project/${id}`, requestOptions).then(handleResponse);
 }
+
+function putProjectDetail(project_id, title, max_people, description, course, tags, 
+                        languages, technologies) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()},
+        body: JSON.stringify({ 
+            "title": title,
+            "max_people": max_people,
+            "description": description,
+            "course": course,
+            "tags": tags,
+            "languages": languages,
+            "technologies": technologies})
+    };
+    return fetch(`${config.apiUrl}/api/project/${project_id}`, requestOptions).then(GetReponseCode);
+};

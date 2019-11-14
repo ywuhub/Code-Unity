@@ -61,6 +61,7 @@ class MyGroup extends React.Component {
         }
     }
 
+
     render() {
         let key_id=0;
         let id_value=0;
@@ -69,26 +70,19 @@ class MyGroup extends React.Component {
             <div className="container-fluid">
 				<div className="row mt-1">
 					<div className="col-sm-9 pl-1">
-                        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 className="h4 ml-2">My Group</h1>
-                            {
-                                this.state.currentProject&&
-                                (this.props._id==this.state.currentProject.leader)
-                                &&<a href={"/mygroup/edit/"+this.state.currentProject.project_id}>
-                                    <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
-                                </a>
-                            }
-                        </div>
                         {
                         this.state.currentProject && !this.props.isEdit &&
-                        <div className="my-3 p-3 bg-white rounded shadow-sm">
-                            <GroupPage data={this.state.currentProject} key_id_outer={key_id}/>
-                        </div>
+                            <GroupPage data={this.state.currentProject}
+                                       key_id_outer={key_id}
+                                       isEditable={this.props._id==this.state.currentProject.leader}
+                                         />
                         }
                         {
                         this.state.currentProject && this.state.isRedirect&&this.props.isEdit&&
-                        <div className="my-3 p-3 bg-white rounded shadow-sm">
-                            <GroupEditPage data={this.state.currentProject} key_id_outer={key_id}/>
+                        <div>
+                            <GroupEditPage data={this.state.currentProject} 
+                                           key_id_outer={key_id}
+                                           />
                         </div>
                         }
 
