@@ -3,6 +3,7 @@ from flask import request
 from flask_restful import Resource
 from pymongo.database import Database
 
+
 class UserList(Resource):
     def __init__(self, db: Database):
         self.db = db

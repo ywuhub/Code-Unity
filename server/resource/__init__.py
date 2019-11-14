@@ -12,3 +12,4 @@ from .project_request_list import ProjectRequestList
 from .user_invite import UserInvite
 from .user_invite_list import UserInviteList
 from .user_list import UserList
+from .reset_password import ResetPassword
