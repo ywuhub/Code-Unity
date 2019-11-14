@@ -1,5 +1,6 @@
 import React from 'react';
 import { inboxService } from '@/_services';
+import { Route, Link, Switch } from 'react-router-dom';
 
 class JoinRequestsSent extends React.Component {
     constructor(props) {
@@ -21,10 +22,10 @@ class JoinRequestsSent extends React.Component {
             .catch(err => { console.log(err); })
     }
 
-    removeJoinRequestSent(e) {
+    removeJoinRequestSent(project_id, index, e) {
         let sent = this.state.sent;
-        sent.splice(e.target.value, 1);
-        inboxService.remove_join_request_sent(e.target.id)
+        sent.splice(index, 1);
+        inboxService.remove_join_request_sent(project_id)
             .then(json => {
                 if (json.status === "success") {
                     if (this.isMounted_) this.setState({ sent: sent });
@@ -51,7 +52,7 @@ class JoinRequestsSent extends React.Component {
                                         </div>
                                     </div>
                                     <div className="">
-                                        <button className="btn btn-sm btn-outline-secondary mx-1" id={invite.project_id} value={index} onClick={this.removeJoinRequestSent.bind(this)}>Cancel Request</button>
+                                        <button className="btn btn-sm btn-outline-secondary mx-1" onClick={this.removeJoinRequestSent.bind(this, invite.project_id, index)}>Cancel Request</button>
                                     </div>
                                 </div>
                             </div>
@@ -86,10 +87,10 @@ class JoinRequestsReceived extends React.Component {
         this.isMounted_ = false;
     }
 
-    acceptJoinRequest(e) {
+    acceptJoinRequest(project_id, user_id, index, e) {
         let received = this.state.received;
-        received.splice(e.target.value, 1);
-        inboxService.accept_join_request(e.target.id, e.target.name)
+        received.splice(index, 1);
+        inboxService.accept_join_request(project_id, user_id)
             .then(json => {
                 if (json.status === "success") {
                     if (this.isMounted_) this.setState({ received: received });
@@ -100,7 +101,7 @@ class JoinRequestsReceived extends React.Component {
             .catch(err => { console.log(err); });
     }
 
-    declineJoinRequest(e) {
+    declineJoinRequest(project_id, user_id, index, e) {
         console.log("TBD");
         // let received = this.state.received;
         // received.splice(e.target.value, 1);
@@ -132,8 +133,8 @@ class JoinRequestsReceived extends React.Component {
                                         </div>
                                     </div>
                                     <div className="">
-                                        <button className="btn btn-sm btn-outline-secondary mx-1" id={invite.project_id} name={invite.user_id} value={index} onClick={this.acceptJoinRequest.bind(this)}>Accept</button>
-                                        <button className="btn btn-sm btn-outline-secondary mx-1" id={invite.project_id} name={invite.user_id} value={index} onClick={this.declineJoinRequest.bind(this)}>Decline</button>
+                                        <button className="btn btn-sm btn-outline-secondary mx-1" onClick={this.acceptJoinRequest.bind(this, invite.project_id, invite.user_id, index)}>Accept</button>
+                                        <button className="btn btn-sm btn-outline-secondary mx-1" onClick={this.declineJoinRequest.bind(this, invite.project_id, invite.user_id, index)}>Decline</button>
                                     </div>
                                 </div>
                             </div>

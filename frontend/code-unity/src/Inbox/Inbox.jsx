@@ -27,7 +27,7 @@ class Inbox extends React.Component {
                             <a className="nav-link" data-toggle="tab" href="#requests-received">Join Requests Received</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" data-toggle="tab" href="#requests-received">Group Notifications</a>
+                            <a className="nav-link" data-toggle="tab" href="#group-notifications">Group Notifications</a>
                         </li>
                     </ul>
                 </div>
@@ -44,6 +44,8 @@ class Inbox extends React.Component {
                         </div>
                         <div id="requests-received" className="container-fluid tab-pane fade"><br />
                             <JoinRequestsReceived />
+                        </div>
+                        <div id="group-notifications" className="container-fluid tab-pane fade"><br />
                         </div>
                     </div>
                 </div>

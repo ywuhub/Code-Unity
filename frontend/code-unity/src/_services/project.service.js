@@ -7,6 +7,7 @@ const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('
 export const projectService = {
     create_group,
     join_group,
+    leave_group,
     join_requests,
     accept_request,
     currentUser: currentUserSubject.asObservable(),
@@ -33,6 +34,16 @@ function join_group(project_id, message) {
 
     return fetch(`${config.apiUrl}/api/project/${project_id}/request`, requestOptions)
         .then(handleResponse);
+}
+
+function leave_group(project_id) {
+    const options = {
+        method: 'POST',
+        headers: { 'Authorization': authHeader() },
+    };
+
+    return fetch(`${config.apiUrl}/api/project/${project_id}/leave`, options)
+        .then(response => {return response.json()});
 }
 
 function join_requests(incoming) {

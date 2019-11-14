@@ -22,10 +22,10 @@ class InviteSentComponent extends React.Component {
             .catch(err => { console.log(err); })
     }
 
-    removeInvitation(e) {
+    removeInvitation(project_id, user_id, index, e) {
         let sent = this.state.sent;
-        sent.splice(e.target.value, 1);
-        inboxService.remove_invitation(e.target.id, e.target.name)
+        sent.splice(index, 1);
+        inboxService.remove_invitation(project_id, user_id)
             .then(json => {
                 if (json.status === "success") {
                     if (this.isMounted_) this.setState({ sent: sent });
@@ -54,7 +54,7 @@ class InviteSentComponent extends React.Component {
                                         </div>
                                     </div>
                                     <div className="">
-                                        <button className="btn btn-sm btn-outline-secondary mx-1" id={invite.project_id} name={invite.user_id} value={index} onClick={this.removeInvitation.bind(this)}>Cancel Invite</button>
+                                        <button className="btn btn-sm btn-outline-secondary mx-1" onClick={this.removeInvitation.bind(this, invite.project_id, invite.user_id, index)}>Cancel Invite</button>
                                     </div>
                                 </div>
                             </div>
@@ -85,10 +85,10 @@ class InviteReceivedComponent extends React.Component {
             .catch(err => { console.log(err); });
     }
 
-    acceptInvitation(e) {
+    acceptInvitation(project_id, index, e) {
         let received = this.state.received;
-        received.splice(e.target.value, 1);
-        inboxService.accept_join_invitation(e.target.id)
+        received.splice(index, 1);
+        inboxService.accept_join_invitation(project_id)
             .then(json => {
                 if (json.status === "success") {
                     if (this.isMounted_) this.setState({ received: received });
@@ -99,10 +99,10 @@ class InviteReceivedComponent extends React.Component {
             .catch(err => { console.log(err); });
     }
 
-    declineInvitation(e) {
+    declineInvitation(project_id, user_id, index, e) {
         let received = this.state.received;
-        received.splice(e.target.value, 1);
-        inboxService.remove_invitation(e.target.id, e.target.name)
+        received.splice(index, 1);
+        inboxService.remove_invitation(project_id, user_id)
             .then(json => {
                 if (json.status === "success") {
                     if (this.isMounted_) this.setState({ received: received });
@@ -131,8 +131,8 @@ class InviteReceivedComponent extends React.Component {
                                         </div>
                                     </div>
                                     <div className="">
-                                        <button className="btn btn-sm btn-outline-secondary mx-1" id={invite.project_id} value={index} onClick={this.acceptInvitation.bind(this)}>Accept</button>
-                                        <button className="btn btn-sm btn-outline-secondary mx-1" id={invite.project_id} name={invite.user_id} value={index} onClick={this.declineInvitation.bind(this)}>Decline</button>
+                                        <button className="btn btn-sm btn-outline-secondary mx-1" onClick={this.acceptInvitation.bind(this, invite.project_id, index)}>Accept</button>
+                                        <button className="btn btn-sm btn-outline-secondary mx-1" onClick={this.declineInvitation.bind(this, invite.project_id, invite.user_id, index)}>Decline</button>
                                     </div>
                                 </div>
                             </div>

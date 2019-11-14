@@ -3,7 +3,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 import peopleIcon from '@/Assert/peopleIcon.png';
 import '@/Style';
 import { SkillBox, GroupCard, GroupPage, GroupEditPage} from '@/WebComponents';
-import { userService } from '@/_services';
+import { userService, projectService } from '@/_services';
 
 class MyGroup extends React.Component {
     constructor(props) {
@@ -67,6 +67,15 @@ class MyGroup extends React.Component {
         }
     }
 
+    leaveProject(e) {
+        projectService.leave_group(this.state.currentProject.project_id)
+            .then(json => {
+                console.log(json);
+                window.location.reload();
+            })
+            .catch(err => console.log(err));
+    }
+
     render() {
         let key_id=0;
         let id_value=0;
@@ -77,13 +86,18 @@ class MyGroup extends React.Component {
 					<div className="col-sm-9 pl-1">
                         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                             <h1 className="h4 ml-2">My Group</h1>
-                            {
-                                this.state.currentProject&&
-                                (this.props._id==this.state.currentProject.leader._id)
-                                &&<a href={"/mygroup/edit/"+this.state.currentProject.project_id}>
-                                    <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
-                                </a>
-                            }
+                            <div>
+                                { this.state.projectData.length > 0 && 
+                                    <button type="button" class="btn btn-sm btn-outline-secondary mx-1" onClick={this.leaveProject.bind(this)}>{(this.props._id==this.state.currentProject.leader._id && "Delete") || "Leave"} Group</button> 
+                                }
+                                {
+                                    this.state.currentProject &&
+                                    (this.props._id==this.state.currentProject.leader._id) &&
+                                    <a href={"/mygroup/edit/"+this.state.currentProject.project_id}>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
+                                    </a>
+                                }
+                            </div>
                         </div>
                         {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
                         {!this.state.isLoading &&
