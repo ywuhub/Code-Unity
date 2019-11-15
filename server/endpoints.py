@@ -42,7 +42,7 @@ def register_endpoints(
     api.add_resource(ProgrammingLanguages, "/programming_languages", resource_class_args=[db])
     api.add_resource(Auth, "/auth", resource_class_args=[user_manager])
     api.add_resource(LogOut, "/auth/logout", resource_class_args=[user_manager])
-    api.add_resource(ResetPassword, "/reset_password")
+    api.add_resource(ResetPassword, "/reset_password", resource_class_args=[db])
     api.add_resource(NewProject, "/project")
     api.add_resource(ProjectResource, "/project/<string:project_id>", resource_class_args=[project_manager])
     api.add_resource(ProjectJoin, "/project/<string:project_id>/join", resource_class_args=[project_manager])

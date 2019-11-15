@@ -69,8 +69,8 @@ class UserList(Resource):
                 }
             ]
         ```
-
         """
+
         # init return list
         ret = []
 
