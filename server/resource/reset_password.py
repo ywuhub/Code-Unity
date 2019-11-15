@@ -1,70 +1,71 @@
-from json import dumps
+from argon2 import PasswordHasher
+from bson import ObjectId
 
+from flask import current_app
 from flask_restful import Resource, reqparse
 from pymongo.database import Database
 
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
+
+# password hasher to encode incoming user passwords for resetting password
+ph = PasswordHasher(time_cost=1, memory_cost=51200, parallelism=2)
+
+def verify_token(user_token: str):
+    s = Serializer(current_app.config['SECRET_KEY'])
+
+    # decodes the token to get the user_id that is embedded to it
+    # i.e. {'_id': user_id}.tokenkey
+    # decoding gives: payload = {'_id': user_id} [tokenkey removed]
+    try:
+        payload = s.loads(user_token)
+    except:
+        return {"message" : "Reset Password Token has expired or is invalid. Please resend reset password request again!"}
+
+    return payload
 
 class ResetPassword(Resource):
     def __init__(self, db: Database):
         self.users = db.get_collection("users")
 
-    def get(self):
+    def put(self, token: str):
         """
-        Sends a message to reset user's password to a registered email address if they forgot their password.
+        Reset the password from the link sent to the user's email which goes here
+        and we verify the timed token to see if it has expired.
         INPUT:
-        - email: a email that is linked to a code unity account or else error will be sent back
+        - token: token key with the user id embedded with a 24 hour life
 
         EXAMPLE:
         ```
-        GET ?email=test@example.com ->
+        PUT ->
             (200 OK) <-
-                Message sent to registered email address if found to reset password
+                
         ```
         """
-
-        # fetch the email parameter
-        get_parser = reqparse.RequestParser(bundle_errors=True)
-        get_parser.add_argument("email", type=str, required=True, help="Email required")
-        email_arg = get_parser.parse_args(strict=True)
+        # decode token to get user id to reset password
+        payload = verify_token(token)
         
-        # check if email in database or else send error
-        doc = self.users.find_one({"email": email_arg['email']})
-        if doc:
-            # create message to send 
-            content = r"""
-                        <p>Hello {username},<p>
-                        <p>
-                            This email is to confirm your request to reset your password for your Code Unity account.
-                            To access your account, you will now need to follow the instructions below:
-                        </p>
-                        <ol>
-                            <li>Click on the following link to go to the password reset page. Link: <link to reset password goes here></li>
-                            <li>On the page fill in your new password and click on 'Save Changes'.</li>
-                            <li>Wait 5 seconds for you to be redirected back to the login page to use new password.</li>
-                        </ol>
-                        <p>Best Regards,<br>
-                           Code Unity
-                        </p>
-                       """.format(username = doc['username'])
-
-            message = Mail(
-                from_email = 'admin@codeunity.com',
-                to_emails = doc['email'],
-                subject = 'Code Unity: Password Reset Information',
-                html_content = content
-            )
-
-            # send message through sendgrid api
-            try: 
-                send_msg = SendGridAPIClient('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')
-                send_msg.send(message)
-            except Exception:
-                return {"message": "An error has occured! Please try again."}
+        # return error if invalid token
+        if '_id' in payload.keys():
+            user_id = payload['_id']
         else:
-            return {"message": "Error: Email is not registered to an Code Unity account. Please try again!"}
+            return payload, 400
 
-        return {"message": "An email has been sent to your email address " + email_arg['email'] + ". " +
-                           "Follow the instructions given in that email to reset your password."}
+        # fetch password parameter
+        put_parser = reqparse.RequestParser(bundle_errors=True)
+        put_parser.add_argument("password", type=str, required=True, help="New Password required")
+        args = put_parser.parse_args(strict=True)
+        
+        # check if password is valid
+        if args['password'] == '':
+            return {"message": "Please enter a valid password"}, 400
+
+        # update password in database
+        doc = self.users.find_one({"_id": ObjectId(user_id)})
+        if doc:
+            password = ph.hash(args['password'])
+            self.users.update({"_id": ObjectId(user_id)}, {"$set": {"password": password}}, upsert=False)
+        else:
+            return {"message" : "Error: Invalid Token. Please resend reset password request again!"}, 400
+
+        return {"message": "Password has been reset! Redirecting your to the login page in 5 seconds..."}
