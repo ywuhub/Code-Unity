@@ -5,7 +5,7 @@ import { history } from '@/_helpers';
 import { authenticationService } from '@/_services';
 import { PrivateRoute } from '@/_components';
 import { HomePage } from '@/HomePage';
-import { LoginPage, Register } from '@/LoginPage';
+import { LoginPage, Register, ForgotPassword } from '@/LoginPage';
 import { UserSearch } from '@/UserSearch';
 import '@/Style';
 
@@ -63,7 +63,7 @@ class App extends React.Component {
                                             <a className="dropdown-item" href="#">Applications</a>
 
                                             <div className="dropdown-divider"></div>
-                                            <a className="dropdown-item" href="#">Settings</a>
+                                            <a className="dropdown-item" href="/setting">Settings</a>
                                             <a onClick={this.logout} className="dropdown-item">Logout</a>
                                         </div>
                                     </div>
@@ -76,6 +76,7 @@ class App extends React.Component {
                         <Switch>
                             <Route exact path="/login" component={LoginPage} />
                             <Route exact path="/register" component={Register} />
+                            <Route exact path="/forgotPassword" component={ForgotPassword} />
                             <PrivateRoute path="/" component={HomePage} />
                         </Switch>
 

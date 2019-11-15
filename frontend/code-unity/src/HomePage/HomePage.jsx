@@ -2,7 +2,8 @@ import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
-import { Dashboard, GroupList, GroupChat, Profile, MyGroup, GroupPage, JoinRequests } from '@/Board';
+import { Dashboard, GroupList, GroupChat, Profile,
+         MyGroup, GroupPage, JoinRequests, SettingPage } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 import { OthersProfile } from '@/UserSearch';
 import { Inbox } from '@/Inbox';
@@ -56,6 +57,7 @@ class HomePage extends React.Component {
             </Switch>
           )
         )
+
         return (
             <div className="container-fluid">
                 <div className="row">
@@ -156,6 +158,7 @@ class HomePage extends React.Component {
                         <GroupPage {...props} />)
                     } />
                     <Route path="/inbox" component={Inbox}/>
+                    <Route path="/setting" component={SettingPage}/>
                 </Switch>
 
                 </main>
