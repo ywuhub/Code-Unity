@@ -11,7 +11,7 @@ class Inbox extends React.Component {
     render() {
         return (
             <div className="container-fluid">
-                <div className="d-flex flex-column pt-3 pb-2 mb-2 ">
+                <div className="d-flex flex-column pt-3 pb-2 ">
                     <h4 className="border-bottom pb-2">Inbox</h4>
                     <ul className="nav nav-tabs nav-justified mt-3" role="tablist">
                         <li className="nav-item">

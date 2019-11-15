@@ -7,6 +7,7 @@ class JoinRequestsSent extends React.Component {
         super(props);
         this.isMounted_ = false;
         this.state = {
+            initialSent: [],
             sent: [],
             isLoading: false
         }
@@ -17,28 +18,61 @@ class JoinRequestsSent extends React.Component {
         this.setState({ isLoading: true });
         inboxService.get_join_requests_sent()
             .then(json => {
-                if (this.isMounted_) this.setState({ sent: json, isLoading: false });
+                if (this.isMounted_) this.setState({ initialSent: json, sent: json, isLoading: false });
             })
             .catch(err => { console.log(err); })
     }
 
     removeJoinRequestSent(project_id, index, e) {
-        let sent = this.state.sent;
+        let sent = this.state.initialSent;
         sent.splice(index, 1);
         inboxService.remove_join_request_sent(project_id)
             .then(json => {
                 if (json.status === "success") {
-                    if (this.isMounted_) this.setState({ sent: sent });
+                    if (this.isMounted_) this.setState({ initialSent: sent, sent: sent });
                 }
             })
             .catch(err => { console.log(err) });
+    }
+
+    containsFilter(invitation, filter) {
+        let contains = false;
+        for (let key of Object.keys(invitation)) {
+            if (typeof invitation[key] === 'string') contains = (invitation[key].toLowerCase().indexOf(filter) !== -1);
+            else contains = (Array.from(invitation[key]).toString().toLowerCase().indexOf(filter) !== -1);
+            if (contains) break;
+        }
+        return contains;
+    }
+
+    filter(e) {
+        const input = e.target.value.toLowerCase();
+
+        if (/^(\s+|)$/.test(input)) {
+            this.setState({ sent: this.state.initialSent });
+
+        } else {
+            let invitations = this.state.initialSent.filter((invitation) => {
+                return this.containsFilter(invitation, input);
+            })
+            this.setState({ sent: invitations });
+        }
     }
 
     render() {
         let key = 0;
         return (
             <div>
-                {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3"></div>) ||
+                 <div className="d-flex justify-content-center border-bottom">
+                    <div className="input-group bg-light border-bottom shadow-sm rounded-pill mb-4 w-75">
+                        <input type="text" id="search-bar" className="form-control bg-transparent rounded-pill p-4 pr-5 border-0" placeholder="Search" onChange={this.filter.bind(this)}></input>
+                        <div className="input-group-append">
+                            <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
+                        </div>
+                    </div>
+                </div>
+
+                {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 mt-3"></div>) ||
                     this.state.sent.map((invite, index) => {
                         return (
                             <div key={key++} className="d-flex media text-muted border-bottom border-top border-gray">
@@ -68,6 +102,7 @@ class JoinRequestsReceived extends React.Component {
         super(props);
         this.isMounted_ = false;
         this.state = {
+            initialReceived: [],
             received: [],
             isLoading: false
         }
@@ -78,7 +113,7 @@ class JoinRequestsReceived extends React.Component {
         this.setState({ isLoading: true });
         inboxService.get_join_requests_received()
             .then(json => {
-                if (this.isMounted_) this.setState({ received: json, isLoading: false });
+                if (this.isMounted_) this.setState({ initialReceived: json, received: json, isLoading: false });
             })
             .catch(err => { console.log(err); });
     }
@@ -88,12 +123,12 @@ class JoinRequestsReceived extends React.Component {
     }
 
     acceptJoinRequest(project_id, user_id, index, e) {
-        let received = this.state.received;
+        let received = this.state.initialReceived;
         received.splice(index, 1);
         inboxService.accept_join_request(project_id, user_id)
             .then(json => {
                 if (json.status === "success") {
-                    if (this.isMounted_) this.setState({ received: received });
+                    if (this.isMounted_) this.setState({ initialReceived: received, received: received });
                 } else {
                     console.log(json.message);
                 }
@@ -114,11 +149,43 @@ class JoinRequestsReceived extends React.Component {
         //     .catch(err => { console.log(err) });
     }
 
+    containsFilter(invitation, filter) {
+        let contains = false;
+        for (let key of Object.keys(invitation)) {
+            if (typeof invitation[key] === 'string') contains = (invitation[key].toLowerCase().indexOf(filter) !== -1);
+            else contains = (Array.from(invitation[key]).toString().toLowerCase().indexOf(filter) !== -1);
+            if (contains) break;
+        }
+        return contains;
+    }
+
+    filter(e) {
+        const input = e.target.value.toLowerCase();
+
+        if (/^(\s+|)$/.test(input)) {
+            this.setState({ sent: this.state.initialReceived });
+
+        } else {
+            let invitations = this.state.initialReceived.filter((invitation) => {
+                return this.containsFilter(invitation, input);
+            })
+            this.setState({ received: invitations });
+        }
+    }
+
     render() {
         let key = 0;
         return (
             <div>
-                {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3"></div>) ||
+                <div className="d-flex justify-content-center border-bottom">
+                    <div className="input-group bg-light border-bottom shadow-sm rounded-pill mb-4 w-75">
+                        <input type="text" id="search-bar" className="form-control bg-transparent rounded-pill p-4 pr-5 border-0" placeholder="Search" onChange={this.filter.bind(this)}></input>
+                        <div className="input-group-append">
+                            <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
+                        </div>
+                    </div>
+                </div>
+                {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 mt-3"></div>) ||
                     this.state.received.map((invite, index) => {
                         return (
                             <div key={key++} className="d-flex media text-muted border-bottom border-top border-gray">

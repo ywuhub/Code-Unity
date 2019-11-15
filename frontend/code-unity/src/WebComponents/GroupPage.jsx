@@ -33,7 +33,7 @@ class GroupPage extends React.Component {
                             <button type="button" className="btn btn-sm btn-outline-secondary mx-1" 
                                 onClick={this.leaveProject.bind(this)}>
                                 {(this.props.isEditable && "Delete") || "Leave"} 
-                                Group
+                                &nbsp;Group
                             </button> 
                         }
                         {this.props.isEditable&&

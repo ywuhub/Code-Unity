@@ -64,7 +64,11 @@ class GroupList extends React.Component {
     let contains = false;
     for (let key of Object.keys(post)) {
       if (typeof post[key] === 'string') contains = (post[key].toLowerCase().indexOf(filter) !== -1);
-      else contains = (Array.from(post[key]).toString().toLowerCase().indexOf(filter) !== -1);
+      else {
+        if (key === 'leader') contains = (post[key].username.toLowerCase().indexOf(filter) !== -1);
+        else if (key === 'members') contains = (post[key].some(member => { return member.username.toLowerCase().indexOf(filter) !== -1}));
+        else contains = (Array.from(post[key]).toString().toLowerCase().indexOf(filter) !== -1);
+      }
       if (contains) break;
     }
     return contains;
