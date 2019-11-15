@@ -73,8 +73,8 @@ class LoginPage extends React.Component {
                                     </Form>
                                 )}
                             />
-
-                            <Link to="/register">Create an account</Link>
+                            <Link to="/register" className="row ml-0">Create an account</Link>
+                            <Link to="/forgotPassword" className="row ml-0">Forgot Password</Link>
                         </div>
                     </div>
                 </div>

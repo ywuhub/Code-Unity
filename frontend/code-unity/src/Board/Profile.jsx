@@ -79,7 +79,6 @@ class Profile extends React.Component {
 
 
     addTag(e) {
-
         if (e.key === 'Enter') {
             if (e.target.classList.contains('interests')) {
               let tags = (this.state.interests || []);
