@@ -11,7 +11,7 @@ class GroupPage extends React.Component {
         super(props);
     }
     leaveProject(e) {
-        projectService.leave_group(this.props.datag.project_id)
+        projectService.leave_group(this.props.data.project_id)
             .then(json => {
                 console.log(json);
                 window.location.reload();
@@ -30,8 +30,7 @@ class GroupPage extends React.Component {
                         <h1 className="h4 ml-2">My Group</h1>
                         <div>
                         {
-                            <button type="button" className="btn btn-sm btn-outline-secondary mx-1" 
-                                onClick={this.leaveProject.bind(this)}>
+                            <button type="button" className="btn btn-sm btn-outline-secondary mx-1" data-toggle="modal" data-target="#leave">
                                 {(this.props.isEditable && "Delete") || "Leave"} 
                                 &nbsp;Group
                             </button> 
@@ -107,6 +106,29 @@ class GroupPage extends React.Component {
                         <SkillBox keyValue={key_id++} title="tags" data={this.props.data.tags} />
                     </div>
                 </div>
+
+                {/* Create alert modal */}
+                <div className="modal fade" id="leave" tabIndex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="leaveTitle">Leave Group</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Are you sure you want to leave this group?</label>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-primary" onClick={this.leaveProject.bind(this)} data-dismiss="modal">Leave Group</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> {/* Create alert modal end */}
             </div>
         );
     }
