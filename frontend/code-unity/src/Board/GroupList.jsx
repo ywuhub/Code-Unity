@@ -1,6 +1,7 @@
 import React from 'react';
 import AdvancedSearch from './AdvancedSearch';
 import GroupPost from './GroupPost';
+import {CreateGroup} from '@/CreateGroup';
 import config from 'config';
 import { authHeader } from '@/_helpers';
 
@@ -354,33 +355,9 @@ class GroupList extends React.Component {
         {/* Create group modal */}
         <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalCenterTitle">Create New Group</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <form>
-                  <label htmlFor="message-text" className="col-form-label">Group Name:</label>
-                  <div className="input-group input-group-sm mb-3">
-                    <input type="text" className="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="message-text" className="col-form-label">Description:</label>
-                    <textarea className="form-control" id="message-text"></textarea>
-                  </div>
-                </form>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary">Save changes</button>
-              </div>
-            </div>
+            <CreateGroup />
           </div>
         </div> {/* Create group modal end */}
-        
       </div>
     );
   }

@@ -13,6 +13,7 @@
     "dependencies": {
         "formik": "^1.5.8",
         "history": "^4.10.1",
+        "quickblox": "^2.12.6",
         "react": "^16.10.2",
         "react-dom": "^16.10.2",
         "react-router-dom": "^5.1.2",
