@@ -3,13 +3,14 @@ import { Route, Link, Switch } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import '@/Style';
 import { SkillBox, GroupCard } from '@/WebComponents';
-import { userService } from '@/_services';
+import { userService, authenticationService } from '@/_services';
 import { projectService } from '../_services';
 
 class GroupPage extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+        this.isMember = this.isMember.bind(this);
         this.state = {
             _id: '',
             details: {},
@@ -28,7 +29,7 @@ class GroupPage extends React.Component {
                 details: data,
                 isLoading: false,
             })
-        })
+        }).then(this.isMember())
             .catch(err => {
                 this.setState({
                     isLoading: false
@@ -42,8 +43,32 @@ class GroupPage extends React.Component {
         })*/
     }
 
+    isMember() {
+        console.log(this.state.details.members);
+        for (var i in this.state.details.members) {
+            if (this.state.details.members[i]._id == authenticationService.currentUserValue.uid) {
+                this.setState({
+                    applied: true
+                });
+                break;
+            }
+        }
+    }
+
+
     handleChange(event) {
         this.setState({ description: event.target.value });
+    }
+
+    handleSubmit() {
+        projectService.join_group(this.state._id, this.state.description)
+            .then(
+                user => {
+                    const { from } = this.props.location.state || { from: { pathname: "/" } };
+                    this.props.history.push(from);
+                }
+            );
+        this.setState({ applied: true });
     }
 
     render() {
@@ -132,31 +157,18 @@ class GroupPage extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <Formik
-                                    onSubmit={() => {
-                                        projectService.join_group(this.state._id, this.state.description)
-                                            .then(
-                                                user => {
-                                                    const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                                    this.props.history.push(from);
-                                                }
-                                            );
-                                    }}
-                                    render={() => (
-                                        <Form>
-                                            <div className="form-group">
-                                                <label htmlFor="title" className="pb-2 mb-0">Application Message:</label>
-                                                <div className="form-group input-group">
-                                                    <textarea name="description" value={this.state.description} onChange={this.handleChange} type="text" id="description" rows="4" className={'form-control'} placeholder="Write a message" />
-                                                </div>
-                                            </div>
-                                            <div className="modal-footer">
-                                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <button type="submit" className="btn btn-primary">Submit</button>
-                                            </div>
-                                        </Form>
-                                    )}
-                                />
+                                <Form>
+                                    <div className="form-group">
+                                        <label htmlFor="title" className="pb-2 mb-0">Application Message:</label>
+                                        <div className="form-group input-group">
+                                            <textarea name="description" value={this.state.description} onChange={this.handleChange} type="text" id="description" rows="4" className={'form-control'} placeholder="Write a message" />
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" className="btn btn-primary" onClick={() => { this.handleSubmit() }} data-dismiss="modal">Submit</button>
+                                    </div>
+                                </Form>
                             </div>
                         </div>
                     </div>

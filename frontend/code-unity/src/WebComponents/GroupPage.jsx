@@ -11,7 +11,7 @@ class GroupPage extends React.Component {
         super(props);
     }
     leaveProject(e) {
-        projectService.leave_group(this.props.datag.project_id)
+        projectService.leave_group(this.props.data.project_id)
             .then(json => {
                 console.log(json);
                 window.location.reload();
