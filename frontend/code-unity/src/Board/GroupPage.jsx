@@ -1,8 +1,8 @@
 import React from 'react';
-import { Route, Link, Switch } from 'react-router-dom';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Link } from 'react-router-dom';
+import { Form } from 'formik';
 import '@/Style';
-import { SkillBox, GroupCard } from '@/WebComponents';
+import { SkillBox } from '@/WebComponents';
 import { userService, authenticationService } from '@/_services';
 import { projectService } from '../_services';
 
@@ -10,12 +10,12 @@ class GroupPage extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.isMember = this.isMember.bind(this);
         this.state = {
             _id: '',
             details: {},
             description: '',
-            applied: false,
+            requests: {},
+            submitted: false,
             isLoading: true
         }
     }
@@ -29,62 +29,57 @@ class GroupPage extends React.Component {
                 details: data,
                 isLoading: false,
             })
-        }).then(this.isMember())
-            .catch(err => {
-                this.setState({
-                    isLoading: false
-                })
-            });
-        /*
+        })
+        
         projectService.join_requests().then(requests => {
             this.setState({
-                applied: true
+                requests: requests
             })
-        })*/
+        })
     }
-
-    isMember() {
-        console.log(this.state.details.members);
-        for (var i in this.state.details.members) {
-            if (this.state.details.members[i]._id == authenticationService.currentUserValue.uid) {
-                this.setState({
-                    applied: true
-                });
-                break;
-            }
-        }
-    }
-
 
     handleChange(event) {
         this.setState({ description: event.target.value });
     }
 
     handleSubmit() {
-        projectService.join_group(this.state._id, this.state.description)
-            .then(
-                user => {
-                    const { from } = this.props.location.state || { from: { pathname: "/" } };
-                    this.props.history.push(from);
-                }
-            );
-        this.setState({ applied: true });
+        projectService.join_group(this.state._id, this.state.description);
+        this.setState({ submitted: true });
     }
 
     render() {
         let key_id = 0;
         let leader = this.state.details.leader;
+        let is_member = false;
+        for (var i in this.state.details.members) {
+            if (this.state.details.members[i]._id == authenticationService.currentUserValue.uid) {
+                is_member = true;
+                break;
+            }
+        }
+        let applied = false;
+        for (var j in this.state.requests) {
+            if (this.state.requests[j].project_id == this.state.details.project_id) {
+                applied = true;
+                break;
+            }
+        }
+        console.log(this.state.requests);
         return (
-            <div className="container">
+            <div className="container-fluid">
+                {this.state.submitted && <div><br></br><div className="alert alert-success" role="alert">
+                    Join request submitted!
+                </div></div>}
                 <div className="row mt-1">
-                    <div className="col-sm-9 pl-1">
+                    <div className="col-sm pl-1">
                         <div className="my-3 p-3 bg-white rounded shadow-sm">
-                            <div className="container pl-4">
-                                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <div className="container-fluid pl-4">
+                                <div className="row mt-4 d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                                     <h4 className="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
-                                            {!this.state.applied && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
+                                            {applied && <button type="button" className="btn btn-sm btn-outline-secondary">Join Request Pending</button>}
+                                            {(!this.state.submitted && !is_member && !applied) && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
                                         </div>
                                     </div>
                                 </div>
@@ -136,7 +131,7 @@ class GroupPage extends React.Component {
                                         </div>
                                     </div>
                                 }
-                                <div className="row container pt-3 pl-0">
+                                <div className="row container-fluid pt-3 pl-0">
                                     <SkillBox keyValue={key_id++} title="technologies" data={( this.state.details.technologies)} />
                                     <SkillBox keyValue={key_id++} title="languages" data={( this.state.details.languages)} />
                                     <SkillBox keyValue={key_id++} title="tags" data={( this.state.details.tags)} />
