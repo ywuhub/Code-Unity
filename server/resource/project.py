@@ -273,3 +273,39 @@ class ProjectLeave(Resource):
             return {"message": "cannot leave group that user is not part of"}, 400
 
         return {"status": "success"}
+
+class ProjectKick(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+    
+    @jwt_required
+    def post(self, project_id: str):
+        """
+        Kicks the selected user from the project by the group leader.
+        """
+        user = cast(User, current_user)
+        try:
+            project_id = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 422
+        
+        # fetch the member id to kick
+        parser = RequestParser()
+        parser.add_argument("user_id", required=True)
+        args = parser.parse_args(strict=True)
+
+        # check if user is the leader of the project to kick members
+        if user._id == self.project_manager.leader:
+            kick_id = ObjectId(args['user_id'])
+            
+            # remove user from project if possible
+            try:
+                self.project_manager.kick_user_from_project(kick_id, project_id)
+            except ProjectNotFound:
+                return {"message": "project not found"}, 404
+            except UserNotFound:
+                return {"message": "cannot kick user that is not part of the project"}, 400
+        else:
+            return {"message": "user is not the leader of the project"}, 400
+
+        return {"status": "user is successfully kicked"}

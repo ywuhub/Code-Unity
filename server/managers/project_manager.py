@@ -169,6 +169,20 @@ class ProjectManager:
 
         self.projects.replace_one({"_id": project_id}, project)
 
+    def kick_user_from_project(self, user_id: ObjectId, project_id: ObjectId):
+        # TODO: this operation should be atomic.
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+
+        user = self.users.find_one({"_id": user_id})
+        if user is None:
+            raise UserNotFound()
+
+        # remove user from list
+        project["members"].remove(user_id)
+        project["cur_people"] = len(project["members"])
+
     def remove_invitation_request(self, user_id: ObjectId, project_id: ObjectId):
         """
         Removes all invitations or requests pertaining to the user and project.
