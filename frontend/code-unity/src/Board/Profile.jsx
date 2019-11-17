@@ -2,7 +2,7 @@ import React from 'react';
 
 import { userService } from '@/_services';
 import '@/Style';
-import { SkillBox } from '@/WebComponents';
+import { SkillBox, AvatarPicker} from '@/WebComponents';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -180,8 +180,12 @@ class Profile extends React.Component {
                             <div className="my-3 p-3 bg-white rounded shadow-sm">
                                 <div className="m-4">
                                     <div className="row">
-                                        <div className="col-md-6">
+                                        <div className="col-md-6 avator-container">
                                             <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
+                                            <button className="btn"
+                                                    data-toggle="modal" 
+                                                    data-target="#avatarPicker"
+                                            >Change Avator</button>
                                         </div>
                                         <div className="col-md-6 align-middle">
                                             <div> 
@@ -307,6 +311,7 @@ class Profile extends React.Component {
                                 </form>
                             </div>
                         </div>
+                        <AvatarPicker _id="avatarPicker"/>
                     </div>
                 }
             </div>
