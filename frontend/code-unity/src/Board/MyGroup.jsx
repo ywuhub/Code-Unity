@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
-import peopleIcon from '@/Assert/peopleIcon.png';
+import peopleIcon from '@/Assets/peopleIcon.png';
 import '@/Style';
 import { SkillBox, GroupCard, GroupPage, GroupEditPage} from '@/WebComponents';
 import { userService, projectService } from '@/_services';
