@@ -1,24 +1,26 @@
 import React from 'react';
 import { ChatWindow } from './ChatWindow';
-import { QBcreateSession, QBgetGroupChats } from '@/QuickBlox';
+import { QBgetGroupChats } from '@/QuickBlox';
 
 class GroupChat extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			projects: [], 
-			activeIndex: 0
+			projects: [],
+			activeIndex: 0,
+			isLoading: false
 		};
 	}
 
 	componentDidMount() {
+		this.setState({ isLoading: true });
 		QB.createSession({ login: "testuser", password: "testuser" }, (err, res) => {
 			if (res) {
-				QBgetGroupChats(res.token)
+				QBgetGroupChats()
 					.then(chats => {
 						let projects = [];
 						chats.items.map(item => { projects.push({ id: item._id, name: item.name }); });
-						this.setState({ projects: projects });
+						this.setState({ projects: projects, isLoading: false });
 					});
 
 				QB.chat.connect({ userId: res.user_id, password: "testuser" }, (err, roster) => {
@@ -31,7 +33,7 @@ class GroupChat extends React.Component {
 	}
 
 	changeActive(index, e) {
-		console.log(index);
+		this.setState({ activeIndex: index });
 	}
 
 	render() {
@@ -41,20 +43,24 @@ class GroupChat extends React.Component {
 					<h1 className="h4">Group Chat</h1>
 				</div>
 				<div className="row">
+					{(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
+					{/* left bar */}
+					{!this.state.isLoading &&
+						<div className="col-md-4 border-right project-chat-sidebar">
+							{
+								this.state.projects.map((project, index) => {
+									return <a className={"project-chat-item " + (this.state.activeIndex == index && "active")} key={project.id} id={project.id} onClick={this.changeActive.bind(this, index)}>{project.name}</a>
+								})
+							}
+						</div>
+					}
 
-					{/*left bar*/}
-					<div className="col-md-4 border-right project-chat-sidebar">
-						{
-							this.state.projects.map((project, index) => {
-								return <a className={"project-chat-item " + (index == 0 && "active")} key={project.id} id={project.id} onClick={this.changeActive.bind(this, index)}>{project.name}</a>
-							})
-						}
-					</div>
-
-					{/*Message page*/}
-					<div className="col-md-8">
-						<ChatWindow />
-					</div>
+					{/* Message page */}
+					{!this.state.isLoading && this.state.projects.length !==0 &&
+						<div className="col-md-8">
+							<ChatWindow project_id={this.state.projects[this.state.activeIndex].id}/>
+						</div>
+					}
 				</div>
 			</div>
 		);

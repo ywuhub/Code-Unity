@@ -4,7 +4,7 @@ QB.init(79252, 'Ew2aXx4sYYYPgyw', 'da3XXU5JnqW2HdW');
 // var user = {
 //     id: 100104131,
 //     login: 'testuser',
-//     pass: 'testpassword'
+//     pass: 'testuser'
 // };
 
 // QB.createSession({ login: "realUser", password: "realuser" }, (err, res) => {

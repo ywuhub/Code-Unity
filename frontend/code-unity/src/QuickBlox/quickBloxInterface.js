@@ -33,18 +33,18 @@ function QBcreateSession(login) {
 // sign up user for chat        call when user signs up for codeunity  
 // for simplicity   login = password
 // QBinitChatUser(res.token, "realUser", "realUser");
-function QBinitChatUser(token, login, password) {
+function QBinitChatUser(login) {
     const options = {
         'method': 'POST',
         'headers': {
             'Content-Type': 'application/json',
             'QuickBlox-REST-API-Version': '0.1.0',
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         },
         'body': JSON.stringify({
             user: {
                 login: login,
-                password: password
+                password: login
             }
         })
     }
@@ -58,12 +58,12 @@ function QBinitChatUser(token, login, password) {
 
 // create group chat when group created
 // QBcreateGroup(res.token, "test");
-function QBcreateGroup(token, name) {
+function QBcreateGroup(name) {
     const options = {
         'method': 'POST',
         'headers': {
             'Content-Type': 'application/json',
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         },
         'body': JSON.stringify({ type: 2, occupants_ids: [], name: name })
     };
@@ -78,11 +78,11 @@ function QBcreateGroup(token, name) {
 
 // get all group chats of current user
 // QBgetGroupChats(res.token);
-function QBgetGroupChats(token) {
+function QBgetGroupChats() {
     const options = {
         'method': 'GET',
         'headers': {
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         }
     };
 
@@ -96,18 +96,18 @@ function QBgetGroupChats(token) {
 
 // get a group chat's messages      
 // QBgetGroupChatHistory(res.token, "5dcf8a83a28f9a783dcbb176");
-function QBgetGroupChatHistory(token, chat_id) {
+function QBgetGroupChatHistory(chat_id) {
     const options = {
         'method': 'GET',
         'headers': {
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         }
     };
     return fetch(`https://api.quickblox.com/chat/Message.json?chat_dialog_id=${chat_id}`, options)
         .then(response => { return response.json() })
         .then(json => {
             console.log(json);
-            return json;
+            return json.items;
         });
 
     // OR
@@ -123,7 +123,7 @@ function QBgetGroupChatHistory(token, chat_id) {
 
 // change group name, remove members, add members       call when project's groups name changes and members are also changed
 // pass in empty list for members to not add/remove anyone
-function QBupdateGroup(project_id, token, newName, newMembers, byebye) {
+function QBupdateGroup(project_id, newName, newMembers, byebye) {
     // var toUpdateParams = {
     //     name: newName,
     //     push_all: { occupants_ids: newMembers },
@@ -141,7 +141,7 @@ function QBupdateGroup(project_id, token, newName, newMembers, byebye) {
         'method': 'PUT',
         'headers': {
             'Content-Type': 'application/json',
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         },
         'body': JSON.stringify({ name: newName, push_all: newMembers, pull_all: byebye })
     };
@@ -155,13 +155,12 @@ function QBupdateGroup(project_id, token, newName, newMembers, byebye) {
 }
 
 // change group chat name      call when project group name changes
-// QBupdateGroupName("5dcf8a83a28f9a783dcbb176", res.token, "New Group Chat Name");
-function QBupdateGroupName(project_id, token, newName) {
+function QBupdateGroupName(project_id, newName) {
     const options = {
         'method': 'PUT',
         'headers': {
             'Content-Type': 'application/json',
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         },
         'body': JSON.stringify({ name: newName })
     };
@@ -176,12 +175,12 @@ function QBupdateGroupName(project_id, token, newName) {
 
 // add members and remove members from group chat       call when project groups members are changed
 // pass in empty list for members to not add/remove anyone
-function QBupdateMembers(project_id, token, newMembers, byebye) {
+function QBupdateMembers(project_id, newMembers, byebye) {
     const options = {
         'method': 'PUT',
         'headers': {
             'Content-Type': 'application/json',
-            'QB-Token': token
+            'QB-Token': QB.service.getSession().token
         },
         'body': JSON.stringify({ push_all: newMembers, pull_all: byebye })
     };
@@ -223,4 +222,4 @@ function QBsendMessage(chat_id, message) {
     });
 }
 
-export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory };
+export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage };

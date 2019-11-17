@@ -6,12 +6,21 @@ class ChatWindow extends React.Component {
         super(props);
         this.state = {
             messages: [],   // sender_id, message, created_at "2016-03-23T17:00:42Z"
-            isLoading: false
+            isLoading: false,
+            isUpdating: false
         };
     }
 
     componentDidMount() {
-        // QBgetGroupChatHistory();
+        this.setState({ isLoading: true });
+        QBgetGroupChatHistory(this.props.project_id)
+            .then(msgs => {
+                let messages = this.state.messages;
+                msgs.forEach(msg => {
+                    messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
+                })
+                this.setState({ messages: messages, isLoading: false });
+            });
 
         // listener for group chat messages from other users
         QB.chat.onMessageListener = (user_id, msg) => {
@@ -21,9 +30,25 @@ class ChatWindow extends React.Component {
             let messages = this.state.messages;
             messages.push({ sender_id: user_id, message: msg, created_at: dateTime });
 
-            this.setState({
-                messages: messages
-            });
+            if (!this.state.isUpdating) {   // prevent pushing message to wrong chat
+                this.setState({
+                    messages: messages
+                });
+            }
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.project_id !== prevProps.project_id) {
+            this.setState({ isLoading: true, isUpdating: true });
+            QBgetGroupChatHistory(this.props.project_id)
+                .then(msgs => {
+                    let messages = [];
+                    msgs.forEach(msg => {
+                        messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
+                    })
+                    this.setState({ messages: messages, isLoading: false, isUpdating: false });
+                });
         }
     }
 
@@ -63,6 +88,7 @@ class ChatWindow extends React.Component {
 
     render() {
         let key = 0;
+
         return (
             <div className="card border-0 shadow bg-transparent mx-5">
                 {/* group name */}
@@ -72,7 +98,8 @@ class ChatWindow extends React.Component {
 
                 {/* chat history */}
                 <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0">
-                    {
+                    {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
+                    {!this.state.isLoading && 
                         this.state.messages.map(message => {
                             return (
                                 <div key={key++} className="media px-2 py-1">
