@@ -56,6 +56,15 @@ class ChatWindow extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.props.chat_id !== prevProps.chat_id) {
             this.setState({ isLoading: true });
+            const requestOptions = {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+            };
+            fetch(`${config.apiUrl}/api/project/${this.props.project_id}`, requestOptions)
+                .then(response => { return response.json() })
+                .then(json => {
+                    this.setState({ group_name: json.title, group_members: json.members });
+                });
             QBgetGroupChatHistory(this.props.chat_id)
                 .then(msgs => {
                     let messages = [];
@@ -112,7 +121,7 @@ class ChatWindow extends React.Component {
         Array.from(members).forEach((member, index) => {
             QBgetUser(member.id)
                 .then(user => {
-                    new_chat_members.push(100109113);
+                    new_chat_members.push(user.id);
                     if (index === members.length - 1) {
                         QBupdateMembers(this.props.chat_id, new_chat_members, []);
                     }

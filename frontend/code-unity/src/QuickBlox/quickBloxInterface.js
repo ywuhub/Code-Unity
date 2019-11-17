@@ -190,29 +190,18 @@ function QBdeleteGroup(project_id) {
     });
 }
 
-function QBleaveGroup(project_id) {
-    QB.chat.dialog.delete([project_id], function (err) {
-        if (err) {
-            console.log("err: " + err);
-        } else {
-            console.log("deleted qb group");
-        }
+function QBleaveGroup(project_id, user_id) {
+    var toUpdateParams = {
+        pull_all: {occupants_ids: [user_id]},
+    };
+
+    QB.chat.dialog.update(project_id, toUpdateParams, function(err, res) {
+      if (err) {
+          console.log(err);
+      } else {
+        console.log("left qb chat");
+      }
     });
-
-    //     var dialogId = "53aac645535c12bd3b008a40";
-
-    // var toUpdateParams = {
-    //   name: "My school friends",
-    //   pull_all: {occupants_ids: [curr_id]},
-    // };
-
-    // QB.chat.dialog.update(dialogId, toUpdateParams, function(err, res) {
-    //   if (err) {
-    //       console.log(err);
-    //   } else {
-
-    //   }
-    // });
 }
 
 // send message to a chat       

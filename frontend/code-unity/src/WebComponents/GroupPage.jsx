@@ -10,12 +10,36 @@ class GroupPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.curr_id = authenticationService.currentUserValue.uid;
     }
+
     leaveProject(e) {
         projectService.leave_group(this.props.data.project_id)
             .then(json => {
-                console.log(json);
-                window.location.reload();
+                QBgetGroupChats()
+                    .then(chats => {
+                        for (let chat of chats.items) {
+                            if (chat.name.indexOf(`"project_id"=>"${this.props.data.project_id}"`) !== -1) {
+                                // delete group
+                                if (this.props.isEditable) {
+                                    QBdeleteGroup(chat._id)
+                                        .then(resp => {
+                                            window.location.reload();
+                                        });
+                                // leave group
+                                } else {
+                                    QBgetUser(this.curr_id)
+                                        .then(user => {
+                                            QBleaveGroup(chat._id, user.id)
+                                                .then(resp => {
+                                                    window.location.reload();
+                                                });
+                                        })
+                                }
+                                break;
+                            }
+                        }
+                    });
             })
             .catch(err => console.log(err));
     }
@@ -24,7 +48,6 @@ class GroupPage extends React.Component {
         let key_id = this.props.key_id_outer;
         let leader = this.props.data.leader;
         let members = this.props.data.members;
-        const curr_id = authenticationService.currentUserValue.uid;
         return (
                 <div>
                     <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -53,7 +76,7 @@ class GroupPage extends React.Component {
                             <div className="row">
                                 <p>Leader:&nbsp;</p>
                                 <p>
-                                    {(curr_id === leader._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{leader.username}</Link>) ||
+                                    {(this.curr_id === leader._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{leader.username}</Link>) ||
                                         <Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} id={leader._id} style={{ 'textDecoration': 'none' }}>{leader.username}</Link>
                                     }
                                 </p>
@@ -65,7 +88,7 @@ class GroupPage extends React.Component {
                                         members.filter((member) => { return member.username !== this.props.data.leader.username }).map((member, index) => {
                                             return (
                                                 <span key={member._id}>
-                                                    {(curr_id === member._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{member.username}</Link>) ||
+                                                    {(this.curr_id === member._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{member.username}</Link>) ||
                                                         <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} id={member._id} style={{ 'textDecoration': 'none' }}>{member.username}</Link>
                                                     }
                                                     {index !== members.length - 2 && <span>,&nbsp;</span>}
