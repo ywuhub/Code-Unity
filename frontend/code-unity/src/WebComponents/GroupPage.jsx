@@ -22,18 +22,13 @@ class GroupPage extends React.Component {
                             if (chat.name.indexOf(`"project_id"=>"${this.props.data.project_id}"`) !== -1) {
                                 // delete group
                                 if (this.props.isEditable) {
-                                    QBdeleteGroup(chat._id)
-                                        .then(resp => {
-                                            window.location.reload();
-                                        });
+                                    QBdeleteGroup(chat._id);
+                                    
                                 // leave group
                                 } else {
                                     QBgetUser(this.curr_id)
                                         .then(user => {
-                                            QBleaveGroup(chat._id, user.id)
-                                                .then(resp => {
-                                                    window.location.reload();
-                                                });
+                                            QBleaveGroup(chat._id, user.id);
                                         })
                                 }
                                 break;

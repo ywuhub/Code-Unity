@@ -32,7 +32,7 @@ function QBcreateSession(login) {
 
 // sign up user for chat        call when user signs up for codeunity  
 // for simplicity   login = password = user id 
-function QBinitChatUser(login) {
+function QBinitChatUser(user_id, username) {
     const options = {
         'method': 'POST',
         'headers': {
@@ -42,8 +42,9 @@ function QBinitChatUser(login) {
         },
         'body': JSON.stringify({
             user: {
-                login: login,
-                password: login
+                login: user_id,
+                password: user_id,
+                full_name: username
             }
         })
     }
@@ -186,6 +187,7 @@ function QBdeleteGroup(project_id) {
             console.log("err: " + err);
         } else {
             console.log("deleted qb group");
+            window.location.reload();
         }
     });
 }
@@ -200,6 +202,7 @@ function QBleaveGroup(project_id, user_id) {
           console.log(err);
       } else {
         console.log("left qb chat");
+        window.location.reload();
       }
     });
 }
