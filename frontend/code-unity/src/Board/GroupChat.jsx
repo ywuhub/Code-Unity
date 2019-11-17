@@ -8,7 +8,8 @@ class GroupChat extends React.Component {
 		this.state = {
 			projects: [],
 			activeIndex: 0,
-			isLoading: false
+			isLoading: false,
+			disableChatChange: false
 		};
 	}
 
@@ -32,7 +33,16 @@ class GroupChat extends React.Component {
 		});
 	}
 
+	disableChatChange() {
+		this.setState({ disableChatChange: true });
+	}
+
+	undisableChatChange() {
+		this.setState({ disableChatChange: false });
+	}
+
 	changeActive(index, e) {
+		if (this.state.disableChatChange) return;
 		this.setState({ activeIndex: index });
 	}
 
@@ -58,7 +68,7 @@ class GroupChat extends React.Component {
 					{/* Message page */}
 					{!this.state.isLoading && this.state.projects.length !==0 &&
 						<div className="col-md-8">
-							<ChatWindow project_id={this.state.projects[this.state.activeIndex].id}/>
+							<ChatWindow project_id={this.state.projects[this.state.activeIndex].id} disableChange={this.disableChatChange.bind(this)} undisableChange={this.undisableChatChange.bind(this)} />
 						</div>
 					}
 				</div>

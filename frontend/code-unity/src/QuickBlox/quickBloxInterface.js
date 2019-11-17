@@ -32,7 +32,6 @@ function QBcreateSession(login) {
 
 // sign up user for chat        call when user signs up for codeunity  
 // for simplicity   login = password
-// QBinitChatUser(res.token, "realUser", "realUser");
 function QBinitChatUser(login) {
     const options = {
         'method': 'POST',
@@ -57,7 +56,6 @@ function QBinitChatUser(login) {
 }
 
 // create group chat when group created
-// QBcreateGroup(res.token, "test");
 function QBcreateGroup(name) {
     const options = {
         'method': 'POST',
@@ -77,7 +75,6 @@ function QBcreateGroup(name) {
 }
 
 // get all group chats of current user
-// QBgetGroupChats(res.token);
 function QBgetGroupChats() {
     const options = {
         'method': 'GET',
@@ -95,7 +92,6 @@ function QBgetGroupChats() {
 }
 
 // get a group chat's messages      
-// QBgetGroupChatHistory(res.token, "5dcf8a83a28f9a783dcbb176");
 function QBgetGroupChatHistory(chat_id) {
     const options = {
         'method': 'GET',
@@ -205,7 +201,6 @@ function QBdeleteGroup(project_id) {
 }
 
 // send message to a chat       
-// QBsendMessage(res.token, "5dcf8a83a28f9a783dcbb176", "test send msg");
 function QBsendMessage(chat_id, message) {
     var params = {
         message: message,
@@ -222,4 +217,4 @@ function QBsendMessage(chat_id, message) {
     });
 }
 
-export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage };
+export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup };

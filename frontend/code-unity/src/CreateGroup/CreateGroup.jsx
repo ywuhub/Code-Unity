@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import config from 'config';
 import { projectService } from '@/_services';
 import { authHeader } from '@/_helpers';
+import { QBcreateGroup } from '@/QuickBlox';
 
 class CreateGroup extends React.Component {
     constructor(props) {
@@ -150,8 +151,19 @@ class CreateGroup extends React.Component {
                             projectService.create_group(title, max_people, this.state.course, this.state.description, this.state.selectedLang, this.state.selectedProg, this.state.selectedTag)
                                 .then(
                                     user => {
-                                        const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                        this.props.history.push(from);
+                                        // const { from } = this.props.location.state || { from: { pathname: "/" } };
+                                        // this.props.history.push(from);
+
+                                        QB.createSession({ login: "testuser", password: "testuser" }, (err, res) => {
+                                            if (res) {
+                                                QBcreateGroup(title)
+                                                    .then(resp => {
+                                                        window.location.reload();
+                                                    });
+                                            } else {
+                                                console.log(err);
+                                            }
+                                        });
                                     },
                                     error => {
                                         setSubmitting(false);

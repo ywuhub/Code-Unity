@@ -1,13 +1,12 @@
 import React from 'react';
-import { QBgetGroupChatHistory } from '@/QuickBlox';
+import { QBgetGroupChatHistory, QBsendMessage } from '@/QuickBlox';
 
 class ChatWindow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             messages: [],   // sender_id, message, created_at "2016-03-23T17:00:42Z"
-            isLoading: false,
-            isUpdating: false
+            isLoading: false
         };
     }
 
@@ -24,35 +23,38 @@ class ChatWindow extends React.Component {
 
         // listener for group chat messages from other users
         QB.chat.onMessageListener = (user_id, msg) => {
+            this.props.disableChange();
             const d = new Date().toISOString();
             const dateTime = d.split('.')[0];
         
             let messages = this.state.messages;
             messages.push({ sender_id: user_id, message: msg, created_at: dateTime });
 
-            if (!this.state.isUpdating) {   // prevent pushing message to wrong chat
-                this.setState({
-                    messages: messages
-                });
-            }
+            this.setState({
+                messages: messages
+            });
+            this.props.undisableChange();
         }
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.project_id !== prevProps.project_id) {
-            this.setState({ isLoading: true, isUpdating: true });
+            this.setState({ isLoading: true });
             QBgetGroupChatHistory(this.props.project_id)
                 .then(msgs => {
                     let messages = [];
                     msgs.forEach(msg => {
                         messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
                     })
-                    this.setState({ messages: messages, isLoading: false, isUpdating: false });
+                    this.setState({ messages: messages, isLoading: false });
                 });
         }
+        const chat_msgs = document.getElementById('chat-msgs');
+        chat_msgs.scrollTop = chat_msgs.scrollHeight;
     }
 
     addMessage(e) {
+        this.props.disableChange();
         const d = new Date().toISOString();
         const dateTime = d.split('.')[0];
 
@@ -65,7 +67,10 @@ class ChatWindow extends React.Component {
             messages: messages
         });
 
+        QBsendMessage(this.props.project_id, msg.value);
+
         msg.value = '';
+        this.props.undisableChange();
     }
 
     onEnter(e) {
@@ -97,7 +102,7 @@ class ChatWindow extends React.Component {
                 </div>
 
                 {/* chat history */}
-                <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0">
+                <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0" id="chat-msgs">
                     {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
                     {!this.state.isLoading && 
                         this.state.messages.map(message => {
