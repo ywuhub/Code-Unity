@@ -31,7 +31,7 @@ function QBcreateSession(login) {
 // }
 
 // sign up user for chat        call when user signs up for codeunity  
-// for simplicity   login = password
+// for simplicity   login = password = user id 
 function QBinitChatUser(login) {
     const options = {
         'method': 'POST',
@@ -50,8 +50,23 @@ function QBinitChatUser(login) {
     return fetch('https://api.quickblox.com/users.json', options)
         .then(response => { return response.json() })
         .then(json => {
-            console.log(json);
             return json;
+        });
+}
+
+function QBgetUser(user_id) {
+    const options = {
+        'method': 'GET',
+        'headers': {
+            'QuickBlox-REST-API-Version': '0.1.0',
+            'QB-Token': QB.service.getSession().token
+        }
+    }
+    return fetch(`https://api.quickblox.com/users/by_login.json?login=${user_id}`, options)
+        .then(response => { return response.json() })
+        .then(json => {
+            // console.log(json);
+            return json.user;
         });
 }
 
@@ -69,7 +84,6 @@ function QBcreateGroup(name) {
     return fetch('https://api.quickblox.com/chat/Dialog.json', options)
         .then(response => { return response.json() })
         .then(json => {
-            console.log(json);
             return json;
         });
 }
@@ -86,7 +100,6 @@ function QBgetGroupChats() {
     return fetch('https://api.quickblox.com/chat/Dialog.json', options)
         .then(response => { return response.json() })
         .then(json => {
-            console.log(json);
             return json;
         });
 }
@@ -102,7 +115,6 @@ function QBgetGroupChatHistory(chat_id) {
     return fetch(`https://api.quickblox.com/chat/Message.json?chat_dialog_id=${chat_id}`, options)
         .then(response => { return response.json() })
         .then(json => {
-            console.log(json);
             return json.items;
         });
 
@@ -120,73 +132,51 @@ function QBgetGroupChatHistory(chat_id) {
 // change group name, remove members, add members       call when project's groups name changes and members are also changed
 // pass in empty list for members to not add/remove anyone
 function QBupdateGroup(project_id, newName, newMembers, byebye) {
-    // var toUpdateParams = {
-    //     name: newName,
-    //     push_all: { occupants_ids: newMembers },
-    //     pull_all: { occupants_ids: byebye }
-    // };
-
-    // QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
-    //     if (err) {
-    //         console.log(err);
-    //     } else {
-
-    //     }
-    // }); OR 
-    const options = {
-        'method': 'PUT',
-        'headers': {
-            'Content-Type': 'application/json',
-            'QB-Token': QB.service.getSession().token
-        },
-        'body': JSON.stringify({ name: newName, push_all: newMembers, pull_all: byebye })
+    var toUpdateParams = {
+        name: newName,
+        push_all: { occupants_ids: newMembers },
+        pull_all: { occupants_ids: byebye }
     };
 
-    return fetch(`https://api.quickblox.com/chat/Dialog/${project_id}.json`, options)
-        .then(response => { return response.json() })
-        .then(json => {
-            console.log(json);
-            return json;
-        });
+    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(res);
+        }
+    });
 }
 
 // change group chat name      call when project group name changes
 function QBupdateGroupName(project_id, newName) {
-    const options = {
-        'method': 'PUT',
-        'headers': {
-            'Content-Type': 'application/json',
-            'QB-Token': QB.service.getSession().token
-        },
-        'body': JSON.stringify({ name: newName })
+    var toUpdateParams = {
+        name: newName
     };
 
-    return fetch(`https://api.quickblox.com/chat/Dialog/${project_id}.json`, options)
-        .then(response => { return response.json() })
-        .then(json => {
-            console.log(json);
-            return json;
-        });
+    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(res);
+        }
+    });
 }
 
 // add members and remove members from group chat       call when project groups members are changed
 // pass in empty list for members to not add/remove anyone
 function QBupdateMembers(project_id, newMembers, byebye) {
-    const options = {
-        'method': 'PUT',
-        'headers': {
-            'Content-Type': 'application/json',
-            'QB-Token': QB.service.getSession().token
-        },
-        'body': JSON.stringify({ push_all: newMembers, pull_all: byebye })
+    var toUpdateParams = {
+        push_all: { occupants_ids: (newMembers || []) },
+        pull_all: { occupants_ids: (byebye || []) } 
     };
 
-    return fetch(`https://api.quickblox.com/chat/Dialog/${project_id}.json`, options)
-        .then(response => { return response.json() })
-        .then(json => {
-            console.log(json);
-            return json;
-        });
+    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(res);
+        }
+    });
 }
 
 // delete group chat        call when project group is deleted      
@@ -198,6 +188,31 @@ function QBdeleteGroup(project_id) {
             console.log("deleted qb group");
         }
     });
+}
+
+function QBleaveGroup(project_id) {
+    QB.chat.dialog.delete([project_id], function (err) {
+        if (err) {
+            console.log("err: " + err);
+        } else {
+            console.log("deleted qb group");
+        }
+    });
+
+    //     var dialogId = "53aac645535c12bd3b008a40";
+
+    // var toUpdateParams = {
+    //   name: "My school friends",
+    //   pull_all: {occupants_ids: [curr_id]},
+    // };
+
+    // QB.chat.dialog.update(dialogId, toUpdateParams, function(err, res) {
+    //   if (err) {
+    //       console.log(err);
+    //   } else {
+
+    //   }
+    // });
 }
 
 // send message to a chat       
@@ -217,4 +232,4 @@ function QBsendMessage(chat_id, message) {
     });
 }
 
-export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup };
+export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBupdateMembers, QBgetUser };

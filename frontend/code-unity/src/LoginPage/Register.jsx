@@ -36,6 +36,8 @@ class Register extends React.Component {
                                 authenticationService.register(email, username, password)
                                     .then(
                                         user => {
+                                            // user.uid qbsingup
+
                                             const { from } = this.props.location.state || { from: { pathname: "/" } };
                                             this.props.history.push(from);
                                         },

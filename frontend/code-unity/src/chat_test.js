@@ -12,34 +12,27 @@ QB.init(79252, 'Ew2aXx4sYYYPgyw', 'da3XXU5JnqW2HdW');
 //     if (res) {
 //         // res.token == QB.token   ie just session token
 //         // 100109113
-//         var params = {
-//             message: "Hey Me?",
-//             chat_dialog_id: '5dcf8a83a28f9a783dcbb176',
-//             send_to_chat: "1",
-//         };
-//         QB.chat.message.create(params, function (err, res) {
-//             if (res) {
-//                 var dialogId = "5dcf8a83a28f9a783dcbb176";
-//                 var params = { chat_dialog_id: dialogId, sort_desc: 'date_sent', limit: 100, skip: 0 };
-//                 QB.chat.message.list(params, function (err, messages) {
-//                     if (messages) {
-//                         console.log(messages);
-//                     } else {
-//                         console.log(err);
-//                     }
-//                 });
-//             } else {
-//                 console.log(err);
-//             }
-//         });
-//         QB.chat.connect({ userId: res.user_id, password: "realuser" }, (err, roster) => {
-//             if (err) {
-//                 console.log(err);
-//             } else {
-//             }
-//         });
+//         // QBcreateGroup("test custom data");
 //     } else {
 //         console.log(err);
 //     }
 // });
 
+
+// function QBcreateGroup(name) {
+//     const options = {
+//         'method': 'POST',
+//         'headers': {
+//             'Content-Type': 'application/json',
+//             'QB-Token': QB.service.getSession().token
+//         },
+//         'body': JSON.stringify({ type: 2, occupants_ids: [], name: name })
+//     };
+
+//     return fetch('https://api.quickblox.com/chat/Dialog.json', options)
+//         .then(response => { return response.json() })
+//         .then(json => {
+//             console.log(json);
+//             return json;
+//         });
+// }

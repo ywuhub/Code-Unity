@@ -1,18 +1,34 @@
 import React from 'react';
-import { QBgetGroupChatHistory, QBsendMessage } from '@/QuickBlox';
+import { QBgetGroupChatHistory, QBsendMessage, QBupdateMembers, QBgetUser } from '@/QuickBlox';
+import config from 'config';
+import { authHeader } from '@/_helpers';
+import { authenticationService } from '@/_services';
 
 class ChatWindow extends React.Component {
     constructor(props) {
         super(props);
+        this.curr_id = authenticationService.currentUserValue.uid;
         this.state = {
             messages: [],   // sender_id, message, created_at "2016-03-23T17:00:42Z"
+            group_members: [],  // [{username, _id}]    
+            group_name: '',
             isLoading: false
         };
     }
 
     componentDidMount() {
         this.setState({ isLoading: true });
-        QBgetGroupChatHistory(this.props.project_id)
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        };
+        fetch(`${config.apiUrl}/api/project/${this.props.project_id}`, requestOptions)
+            .then(response => { return response.json() })
+            .then(json => {
+                this.setState({ group_name: json.title, group_members: json.members });
+            });
+
+        QBgetGroupChatHistory(this.props.chat_id)
             .then(msgs => {
                 let messages = this.state.messages;
                 msgs.forEach(msg => {
@@ -26,7 +42,7 @@ class ChatWindow extends React.Component {
             this.props.disableChange();
             const d = new Date().toISOString();
             const dateTime = d.split('.')[0];
-        
+
             let messages = this.state.messages;
             messages.push({ sender_id: user_id, message: msg, created_at: dateTime });
 
@@ -38,9 +54,9 @@ class ChatWindow extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.project_id !== prevProps.project_id) {
+        if (this.props.chat_id !== prevProps.chat_id) {
             this.setState({ isLoading: true });
-            QBgetGroupChatHistory(this.props.project_id)
+            QBgetGroupChatHistory(this.props.chat_id)
                 .then(msgs => {
                     let messages = [];
                     msgs.forEach(msg => {
@@ -67,7 +83,7 @@ class ChatWindow extends React.Component {
             messages: messages
         });
 
-        QBsendMessage(this.props.project_id, msg.value);
+        QBsendMessage(this.props.chat_id, msg.value);
 
         msg.value = '';
         this.props.undisableChange();
@@ -80,7 +96,6 @@ class ChatWindow extends React.Component {
     }
 
     getUsername(id) {
-        // TODO
         return id;
     }
 
@@ -91,6 +106,20 @@ class ChatWindow extends React.Component {
         return date + " " + time;
     }
 
+    addMembers(e) {
+        const members = document.getElementsByClassName('member-option');
+        let new_chat_members = [];
+        Array.from(members).forEach((member, index) => {
+            QBgetUser(member.id)
+                .then(user => {
+                    new_chat_members.push(100109113);
+                    if (index === members.length - 1) {
+                        QBupdateMembers(this.props.chat_id, new_chat_members, []);
+                    }
+                })
+        })
+    }
+
     render() {
         let key = 0;
 
@@ -98,13 +127,16 @@ class ChatWindow extends React.Component {
             <div className="card border-0 shadow bg-transparent mx-5">
                 {/* group name */}
                 <div className="card-header text-muted bg-light pt-4 border-0">
-                    <h3 className="border-bottom p-2 pb-4">Project Group Name</h3>
+                    <h3 className="d-flex justify-content-between border-bottom p-2 pb-4">
+                        {this.state.group_name}
+                        <button className="btn btn-primary btn-circle" data-toggle="modal" data-target="#exampleModalCenter"><i className="fas fa-plus"></i></button>
+                    </h3>
                 </div>
 
                 {/* chat history */}
                 <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0" id="chat-msgs">
                     {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
-                    {!this.state.isLoading && 
+                    {!this.state.isLoading &&
                         this.state.messages.map(message => {
                             return (
                                 <div key={key++} className="media px-2 py-1">
@@ -126,6 +158,37 @@ class ChatWindow extends React.Component {
                         <button className="btn bg-transparent border-0 pr-0" id="send-button" onClick={this.addMessage.bind(this)}><i className="fa fa-paper-plane fa-hover" style={{ 'fontSize': '20px' }}></i></button>
                     </div>
                 </div>
+
+                {/* Create group modal */}
+                <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalCenterTitle">Add Members to Chat</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                {
+                                    this.state.group_members.map(member => {
+                                        if (member._id == this.curr_id) return <div key={member._id}></div>
+                                        return (
+                                            <div className="custom-control custom-checkbox" key={member._id}>
+                                                <input type="checkbox" className="custom-control-input member-option" id={member._id} />
+                                                <label className="custom-control-label" htmlFor={member._id}>{member.username}</label>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={this.addMembers.bind(this)}>Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> {/* Create group modal end */}
             </div>
         );
     }

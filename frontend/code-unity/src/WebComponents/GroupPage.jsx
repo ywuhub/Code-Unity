@@ -2,6 +2,7 @@ import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import { Route, Link, Switch } from 'react-router-dom';
 import { authenticationService, projectService } from '@/_services';
+import { QBdeleteGroup, QBleaveGroup } from '@/QuickBlox';
 
 import '@/Style';
 
@@ -11,7 +12,7 @@ class GroupPage extends React.Component {
         super(props);
     }
     leaveProject(e) {
-        projectService.leave_group(this.props.datag.project_id)
+        projectService.leave_group(this.props.data.project_id)
             .then(json => {
                 console.log(json);
                 window.location.reload();
