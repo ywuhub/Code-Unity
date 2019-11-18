@@ -1,9 +1,11 @@
 from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
+    UserNotInvolved,
     NotProjectLeader,
     AlreadyMemberOf,
     ProjectFull,
+    CannotKickYourself
 )
 from typing import List
 
@@ -175,16 +177,21 @@ class ProjectManager:
         project = self.projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
-
+        
         user = self.users.find_one({"_id": user_id})
+        
         if user is None:
             raise UserNotFound()
-
+        elif user["_id"] not in project["members"]:
+            raise UserNotInvolved()
+        
         if leader_id != project["leader"]:
             raise NotProjectLeader()
+        elif user_id == leader_id:
+            raise CannotKickYourself()
 
         # remove user from list
-        project["members"].remove(user_id)
+        project["members"].remove(ObjectId(user_id))
         project["cur_people"] = len(project["members"])
 
     def remove_invitation_request(self, user_id: ObjectId, project_id: ObjectId):

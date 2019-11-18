@@ -11,7 +11,9 @@ from server.exceptions import (
     ProjectFull,
     ProjectNotFound,
     UserNotFound,
-    NotProjectLeader
+    UserNotInvolved,
+    NotProjectLeader,
+    CannotKickYourself
 )
 from server.managers.project_manager import ProjectManager
 from server.models.project import Project, project_fields
@@ -307,8 +309,12 @@ class ProjectKick(Resource):
         except ProjectNotFound:
             return {"message": "project not found"}, 404
         except UserNotFound:
+            return {"message": "user does not exist"}, 404
+        except UserNotInvolved:
             return {"message": "user not involved in project"}, 400
         except NotProjectLeader:
             return {"message": "current user is not the project leader so not kicking rights"}, 400
-
+        except CannotKickYourself:
+            return {"message": "cannot kick yourself"}, 400
+            
         return {"status": "user is successfully kicked"}
