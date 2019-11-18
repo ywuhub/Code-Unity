@@ -37,11 +37,10 @@ class Register extends React.Component {
                                 authenticationService.register(email, username, password)
                                     .then(
                                         user => {
-                                            // user.uid qbsingup
                                             QBinitChatUser(user.uid, username);
-                                            
-                                                const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                                this.props.history.push(from);
+
+                                            const { from } = this.props.location.state || { from: { pathname: "/" } };
+                                            this.props.history.push(from);
                                         },
                                         error => {
                                             setSubmitting(false);

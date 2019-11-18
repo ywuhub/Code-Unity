@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChatWindow } from './ChatWindow';
-import { QBgetGroupChats } from '@/QuickBlox';
 import { authenticationService } from '@/_services';
+import { QBgetGroupChats } from '@/QuickBlox';
 
 class GroupChat extends React.Component {
 	constructor(props) {
@@ -10,9 +10,9 @@ class GroupChat extends React.Component {
 			projects: [],
 			activeIndex: 0,
 			activeProjectID: 0,
+			activeTitle: '',
 			noChat: true,
-			isLoading: false,
-			disableChatChange: false
+			isLoading: false
 		};
 	}
 
@@ -27,32 +27,20 @@ class GroupChat extends React.Component {
 							let projects = [];
 							chats.items.map(item => { projects.push({ id: item._id, name: item.name }); });	// item.name === {"name"=>"", "project_id"=>""}
 							const project_json = JSON.parse(projects[0].name.replace(/"=>"/g, '": "'));
-							this.setState({ projects: projects, activeProjectID: project_json.project_id, isLoading: false, noChat: false });
-						} else {
-							this.setState({ isLoading: false });
-						}
-					});
-
-				QB.chat.connect({ userId: res.user_id, password: curr_id }, (err, roster) => {
-					if (err) console.log(err);
-				});
+							this.setState({ projects: projects, activeProjectID: project_json.project_id, activeTitle: project_json.name, noChat: false });
+						} 
+					})
+					.then(response => {
+						this.setState({ isLoading: false });
+					})
 			} else {
 				console.log(err);
 			}
 		});
 	}
 
-	disableChatChange() {
-		this.setState({ disableChatChange: true });
-	}
-
-	undisableChatChange() {
-		this.setState({ disableChatChange: false });
-	}
-
-	changeActive(index, project_id, e) {
-		if (this.state.disableChatChange) return;
-		this.setState({ activeIndex: index, activeProjectID: project_id });
+	changeActive(index, project_id, project_name, e) {
+		this.setState({ activeIndex: index, activeProjectID: project_id, activeTitle: project_name });
 	}
 
 	render() {
@@ -73,7 +61,7 @@ class GroupChat extends React.Component {
 							{
 								this.state.projects.map((project, index) => {
 									const project_json = JSON.parse(project.name.replace(/"=>"/g, '": "'));
-									return <a className={"project-chat-item " + (this.state.activeIndex == index && "active")} key={project.id} onClick={this.changeActive.bind(this, index, project_json.project_id)}>{project_json.name}</a>
+									return <a className={"project-chat-item " + (this.state.activeIndex == index && "active")} key={project.id} onClick={this.changeActive.bind(this, index, project_json.project_id, project_json.name)}>{project_json.name}</a>
 								})
 							}
 						</div>
@@ -82,7 +70,7 @@ class GroupChat extends React.Component {
 					{/* Message page */}
 					{!this.state.isLoading && this.state.projects.length !==0 && !this.state.noChat && 
 						<div className="col-md-8">
-							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} disableChange={this.disableChatChange.bind(this)} undisableChange={this.undisableChatChange.bind(this)} />
+							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} project_title={this.state.activeTitle} />
 						</div>
 					}
 				</div>

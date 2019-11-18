@@ -10,31 +10,42 @@ class GroupPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            isSubmitting: false
+        }
         this.curr_id = authenticationService.currentUserValue.uid;
     }
 
     leaveProject(e) {
+        this.setState({ isSubmitting: true });
         projectService.leave_group(this.props.data.project_id)
             .then(json => {
-                QBgetGroupChats()
-                    .then(chats => {
-                        for (let chat of chats.items) {
-                            if (chat.name.indexOf(`"project_id"=>"${this.props.data.project_id}"`) !== -1) {
-                                // delete group
+                QB.createSession({ login: this.curr_id, password: this.curr_id }, (err, res) => {
+                    if (res) {
+                        QB.data.list("Project", { project_id: this.props.data.project_id }, (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
                                 if (this.props.isEditable) {
-                                    QBdeleteGroup(chat._id);
-                                    
-                                // leave group
+                                    if (result.items.length != 0) {
+                                        QBdeleteGroup(result.items[0].chat_id, this.props.data.project_id);
+                                    }
+
+                                    // leave group
                                 } else {
                                     QBgetUser(this.curr_id)
-                                        .then(user => {
-                                            QBleaveGroup(chat._id, user.id);
+                                        .then(qb_user => {
+                                            if (result.items.length != 0) {
+                                                QBleaveGroup(result.items[0].chat_id, qb_user.id);
+                                            }
                                         })
                                 }
-                                break;
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        console.log(err);
+                    }
+                });
             })
             .catch(err => console.log(err));
     }
@@ -44,24 +55,27 @@ class GroupPage extends React.Component {
         let leader = this.props.data.leader;
         let members = this.props.data.members;
         return (
-                <div>
-                    <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h1 className="h4 ml-2">My Group</h1>
-                        <div>
-                        {
-                            <button type="button" className="btn btn-sm btn-outline-secondary mx-1" 
-                                onClick={this.leaveProject.bind(this)}>
-                                {(this.props.isEditable && "Delete") || "Leave"} 
-                                &nbsp;Group
-                            </button> 
+            <div>
+                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 className="h4 ml-2">My Group</h1>
+                    <div>
+                        {this.state.isSubmitting &&
+                            <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
                         }
-                        {this.props.isEditable&&
-                            <a href={"/mygroup/edit/"+this.props.data.project_id}>
-                                <button type="button" className="btn btn-sm btn-outline-secondary">Edit Group</button>
+                        {
+                            <button type="button" className="btn btn-sm btn-outline-secondary mx-1" disabled={this.state.isSubmitting}
+                                onClick={this.leaveProject.bind(this)}>
+                                {(this.props.isEditable && "Delete") || "Leave"}
+                                &nbsp;Group
+                            </button>
+                        }
+                        {this.props.isEditable &&
+                            <a href={"/mygroup/edit/" + this.props.data.project_id}>
+                                <button type="button" className="btn btn-sm btn-outline-secondary" disabled={this.state.isSubmitting}>Edit Group</button>
                             </a>
                         }
-                        </div>
                     </div>
+                </div>
                 <div className="container-fluid pl-4">
                     <div className="row mt-2 d-flex justify-content-between flex-wrap">
                         <h4 className="h1">{this.props.data.title}</h4>

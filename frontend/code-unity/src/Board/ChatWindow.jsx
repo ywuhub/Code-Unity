@@ -1,8 +1,8 @@
 import React from 'react';
-import { QBgetGroupChatHistory, QBsendMessage, QBupdateMembers, QBgetUser } from '@/QuickBlox';
 import config from 'config';
 import { authHeader } from '@/_helpers';
-import { authenticationService } from '@/_services';
+import { authenticationService, userService } from '@/_services';
+import { QBgetGroupChatHistory, QBsendMessage, QBupdateMembers, QBgetUser, QBgetUserData, QBupdateGroupName } from '@/QuickBlox';
 
 class ChatWindow extends React.Component {
     constructor(props) {
@@ -18,84 +18,112 @@ class ChatWindow extends React.Component {
 
     componentDidMount() {
         this.setState({ isLoading: true });
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
-        };
-        fetch(`${config.apiUrl}/api/project/${this.props.project_id}`, requestOptions)
-            .then(response => { return response.json() })
+        userService.getProjectDetail(this.props.project_id)
             .then(json => {
+                if (json.title !== this.props.project_title) {
+                    QBupdateGroupName(this.props.chat_id, { name: json.title, project_id: this.props.project_id })
+                }
                 this.setState({ group_name: json.title, group_members: json.members });
             });
 
         QBgetGroupChatHistory(this.props.chat_id)
             .then(msgs => {
-                let messages = this.state.messages;
-                msgs.forEach(msg => {
+                if (msgs.length === 0) this.setState({ isLoading: false });
+                let messages = [];
+                for (let i = 0; i < msgs.length; ++i) {
+                    const msg = msgs[i];
+                    // QBgetUserData(msg.sender_id)
+                    //     .then(user => {
+                    //         messages.push({ sender_id: user.username, message: msg.message, created_at: msg.created_at });
+                    //         if (i == msgs.length - 1) this.setState({ messages: messages, isLoading: false });
+                    //     });
                     messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
-                })
+                }
                 this.setState({ messages: messages, isLoading: false });
             });
 
+        // join group chat
+        QB.createSession({ login: this.curr_id, password: this.curr_id }, (err, res) => {
+            if (res) {
+                let dialogJid = QB.chat.helpers.getRoomJidFromDialogId(this.props.chat_id);
+                QB.chat.muc.join(dialogJid, function (resultStanza) {   // error
+                    var joined = true;
+
+                    for (var i = 0; i < resultStanza.childNodes.length; i++) {
+                        var elItem = resultStanza.childNodes.item(i);
+                        if (elItem.tagName === 'error') {
+                            joined = false;
+                        }
+                    }
+                });
+            } else {
+                console.log(err);
+            }
+        });
+
         // listener for group chat messages from other users
         QB.chat.onMessageListener = (user_id, msg) => {
-            this.props.disableChange();
             const d = new Date().toISOString();
             const dateTime = d.split('.')[0];
 
             let messages = this.state.messages;
             messages.push({ sender_id: user_id, message: msg, created_at: dateTime });
 
-            this.setState({
-                messages: messages
-            });
-            this.props.undisableChange();
+            this.setState({ messages: messages });
         }
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.chat_id !== prevProps.chat_id) {
-            this.setState({ isLoading: true });
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
-            };
-            fetch(`${config.apiUrl}/api/project/${this.props.project_id}`, requestOptions)
-                .then(response => { return response.json() })
+            // leave current group chat     error
+            // let dialogJid = QB.chat.helpers.getRoomJidFromDialogId(prevProps.chat_id);
+            // QB.chat.muc.leave(dialogJid, function () {
+            //     console.log("Left dialog " + dialogId);
+            // });
+
+            this.setState({ messages: [], isLoading: true });
+            userService.getProjectDetail(this.props.project_id)
                 .then(json => {
+                    if (json.title !== this.props.project_title) {
+                        QBupdateGroupName(this.props.chat_id, { name: json.title, project_id: this.props.project_id })
+                    }
                     this.setState({ group_name: json.title, group_members: json.members });
                 });
+
             QBgetGroupChatHistory(this.props.chat_id)
                 .then(msgs => {
+                    if (msgs.length === 0) this.setState({ isLoading: false });
                     let messages = [];
-                    msgs.forEach(msg => {
+                    for (let i = 0; i < msgs.length; ++i) {
+                        const msg = msgs[i];
                         messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
-                    })
+                    }
                     this.setState({ messages: messages, isLoading: false });
                 });
+
         }
-        const chat_msgs = document.getElementById('chat-msgs');
-        chat_msgs.scrollTop = chat_msgs.scrollHeight;
+
+        if (!this.state.isLoading) {
+
+            const chat_msgs = document.getElementById('chat-msgs');
+            chat_msgs.scrollTop = chat_msgs.scrollHeight;
+        }
     }
 
     addMessage(e) {
-        this.props.disableChange();
         const d = new Date().toISOString();
         const dateTime = d.split('.')[0];
 
-        const user_id = JSON.parse(localStorage.getItem('currentUser')).uid;
+        const user_id = "Me c:";
         const msg = document.getElementById('message');
 
         let messages = this.state.messages;
         messages.push({ sender_id: user_id, message: msg.value, created_at: dateTime });
-        this.setState({
-            messages: messages
-        });
+        this.setState({ messages: messages });
 
         QBsendMessage(this.props.chat_id, msg.value);
 
         msg.value = '';
-        this.props.undisableChange();
     }
 
     onEnter(e) {
@@ -104,15 +132,17 @@ class ChatWindow extends React.Component {
         }
     }
 
-    getUsername(id) {
-        return id;
-    }
-
     cleanTime(dateTime) {
         const arr = dateTime.split('T');
         const date = arr[0];
         const time = arr[1].replace('Z', '');
         return date + " " + time;
+    }
+
+    getUsername(id) {
+        if (id === 'Me c:') return id;
+        return id;
+
     }
 
     addMembers(e) {
@@ -124,6 +154,7 @@ class ChatWindow extends React.Component {
                     new_chat_members.push(user.id);
                     if (index === members.length - 1) {
                         QBupdateMembers(this.props.chat_id, new_chat_members, []);
+                        document.getElementById('close-modal').click();
                     }
                 })
         })
@@ -135,38 +166,41 @@ class ChatWindow extends React.Component {
         return (
             <div className="card border-0 shadow bg-transparent mx-5">
                 {/* group name */}
-                <div className="card-header text-muted bg-light pt-4 border-0">
-                    <h3 className="d-flex justify-content-between border-bottom p-2 pb-4">
-                        {this.state.group_name}
-                        <button className="btn btn-primary btn-circle" data-toggle="modal" data-target="#exampleModalCenter"><i className="fas fa-plus"></i></button>
-                    </h3>
-                </div>
+                {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 my-3"></div>)}
 
-                {/* chat history */}
-                <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0" id="chat-msgs">
-                    {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
-                    {!this.state.isLoading &&
-                        this.state.messages.map(message => {
-                            return (
-                                <div key={key++} className="media px-2 py-1">
-                                    <div className="media-body">
-                                        <h6>{this.getUsername(message.sender_id)} <small className="text-muted"><i>{this.cleanTime(message.created_at)}</i></small></h6>
-                                        <p> {message.message} </p>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
+                {!this.state.isLoading &&
+                    <div>
+                        <div className="card-header text-muted bg-light pt-4 border-0">
+                            <h3 className="d-flex justify-content-between border-bottom p-2 pb-4">
+                                {this.state.group_name}
+                                <button className="btn btn-primary btn-circle" data-toggle="modal" data-target="#exampleModalCenter"><i className="fas fa-plus"></i></button>
+                            </h3>
+                        </div>
 
-                {/* message input */}
-                <div className="card-footer bg-light border-0">
-                    <hr />
-                    <div className="d-flex justify-content-between mb-3">
-                        <input type="text" id="message" className="form-control bg-dark rounded-pill p-4" style={{ "color": "white" }} placeholder="Enter message" onKeyPress={this.onEnter.bind(this)}></input>
-                        <button className="btn bg-transparent border-0 pr-0" id="send-button" onClick={this.addMessage.bind(this)}><i className="fa fa-paper-plane fa-hover" style={{ 'fontSize': '20px' }}></i></button>
+                        <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0" id="chat-msgs">
+                            {
+                                this.state.messages.map(message => {
+                                    return (
+                                        <div key={key++} className="media px-2 py-1">
+                                            <div className="media-body">
+                                                <h6>{this.getUsername(message.sender_id)} <small className="text-muted"><i>{this.cleanTime(message.created_at)}</i></small></h6>
+                                                <p> {message.message} </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+
+                        <div className="card-footer bg-light border-0">
+                            <hr />
+                            <div className="d-flex justify-content-between mb-3">
+                                <input type="text" id="message" className="form-control bg-dark rounded-pill p-4" style={{ "color": "white" }} placeholder="Enter message" onKeyPress={this.onEnter.bind(this)}></input>
+                                <button className="btn bg-transparent border-0 pr-0" id="send-button" onClick={this.addMessage.bind(this)}><i className="fa fa-paper-plane fa-hover" style={{ 'fontSize': '20px' }}></i></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                }
 
                 {/* Create group modal */}
                 <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -192,7 +226,7 @@ class ChatWindow extends React.Component {
                                 }
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal" id="close-modal">Close</button>
                                 <button type="button" className="btn btn-primary" onClick={this.addMembers.bind(this)}>Add</button>
                             </div>
                         </div>

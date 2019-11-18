@@ -1,12 +1,12 @@
 import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import '@/Style';
-import { userService, projectService } from '@/_services';
-
+import { userService, projectService, authenticationService } from '@/_services';
 
 class GroupEditPage extends React.Component {
     constructor(props) {
         super(props);
+        this.curr_id = authenticationService.currentUserValue.uid;
         this.removeTag = this.removeTag.bind(this);
         this.addTag = this.addTag.bind(this);
         this.putProjectDetails = this.putProjectDetails.bind(this);

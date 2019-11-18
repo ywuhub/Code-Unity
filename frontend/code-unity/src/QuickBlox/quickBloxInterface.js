@@ -25,11 +25,6 @@ function QBcreateSession(login) {
 
 // QB.chat.disconnect();
 
-// var session = QB.service.getSession();
-// if (session) {
-//    session.token     // token used in below functions     
-// }
-
 // sign up user for chat        call when user signs up for codeunity  
 // for simplicity   login = password = user id 
 function QBinitChatUser(user_id, username) {
@@ -51,6 +46,7 @@ function QBinitChatUser(user_id, username) {
     return fetch('https://api.quickblox.com/users.json', options)
         .then(response => { return response.json() })
         .then(json => {
+            QBcreateUserData(json.user.id, user_id, username);
             return json;
         });
 }
@@ -71,20 +67,49 @@ function QBgetUser(user_id) {
         });
 }
 
+function QBgetUserData(qb_id) {
+    const options = {
+        'method': 'GET',
+        'headers': {
+            'QB-Token': QB.service.getSession().token
+        }
+    }
+    return fetch(`https://api.quickblox.com/data/User.json?qb_id=${qb_id}`, options)
+        .then(response => { return response.json() })
+        .then(json => {
+            return json.items[0];
+        });
+}
+
+function QBgetProjectData(project_id) {
+    const options = {
+        'method': 'GET',
+        'headers': {
+            'QB-Token': QB.service.getSession().token
+        }
+    }
+    return fetch(`https://api.quickblox.com/data/User.json?project_id=${project_id}`, options)
+        .then(response => { return response.json() })
+        .then(json => {
+            return json.items[0];
+        });
+}
+
 // create group chat when group created
-function QBcreateGroup(name) {
+function QBcreateGroup(data) {
     const options = {
         'method': 'POST',
         'headers': {
             'Content-Type': 'application/json',
             'QB-Token': QB.service.getSession().token
         },
-        'body': JSON.stringify({ type: 2, occupants_ids: [], name: name })
+        'body': JSON.stringify({ type: 2, occupants_ids: [], name: data })
     };
 
     return fetch('https://api.quickblox.com/chat/Dialog.json', options)
         .then(response => { return response.json() })
         .then(json => {
+            QBcreateProjectData(json._id, data.project_id, data.name);
             return json;
         });
 }
@@ -117,7 +142,8 @@ function QBgetGroupChatHistory(chat_id) {
         .then(response => { return response.json() })
         .then(json => {
             return json.items;
-        });
+        })
+        // .then()
 
     // OR
     // var params = { chat_dialog_id: chat_id, sort_desc: 'date_sent', limit: 100, skip: 0 };
@@ -131,7 +157,6 @@ function QBgetGroupChatHistory(chat_id) {
 }
 
 // change group name, remove members, add members       call when project's groups name changes and members are also changed
-// pass in empty list for members to not add/remove anyone
 function QBupdateGroup(project_id, newName, newMembers, byebye) {
     var toUpdateParams = {
         name: newName,
@@ -148,7 +173,6 @@ function QBupdateGroup(project_id, newName, newMembers, byebye) {
     });
 }
 
-// change group chat name      call when project group name changes
 function QBupdateGroupName(project_id, newName) {
     var toUpdateParams = {
         name: newName
@@ -159,16 +183,16 @@ function QBupdateGroupName(project_id, newName) {
             console.log(err);
         } else {
             console.log(res);
+            window.location.reload();
         }
     });
 }
 
 // add members and remove members from group chat       call when project groups members are changed
-// pass in empty list for members to not add/remove anyone
 function QBupdateMembers(project_id, newMembers, byebye) {
     var toUpdateParams = {
         push_all: { occupants_ids: (newMembers || []) },
-        pull_all: { occupants_ids: (byebye || []) } 
+        pull_all: { occupants_ids: (byebye || []) }
     };
 
     QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
@@ -181,10 +205,20 @@ function QBupdateMembers(project_id, newMembers, byebye) {
 }
 
 // delete group chat        call when project group is deleted      
-function QBdeleteGroup(project_id) {
-    QB.chat.dialog.delete([project_id], { force: 1 }, function (err) {
+function QBdeleteGroup(chat_id, project_id) {
+    QB.chat.dialog.delete([chat_id], { force: 1 }, function (err) {
         if (err) {
-            console.log("err: " + err);
+            console.log(err);
+        } else {
+            QBdeleteProjectData(chat_id, project_id);
+        }
+    });
+}
+
+function QBdeleteProjectData(chat_id, project_id) {
+    QB.data.delete("Project", {chat_id: chat_id, project_id: project_id}, function (err, res) {
+        if (err) {
+            throw new Error(err.toString());
         } else {
             console.log("deleted qb group");
             window.location.reload();
@@ -194,16 +228,16 @@ function QBdeleteGroup(project_id) {
 
 function QBleaveGroup(project_id, user_id) {
     var toUpdateParams = {
-        pull_all: {occupants_ids: [user_id]},
+        pull_all: { occupants_ids: [user_id] },
     };
 
-    QB.chat.dialog.update(project_id, toUpdateParams, function(err, res) {
-      if (err) {
-          console.log(err);
-      } else {
-        console.log("left qb chat");
-        window.location.reload();
-      }
+    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("left qb chat");
+            window.location.reload();
+        }
     });
 }
 
@@ -224,4 +258,36 @@ function QBsendMessage(chat_id, message) {
     });
 }
 
-export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBupdateMembers, QBgetUser };
+/**
+ * 
+ * @param {*} qb_id         quickblox id
+ * @param {*} cu_id         code unity id
+ * @param {*} username      user username
+ */
+function QBcreateUserData(qb_id, cu_id, username) {
+    QB.data.create("User", { qb_id: qb_id, cu_id: cu_id, username: username }, function (err, res) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(res);
+        }
+    });
+}
+
+/**
+ * 
+ * @param {*} project_id 
+ * @param {*} chat_id       quickblox chat id
+ * @param {*} name          project name
+ */
+function QBcreateProjectData(chat_id, project_id, name) {
+    QB.data.create("Project", { project_id: project_id, chat_id: chat_id, name: name }, function (err, res) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(res);
+        }
+    });
+}
+
+export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBupdateMembers, QBgetUser, QBgetUserData, QBupdateGroupName, QBgetProjectData };
