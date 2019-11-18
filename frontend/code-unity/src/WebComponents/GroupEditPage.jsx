@@ -149,11 +149,11 @@ class GroupEditPage extends React.Component {
     }
 
     kickMember(member) {
-        this.setState({ kickMember: member._id})
+        this.setState({ kickMember: member})
     }
 
     removeMembers() {
-        projectService.kick_member(this.state.project_id, this.state.kickMember)
+        projectService.kick_member(this.state.project_id, this.state.kickMember._id)
             .then(json => {
                 console.log(json);
                 window.location.reload();
@@ -316,7 +316,7 @@ class GroupEditPage extends React.Component {
                                 </div>
                                 <div className="modal-body">
                                     <div className="form-group">
-                                        <label htmlFor="title" className="pb-2 mb-0">Are you sure you want to kick this member?</label>
+                                    <label htmlFor="title" className="pb-2 mb-0">Are you sure you want to kick <b>{this.state.kickMember.username}?</b></label>
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
