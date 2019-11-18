@@ -425,7 +425,46 @@ POST ->
 (200 OK) <-
 ```
 
-### `/project/<string:project_id>/leave`
+### `api/project/<string:project_id>/leave`
 #### POST
 Removes the logged in user from the specified project. If the user is the
 leader of the project, the project is subsequently disbanded.
+
+### `api/project/<string:project_id>/kick`
+#### POST
+Kicks the selected user from the project by the group leader.
+
+Expects:
+```
+{
+    "user_id": string, 
+    Description: A member id that the project leader wants to kick
+}
+```
+
+### `api/user/account`
+#### GET
+Returns the account information for the currently logged in user.
+Will return 401/422 if user is not authenticated.
+
+Returns:
+```
+    {
+        "_id": string,
+        "name": string,
+        "email": string,
+        "avatar": string
+    }
+```
+#### POST
+Updates the currently logged in user's account information. 
+Will return 401/422 if user is not authenticated.
+
+Parameters (All fields are optional) : 
+```
+    {
+        "username": string,
+        "password": string,
+        "avatar": string
+    }
+```
