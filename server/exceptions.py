@@ -16,3 +16,6 @@ class UserNotFound(Exception):
 
 class DocumentNotFound(Exception):
     pass
+
+class NotProjectLeader(Exception):
+    pass

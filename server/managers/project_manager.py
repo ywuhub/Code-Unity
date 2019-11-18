@@ -1,6 +1,7 @@
 from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
+    NotProjectLeader,
     AlreadyMemberOf,
     ProjectFull,
 )
@@ -169,7 +170,7 @@ class ProjectManager:
 
         self.projects.replace_one({"_id": project_id}, project)
 
-    def kick_user_from_project(self, user_id: ObjectId, project_id: ObjectId):
+    def kick_user_from_project(self, user_id: ObjectId, leader_id: ObjectId, project_id: ObjectId):
         # TODO: this operation should be atomic.
         project = self.projects.find_one({"_id": project_id})
         if project is None:
@@ -178,6 +179,9 @@ class ProjectManager:
         user = self.users.find_one({"_id": user_id})
         if user is None:
             raise UserNotFound()
+
+        if leader_id != project["leader"]:
+            raise NotProjectLeader()
 
         # remove user from list
         project["members"].remove(user_id)
