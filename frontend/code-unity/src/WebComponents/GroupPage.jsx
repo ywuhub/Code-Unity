@@ -63,9 +63,8 @@ class GroupPage extends React.Component {
                             <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
                         }
                         {
-                            <button type="button" className="btn btn-sm btn-outline-secondary mx-1" disabled={this.state.isSubmitting}
-                                onClick={this.leaveProject.bind(this)}>
-                                {(this.props.isEditable && "Delete") || "Leave"}
+                            <button type="button" className="btn btn-sm btn-outline-secondary mx-1" data-toggle="modal" data-target="#leave" disabled={this.state.isSubmitting}>
+                                {(this.props.isEditable && "Delete") || "Leave"} 
                                 &nbsp;Group
                             </button>
                         }
@@ -140,6 +139,29 @@ class GroupPage extends React.Component {
                         <SkillBox keyValue={key_id++} title="tags" data={this.props.data.tags} />
                     </div>
                 </div>
+
+                {/* Create alert modal */}
+                <div className="modal fade" id="leave" tabIndex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="leaveTitle">Leave Group</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Are you sure you want to leave this group?</label>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-primary" onClick={this.leaveProject.bind(this)} data-dismiss="modal">Leave Group</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> {/* Create alert modal end */}
             </div>
         );
     }

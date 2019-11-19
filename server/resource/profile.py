@@ -87,7 +87,8 @@ class AccountResource(Resource):
                 {
                     "_id": string,
                     "name": string,
-                    "password": string,
+                    "email": string,
+                    "avatar": string
                 }
             ```
         """
@@ -106,6 +107,7 @@ class AccountResource(Resource):
             {
                 "username": string,
                 "password": string,
+                "avatar": string
             }
         ```
         """
@@ -113,11 +115,15 @@ class AccountResource(Resource):
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument("username", store_missing=False)
         parser.add_argument("password", store_missing=False)
+        parser.add_argument("avatar", store_missing=False)
         account_dict = parser.parse_args(strict=True)
 
-        # encode password
+        # encode password or update avatar
         if 'password' in account_dict.keys():
             account_dict["password"] = ph.hash(account_dict["password"])
+        elif 'avatar' in account_dict.keys():
+            result = cast(User, current_user).update_avatar(account_dict['avatar'])
+            return {"message": result}
 
         # update account information
         result = cast(User, current_user).update_account(account_dict)

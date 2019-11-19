@@ -87,8 +87,14 @@ class UserManager:
         # a duplicate username/email key.
         try:
             # add user to 'users' database
+            default_avatar = "https://api.adorable.io/avatars/200/code_unity_default.png"
             _id = self.users.insert_one(
-                {"username": username, "password": pwd_hash, "email": email}
+                {
+                    "username": username, 
+                    "password": pwd_hash, 
+                    "email": email, 
+                    "avatar": default_avatar
+                }
             )
             # initiate blank profile for newly registered user
             self.profiles.insert_one(

@@ -12,12 +12,39 @@ class ChatWindow extends React.Component {
             messages: [],   // sender_id, message, created_at "2016-03-23T17:00:42Z"
             group_members: [],  // [{username, _id}]    
             group_name: '',
-            isLoading: false
+            chat_room: '',
+            isLoading: false, 
+            isJoining: false
         };
     }
 
     componentDidMount() {
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, isJoining: true });
+        this.props.disableChatChange();
+        var curr_id = this.curr_id;
+        var chat_id = this.props.chat_id;
+        var setRoom = (room) => { this.setState({ chat_room: room }) }
+        var setJoining = () => { 
+            this.props.enableChatChange();
+            this.setState({ isJoining: false });
+        }
+        QB.createSession({ login: curr_id, password: curr_id }, function (err, result) {
+            if (result) {
+                QB.chat.connect({ userId: result.user_id, password: curr_id }, function (err, res) {
+                    if (res) {
+                        QB.chat.dialog.list({ type: 2, _id: chat_id }, function (err, dialogs) {
+                            const dlg = dialogs.items[0];
+                            setRoom(dlg.xmpp_room_jid);
+                            QB.chat.muc.join(dlg.xmpp_room_jid, function () {
+                                console.log("Joined dialog " + dlg._id + " xmpp " + dlg.xmpp_room_jid);
+                                setJoining();
+                            })
+                        })
+                    }
+                })
+            }
+        });
+
         userService.getProjectDetail(this.props.project_id)
             .then(json => {
                 if (json.title !== this.props.project_title) {
@@ -42,27 +69,9 @@ class ChatWindow extends React.Component {
                 this.setState({ messages: messages, isLoading: false });
             });
 
-        // join group chat
-        QB.createSession({ login: this.curr_id, password: this.curr_id }, (err, res) => {
-            if (res) {
-                let dialogJid = QB.chat.helpers.getRoomJidFromDialogId(this.props.chat_id);
-                QB.chat.muc.join(dialogJid, function (resultStanza) {   // error
-                    var joined = true;
-
-                    for (var i = 0; i < resultStanza.childNodes.length; i++) {
-                        var elItem = resultStanza.childNodes.item(i);
-                        if (elItem.tagName === 'error') {
-                            joined = false;
-                        }
-                    }
-                });
-            } else {
-                console.log(err);
-            }
-        });
-
-        // listener for group chat messages from other users
+        // listener for group chat messages from all users
         QB.chat.onMessageListener = (user_id, msg) => {
+            console.log("Dsad");
             const d = new Date().toISOString();
             const dateTime = d.split('.')[0];
 
@@ -75,13 +84,35 @@ class ChatWindow extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.chat_id !== prevProps.chat_id) {
-            // leave current group chat     error
-            // let dialogJid = QB.chat.helpers.getRoomJidFromDialogId(prevProps.chat_id);
-            // QB.chat.muc.leave(dialogJid, function () {
-            //     console.log("Left dialog " + dialogId);
-            // });
+            this.props.disableChatChange();
+            var curr_id = this.curr_id;
+            var chat_id = this.props.chat_id;
+            var setRoom = (room) => { this.setState({ chat_room: room }) }
+            var setJoining = () => { 
+                this.setState({ isJoining: false });
+                this.props.enableChatChange();
+            }
 
-            this.setState({ messages: [], isLoading: true });
+            this.setState({ messages: [], isLoading: true, isJoining: true });
+
+            // swap group chat 
+            QB.createSession({ login: curr_id, password: curr_id }, function (err, result) {
+                if (result) {
+                    QB.chat.connect({ userId: result.user_id, password: curr_id }, function (err, res) {
+                        if (res) {
+                            QB.chat.dialog.list({ type: 2, _id: chat_id }, function (err, dialogs) {
+                                const dlg = dialogs.items[0];
+                                setRoom(dlg.xmpp_room_jid);
+                                QB.chat.muc.join(dlg.xmpp_room_jid, function () {
+                                    console.log("Joined dialog " + dlg._id + " xmpp " + dlg.xmpp_room_jid);
+                                    setJoining();
+                                })
+                            })
+                        }
+                    })
+                }
+            });
+
             userService.getProjectDetail(this.props.project_id)
                 .then(json => {
                     if (json.title !== this.props.project_title) {
@@ -100,7 +131,6 @@ class ChatWindow extends React.Component {
                     }
                     this.setState({ messages: messages, isLoading: false });
                 });
-
         }
 
         if (!this.state.isLoading) {
@@ -110,18 +140,23 @@ class ChatWindow extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        QB.chat.disconnect();
+    }
+
     addMessage(e) {
-        const d = new Date().toISOString();
-        const dateTime = d.split('.')[0];
-
-        const user_id = "Me c:";
         const msg = document.getElementById('message');
+        if (/^(\s+|)$/.test(msg.value)) return; 
+        var send = {
+            type: 'groupchat',
+            body: msg.value,
+            extension: {
+                save_to_history: 1,
+            }
+        };
 
-        let messages = this.state.messages;
-        messages.push({ sender_id: user_id, message: msg.value, created_at: dateTime });
-        this.setState({ messages: messages });
-
-        QBsendMessage(this.props.chat_id, msg.value);
+        var dialogJid = QB.chat.helpers.getRoomJidFromDialogId(this.props.chat_id);
+        QB.chat.send(dialogJid, send);
 
         msg.value = '';
     }
@@ -164,7 +199,7 @@ class ChatWindow extends React.Component {
         let key = 0;
 
         return (
-            <div className="card border-0 shadow bg-transparent mx-5">
+            <div className="card border-0 shadow bg-transparent mx-5" id="chat-window">
                 {/* group name */}
                 {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 my-3"></div>)}
 
@@ -180,11 +215,13 @@ class ChatWindow extends React.Component {
                         <div className="card-body bg-light border-0 scroll mb-0 pb-0 pt-0 mt-0" id="chat-msgs">
                             {
                                 this.state.messages.map(message => {
+                                    let msg = message.message;
+                                    if (msg.body) msg = msg.body
                                     return (
                                         <div key={key++} className="media px-2 py-1">
                                             <div className="media-body">
                                                 <h6>{this.getUsername(message.sender_id)} <small className="text-muted"><i>{this.cleanTime(message.created_at)}</i></small></h6>
-                                                <p> {message.message} </p>
+                                                <p> {msg} </p>
                                             </div>
                                         </div>
                                     )
@@ -195,8 +232,8 @@ class ChatWindow extends React.Component {
                         <div className="card-footer bg-light border-0">
                             <hr />
                             <div className="d-flex justify-content-between mb-3">
-                                <input type="text" id="message" className="form-control bg-dark rounded-pill p-4" style={{ "color": "white" }} placeholder="Enter message" onKeyPress={this.onEnter.bind(this)}></input>
-                                <button className="btn bg-transparent border-0 pr-0" id="send-button" onClick={this.addMessage.bind(this)}><i className="fa fa-paper-plane fa-hover" style={{ 'fontSize': '20px' }}></i></button>
+                                <input type="text" id="message" className="form-control bg-dark rounded-pill p-4" style={{ "color": "white" }} placeholder={(this.state.isJoining && "Please wait. Joining Chat.") || "Enter message"} onKeyPress={this.onEnter.bind(this)} disabled={this.state.isJoining}></input>
+                                <button className="btn bg-transparent border-0 pr-0" id="send-button" onClick={this.addMessage.bind(this)} disabled={this.state.isJoining}><i className="fa fa-paper-plane fa-hover" style={{ 'fontSize': '20px' }}></i></button>
                             </div>
                         </div>
                     </div>

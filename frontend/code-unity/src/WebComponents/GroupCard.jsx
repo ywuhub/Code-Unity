@@ -1,6 +1,6 @@
 import React from 'react';
 
-import UserIcon from '@/Assert/catSelfie.png';
+import UserIcon from '@/Assets/catSelfie.png';
 import '@/Style';
 
 export const GroupCard = (props) => {

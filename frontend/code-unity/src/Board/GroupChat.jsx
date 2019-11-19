@@ -12,7 +12,8 @@ class GroupChat extends React.Component {
 			activeProjectID: 0,
 			activeTitle: '',
 			noChat: true,
-			isLoading: false
+			isLoading: false, 
+			disable: false
 		};
 	}
 
@@ -39,7 +40,16 @@ class GroupChat extends React.Component {
 		});
 	}
 
+	disableChatChange() {
+		this.setState({ disable: true });
+	}
+
+	enableChatChange() {
+		this.setState({ disable: false });
+	}
+
 	changeActive(index, project_id, project_name, e) {
+		if (this.state.disable) return;
 		this.setState({ activeIndex: index, activeProjectID: project_id, activeTitle: project_name });
 	}
 
@@ -61,7 +71,7 @@ class GroupChat extends React.Component {
 							{
 								this.state.projects.map((project, index) => {
 									const project_json = JSON.parse(project.name.replace(/"=>"/g, '": "'));
-									return <a className={"project-chat-item " + (this.state.activeIndex == index && "active")} key={project.id} onClick={this.changeActive.bind(this, index, project_json.project_id, project_json.name)}>{project_json.name}</a>
+									return <a className={(this.state.disable && "text-muted") + " project-chat-item " + (this.state.activeIndex == index && "active")} key={project.id} onClick={this.changeActive.bind(this, index, project_json.project_id, project_json.name)} >{project_json.name}</a>
 								})
 							}
 						</div>
@@ -69,8 +79,8 @@ class GroupChat extends React.Component {
 
 					{/* Message page */}
 					{!this.state.isLoading && this.state.projects.length !==0 && !this.state.noChat && 
-						<div className="col-md-8">
-							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} project_title={this.state.activeTitle} />
+						<div className="col-md-8 px-5">
+							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} project_title={this.state.activeTitle} disableChatChange={this.disableChatChange.bind(this)} enableChatChange={this.enableChatChange.bind(this)} />
 						</div>
 					}
 				</div>

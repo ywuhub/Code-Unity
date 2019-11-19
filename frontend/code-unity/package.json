@@ -15,7 +15,9 @@
         "history": "^4.10.1",
         "quickblox": "^2.12.6",
         "react": "^16.10.2",
+        "react-color": "^2.17.3",
         "react-dom": "^16.10.2",
+        "react-image-picker": "^1.1.1",
         "react-router-dom": "^5.1.2",
         "rxjs": "^6.5.3",
         "yup": "^0.27.0"

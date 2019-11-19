@@ -271,11 +271,6 @@ class GroupList extends React.Component {
         {/* page header */}
         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 className="h4">Groups</h1>
-          <div className="btn-toolbar mb-2 mb-md-0">
-            <div className="btn-group mr-2">
-              <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter">Create New Group</button>
-            </div>
-          </div>
         </div> {/* page header end */}
 
         <div className="row">
@@ -352,12 +347,6 @@ class GroupList extends React.Component {
 
         <br />
 
-        {/* Create group modal */}
-        <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <CreateGroup />
-          </div>
-        </div> {/* Create group modal end */}
       </div>
     );
   }
