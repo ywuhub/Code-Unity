@@ -2,6 +2,7 @@ import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import '@/Style';
 import { userService, projectService, authenticationService } from '@/_services';
+import { QBupdateGroupName, QBremoveMembers, QBgetUser } from '@/QuickBlox';
 
 class GroupEditPage extends React.Component {
     constructor(props) {
@@ -119,7 +120,15 @@ class GroupEditPage extends React.Component {
             ).then(
                 status => {
                     this.setState({ edit_status_visibility: true})
+                    var project_id = this.state.project_id;
+                    var newName = this.refs.edit_title.value;
                     if (status == "OK") {
+                        QB.createSession({ login: this.curr_id, password: this.curr_id }, function (err, result) {
+                            if (result) {
+                                QBupdateGroupName(project_id, {name: newName, project_id: project_id});
+                            }
+                        });
+                
                         this.setState({
                             edit_status_class:"alert alert-success",
                             edit_status:"Profile has been updated."});
@@ -153,10 +162,21 @@ class GroupEditPage extends React.Component {
     }
 
     removeMembers() {
+        var project_id = this.state.project_id;
+        var member_id = this.state.kickMember._id;
         projectService.kick_member(this.state.project_id, this.state.kickMember._id)
             .then(json => {
                 console.log(json);
-                window.location.reload();
+                QB.createSession({ login: this.curr_id, password: this.curr_id }, function (err, result) {
+                    if (result) {
+                        let member = [];
+                        QBgetUser(member_id)
+                            .then(user => {
+                                member.push(user.id);
+                                QBremoveMembers(project_id, member);
+                            })
+                    }
+                });
             })
             .catch(err => console.log(err));
     }

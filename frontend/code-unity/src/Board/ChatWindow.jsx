@@ -2,7 +2,7 @@ import React from 'react';
 import config from 'config';
 import { authHeader } from '@/_helpers';
 import { authenticationService, userService } from '@/_services';
-import { QBgetGroupChatHistory, QBsendMessage, QBupdateMembers, QBgetUser, QBgetUserData, QBupdateGroupName } from '@/QuickBlox';
+import { QBgetGroupChatHistory, QBsendMessage, QBaddMembers, QBgetUser, QBgetUserData } from '@/QuickBlox';
 
 class ChatWindow extends React.Component {
     constructor(props) {
@@ -47,9 +47,6 @@ class ChatWindow extends React.Component {
 
         userService.getProjectDetail(this.props.project_id)
             .then(json => {
-                if (json.title !== this.props.project_title) {
-                    QBupdateGroupName(this.props.chat_id, { name: json.title, project_id: this.props.project_id })
-                }
                 this.setState({ group_name: json.title, group_members: json.members });
             });
 
@@ -115,9 +112,6 @@ class ChatWindow extends React.Component {
 
             userService.getProjectDetail(this.props.project_id)
                 .then(json => {
-                    if (json.title !== this.props.project_title) {
-                        QBupdateGroupName(this.props.chat_id, { name: json.title, project_id: this.props.project_id })
-                    }
                     this.setState({ group_name: json.title, group_members: json.members });
                 });
 
@@ -175,9 +169,7 @@ class ChatWindow extends React.Component {
     }
 
     getUsername(id) {
-        if (id === 'Me c:') return id;
         return id;
-
     }
 
     addMembers(e) {
@@ -188,7 +180,7 @@ class ChatWindow extends React.Component {
                 .then(user => {
                     new_chat_members.push(user.id);
                     if (index === members.length - 1) {
-                        QBupdateMembers(this.props.chat_id, new_chat_members, []);
+                        QBaddMembers(this.props.chat_id, new_chat_members);
                         document.getElementById('close-modal').click();
                     }
                 })

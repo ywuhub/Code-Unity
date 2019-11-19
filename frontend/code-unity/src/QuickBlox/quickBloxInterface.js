@@ -88,7 +88,7 @@ function QBgetProjectData(project_id) {
             'QB-Token': QB.service.getSession().token
         }
     }
-    return fetch(`https://api.quickblox.com/data/User.json?project_id=${project_id}`, options)
+    return fetch(`https://api.quickblox.com/data/Project.json?project_id=${project_id}`, options)
         .then(response => { return response.json() })
         .then(json => {
             return json.items[0];
@@ -156,52 +156,54 @@ function QBgetGroupChatHistory(chat_id) {
     // });
 }
 
-// change group name, remove members, add members       call when project's groups name changes and members are also changed
-function QBupdateGroup(project_id, newName, newMembers, byebye) {
-    var toUpdateParams = {
-        name: newName,
-        push_all: { occupants_ids: newMembers },
-        pull_all: { occupants_ids: byebye }
-    };
-
-    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(res);
-        }
-    });
-}
-
 function QBupdateGroupName(project_id, newName) {
-    var toUpdateParams = {
-        name: newName
-    };
-
-    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(res);
-            window.location.reload();
-        }
-    });
+    QBgetProjectData(project_id)
+        .then(project => {
+            var toUpdateParams = {
+                name: newName
+            };
+        
+            QB.chat.dialog.update(project.chat_id, toUpdateParams, function (err, res) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(res);
+                    window.location.reload();
+                }
+            });
+        })
 }
 
-// add members and remove members from group chat       call when project groups members are changed
-function QBupdateMembers(project_id, newMembers, byebye) {
+function QBaddMembers(chat_id, newMembers) {
     var toUpdateParams = {
         push_all: { occupants_ids: (newMembers || []) },
-        pull_all: { occupants_ids: (byebye || []) }
     };
 
-    QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
+    QB.chat.dialog.update(chat_id, toUpdateParams, function (err, res) {
         if (err) {
             console.log(err);
         } else {
             console.log(res);
         }
     });
+}
+
+function QBremoveMembers(project_id, members) {
+    QBgetProjectData(project_id)
+        .then(project => {
+            var toUpdateParams = {
+                pull_all: { occupants_ids: members }
+            };
+        
+            QB.chat.dialog.update(project.chat_id, toUpdateParams, function (err, res) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(res);
+                    window.location.reload();
+                }
+            });
+        })
 }
 
 // delete group chat        call when project group is deleted      
@@ -290,4 +292,4 @@ function QBcreateProjectData(chat_id, project_id, name) {
     });
 }
 
-export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBupdateMembers, QBgetUser, QBgetUserData, QBupdateGroupName, QBgetProjectData };
+export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBaddMembers, QBremoveMembers, QBgetUser, QBgetUserData, QBupdateGroupName, QBgetProjectData };
