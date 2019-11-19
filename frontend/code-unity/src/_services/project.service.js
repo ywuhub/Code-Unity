@@ -9,7 +9,7 @@ export const projectService = {
     join_group,
     leave_group,
     join_requests,
-    accept_request,
+    kick_member,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
@@ -61,13 +61,13 @@ function join_requests(incoming) {
     }
 }
 
-function accept_request(project_id, user_id, join_from) {
-    const requestOptions = {
+function kick_member(project_id, user_id) {
+    const options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
-        body: JSON.stringify({ user_id: user_id, join_from: join_from })
+        body: JSON.stringify({ user_id: user_id })
     };
 
-    return fetch(`${config.apiUrl}/api/project/${project_id}/join`, requestOptions)
-        .then(handleResponse);
+    return fetch(`${config.apiUrl}/api/project/${project_id}/kick`, options)
+        .then(response => { return response.json(); });
 }
