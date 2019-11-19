@@ -10,7 +10,8 @@ class ChatWindow extends React.Component {
         this.curr_id = authenticationService.currentUserValue.uid;
         this.state = {
             messages: [],   // sender_id, message, created_at "2016-03-23T17:00:42Z"
-            group_members: [],  // [{username, _id}]    
+            group_members: [],  // [{username, _id}]
+            ids_map: {},    
             group_name: '',
             chat_room: '',
             isLoading: false, 
@@ -21,6 +22,21 @@ class ChatWindow extends React.Component {
     componentDidMount() {
         this.setState({ isLoading: true, isJoining: true });
         this.props.disableChatChange();
+        var qb_users = this.props.qb_user_ids;
+        var setIdMap = (ids_map) => {
+            this.setState({ ids_map: ids_map });
+        }
+        QB.data.list("User", {qb_id: {or: qb_users}}, function(err, result){
+            if (err) { 
+                console.log(err);
+            } else {
+                let ids_map = {}
+                for (let user of result.items) {
+                    ids_map[user.qb_id] = user.username;
+                }
+                setIdMap(ids_map);
+            }
+        });
         var curr_id = this.curr_id;
         var chat_id = this.props.chat_id;
         var setRoom = (room) => { this.setState({ chat_room: room }) }
@@ -82,6 +98,22 @@ class ChatWindow extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.props.chat_id !== prevProps.chat_id) {
             this.props.disableChatChange();
+            var qb_users = this.props.qb_user_ids;
+            var setIdMap = (ids_map) => {
+                this.setState({ ids_map: ids_map });
+            }
+            QB.data.list("User", {qb_id: {or: qb_users}}, function(err, result){
+                if (err) { 
+                    console.log(err);
+                } else {
+                    let ids_map = {}
+                    for (let i = 0; i < result.items.length; ++i) {
+                        let user = result.items[i];
+                        ids_map[user.qb_id] = user.username;
+                        if (i == result.items.length -1) setIdMap(ids_map);
+                    }
+                }
+            });
             var curr_id = this.curr_id;
             var chat_id = this.props.chat_id;
             var setRoom = (room) => { this.setState({ chat_room: room }) }
@@ -169,7 +201,7 @@ class ChatWindow extends React.Component {
     }
 
     getUsername(id) {
-        return id;
+        return this.state.ids_map[id];
     }
 
     addMembers(e) {

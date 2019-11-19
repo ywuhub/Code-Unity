@@ -26,7 +26,7 @@ class GroupChat extends React.Component {
 					.then(chats => {
 						if (chats.total_entries !== 0) {
 							let projects = [];
-							chats.items.map(item => { projects.push({ id: item._id, name: item.name }); });	// item.name === {"name"=>"", "project_id"=>""}
+							chats.items.map(item => { projects.push({ id: item._id, name: item.name, users: item.occupants_ids }); });	// item.name === {"name"=>"", "project_id"=>""}
 							const project_json = JSON.parse(projects[0].name.replace(/"=>"/g, '": "'));
 							this.setState({ projects: projects, activeProjectID: project_json.project_id, activeTitle: project_json.name, noChat: false });
 						} 
@@ -80,7 +80,7 @@ class GroupChat extends React.Component {
 					{/* Message page */}
 					{!this.state.isLoading && this.state.projects.length !==0 && !this.state.noChat && 
 						<div className="col-lg-8 container">
-							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} project_title={this.state.activeTitle} disableChatChange={this.disableChatChange.bind(this)} enableChatChange={this.enableChatChange.bind(this)} />
+							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} project_title={this.state.activeTitle} qb_user_ids={this.state.projects[this.state.activeIndex].users} disableChatChange={this.disableChatChange.bind(this)} enableChatChange={this.enableChatChange.bind(this)} />
 						</div>
 					}
 				</div>
