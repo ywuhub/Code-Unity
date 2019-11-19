@@ -143,7 +143,7 @@ function QBgetGroupChatHistory(chat_id) {
         .then(json => {
             return json.items;
         })
-        // .then()
+    // .then()
 
     // OR
     // var params = { chat_dialog_id: chat_id, sort_desc: 'date_sent', limit: 100, skip: 0 };
@@ -159,16 +159,19 @@ function QBgetGroupChatHistory(chat_id) {
 function QBupdateGroupName(project_id, newName) {
     QBgetProjectData(project_id)
         .then(project => {
-            var toUpdateParams = {
-                name: newName
-            };
-        
+            var toUpdateParams = { name: newName };
             QB.chat.dialog.update(project.chat_id, toUpdateParams, function (err, res) {
                 if (err) {
                     console.log(err);
                 } else {
-                    console.log(res);
-                    window.location.reload();
+                    const project_json = JSON.parse(res.name.replace(/"=>"/g, '": "'));
+                    QB.data.update("Project", {_id: project._id, name: project_json.name}, function(err, res){
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            window.location.reload();
+                        }
+                    });
                 }
             });
         })
@@ -194,7 +197,7 @@ function QBremoveMembers(project_id, members) {
             var toUpdateParams = {
                 pull_all: { occupants_ids: members }
             };
-        
+
             QB.chat.dialog.update(project.chat_id, toUpdateParams, function (err, res) {
                 if (err) {
                     console.log(err);
@@ -218,7 +221,7 @@ function QBdeleteGroup(chat_id, project_id) {
 }
 
 function QBdeleteProjectData(chat_id, project_id) {
-    QB.data.delete("Project", {chat_id: chat_id, project_id: project_id}, function (err, res) {
+    QB.data.delete("Project", { chat_id: chat_id, project_id: project_id }, function (err, res) {
         if (err) {
             throw new Error(err.toString());
         } else {
