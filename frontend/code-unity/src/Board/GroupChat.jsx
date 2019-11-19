@@ -67,7 +67,7 @@ class GroupChat extends React.Component {
 					{(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
 					{/* left bar */}
 					{!this.state.isLoading && !this.state.noChat &&
-						<div className="col-md-4 border-right project-chat-sidebar">
+						<div className="col-lg-4 border-right project-chat-sidebar">
 							{
 								this.state.projects.map((project, index) => {
 									const project_json = JSON.parse(project.name.replace(/"=>"/g, '": "'));
@@ -79,7 +79,7 @@ class GroupChat extends React.Component {
 
 					{/* Message page */}
 					{!this.state.isLoading && this.state.projects.length !==0 && !this.state.noChat && 
-						<div className="col-md-8 px-5">
+						<div className="col-lg-8 container">
 							<ChatWindow chat_id={this.state.projects[this.state.activeIndex].id} project_id={this.state.activeProjectID} project_title={this.state.activeTitle} disableChatChange={this.disableChatChange.bind(this)} enableChatChange={this.enableChatChange.bind(this)} />
 						</div>
 					}

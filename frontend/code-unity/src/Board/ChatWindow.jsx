@@ -68,10 +68,10 @@ class ChatWindow extends React.Component {
 
         // listener for group chat messages from all users
         QB.chat.onMessageListener = (user_id, msg) => {
-            console.log("Dsad");
+            console.log("message sent/received");
             const d = new Date().toISOString();
             const dateTime = d.split('.')[0];
-
+            
             let messages = this.state.messages;
             messages.push({ sender_id: user_id, message: msg, created_at: dateTime });
 
@@ -191,16 +191,17 @@ class ChatWindow extends React.Component {
         let key = 0;
 
         return (
-            <div className="card border-0 shadow bg-transparent mx-5" id="chat-window">
+            <div className="card border-0 shadow bg-transparent mx-auto my-auto" id="chat-window">
                 {/* group name */}
                 {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 my-3"></div>)}
 
                 {!this.state.isLoading &&
                     <div>
                         <div className="card-header text-muted bg-light pt-4 border-0">
+                            {this.state.isJoining && <div className="text-muted" style={{"fontSize":"12px"}}><img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /> Not Connected. Connecting ...</div>}
                             <h3 className="d-flex justify-content-between border-bottom p-2 pb-4">
-                                {this.state.group_name}
-                                <button className="btn btn-primary btn-circle" data-toggle="modal" data-target="#exampleModalCenter"><i className="fas fa-plus"></i></button>
+                                <div>{this.state.group_name} <span className="h6 ml-2" style={{"color": (!this.state.isJoining && "rgb(51, 213, 112)")}}><i className="fas fa-circle ml-2" style={{"position":"absolute", "marginTop":"10px"}}></i></span> </div>
+                                <button className="btn bg-transparent" style={{"color":"rgb(0, 123, 255)"}} data-toggle="modal" data-target="#exampleModalCenter"><i className="fas fa-plus"></i></button>
                             </h3>
                         </div>
 
@@ -211,7 +212,8 @@ class ChatWindow extends React.Component {
                                     if (msg.body) msg = msg.body
                                     return (
                                         <div key={key++} className="media px-2 py-1">
-                                            <div className="media-body">
+                                            <img src="https://api.adorable.io/avatars/200/avatar.png" className="img-fluid img-circle d-block rounded-circle" width="40px" height="40px" alt="avatar" />
+                                            <div className="media-body ml-2">
                                                 <h6>{this.getUsername(message.sender_id)} <small className="text-muted"><i>{this.cleanTime(message.created_at)}</i></small></h6>
                                                 <p> {msg} </p>
                                             </div>
