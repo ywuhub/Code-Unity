@@ -5,9 +5,8 @@ from server.exceptions import (
     NotProjectLeader,
     AlreadyMemberOf,
     ProjectFull,
-    CannotKickYourself
+    CannotKickYourself,
 )
-from typing import List
 
 from bson import ObjectId
 from flask import Flask
@@ -149,7 +148,9 @@ class ProjectManager:
         self.projects.delete_one({"_id": project_id})
 
     def update_project(self, project: Project, updated_details: dict):
-        self.projects.update({"_id": project["_id"]}, {"$set": updated_details}, upsert=False)
+        self.projects.update(
+            {"_id": project["_id"]}, {"$set": updated_details}, upsert=False
+        )
 
     def add_user_to_project(self, user_id: ObjectId, project_id: ObjectId):
         # TODO: this operation should be atomic.
@@ -178,20 +179,22 @@ class ProjectManager:
 
         self.projects.replace_one({"_id": project_id}, project)
 
-    def kick_user_from_project(self, user_id: ObjectId, leader_id: ObjectId, project_id: ObjectId):
+    def kick_user_from_project(
+        self, user_id: ObjectId, leader_id: ObjectId, project_id: ObjectId
+    ):
         # TODO: this operation should be atomic.
         # find the project to kick the member from
         project = self.projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
-        
-        # check if user exists and if they are even in the project        
+
+        # check if user exists and if they are even in the project
         user = self.users.find_one({"_id": user_id})
         if user is None:
             raise UserNotFound()
         elif user["_id"] not in project["members"]:
             raise UserNotInvolved()
-        
+
         # check if the person kicking the member is the leader
         if leader_id != project["leader"]:
             raise NotProjectLeader()
@@ -211,6 +214,22 @@ class ProjectManager:
         """
         self.invitations.delete_one({"user_id": user_id, "project_id": project_id})
         self.requests.delete_one({"user_id": user_id, "project_id": project_id})
+
+    def remove_project_application(
+        self, user: ObjectId, project_id: ObjectId, target_user: ObjectId
+    ):
+        # Check if the user is owner of the project
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound
+        if project["leader"] != user:
+            raise NotProjectLeader
+
+        result = self.requests.delete_one(
+            {"project_id": project_id, "user_id": target_user}
+        )
+        if result.deleted_count == 0:
+            raise ProjectNotFound
 
     def is_request_exist(self, user_id: ObjectId, project_id: ObjectId) -> bool:
         n = self.requests.count_documents(
