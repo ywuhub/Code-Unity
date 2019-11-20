@@ -32,7 +32,8 @@ profile_fields = {
 account_fields = {
     "_id": ObjectIdMarshaller,
     "username": fields.String(default=None),
-    "password": fields.String(default=None),
+    "email": fields.String(default=None),
+    "avatar": fields.String(default=None)
 }
 
 class Profile:
@@ -84,13 +85,15 @@ class Profile:
 class Account:
     _id: ObjectId
     username: str
-    password: str
+    email: str
+    avatar: str
 
     account_fields = frozenset(
         (
             "_id",
             "username",
-            "password",
+            "email",
+            "avatar"
         )
     )
 
@@ -174,6 +177,13 @@ class User:
             self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
         
         return "success"
+
+    def update_avatar(self, avatar_url: str):
+        """
+        Updates the user's avatar picture
+        """
+        self.accounts.update({"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True)
+        return "successfully updated avatar"
 
     def apply_to_project(self, project_id: ObjectId, message: str):
         project = self.projects.find_one({"_id": project_id})

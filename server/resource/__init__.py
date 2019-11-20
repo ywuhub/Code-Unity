@@ -5,7 +5,7 @@ from .new_project import NewProject
 from .other_profile import OtherProfile
 from .profile import ProfileResource, AccountResource
 from .programming_languages import ProgrammingLanguages
-from .project import ProjectResource, ProjectJoin, ProjectLeave
+from .project import ProjectResource, ProjectJoin, ProjectLeave, ProjectKick
 from .project_list import ProjectList, SearchProjects
 from .project_request import ProjectRequest
 from .project_request_list import ProjectRequestList

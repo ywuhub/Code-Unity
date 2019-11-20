@@ -11,6 +11,8 @@ class GroupEditPage extends React.Component {
         this.addTag = this.addTag.bind(this);
         this.putProjectDetails = this.putProjectDetails.bind(this);
         this.onKeyPress = this.onKeyPress.bind(this);
+        this.removeMembers = this.removeMembers.bind(this);
+        this.kickMember = this.kickMember.bind(this);
         this.state = {
             "project_id": "",
             title: "",
@@ -25,7 +27,8 @@ class GroupEditPage extends React.Component {
             technologies: [],
             edit_status_visibility: false,
             edit_status_class: "",
-            edit_status:""
+            edit_status: "",
+            kickMember: ""
         };
 
     }
@@ -145,8 +148,22 @@ class GroupEditPage extends React.Component {
             .catch(err => console.log(err));
     }
 
+    kickMember(member) {
+        this.setState({ kickMember: member})
+    }
+
+    removeMembers() {
+        projectService.kick_member(this.state.project_id, this.state.kickMember._id)
+            .then(json => {
+                console.log(json);
+                window.location.reload();
+            })
+            .catch(err => console.log(err));
+    }
+
     render() {
         let key_id = this.props.key_id_outer;
+        let member_id = 0;
         const EditSkillBox = (props) => {
             // let badge_key = props.keyValue * 20;
             let badge_key = 0;
@@ -222,10 +239,10 @@ class GroupEditPage extends React.Component {
                                         <p>Member: </p>
                                     </div>
                                         {
-                                           (this.props.data.members || []).map((member) => {
+                                           (this.props.data.members || []).filter((member) => { return member.username !== this.props.data.leader.username }).map((member) => {
                                             return(
                                                 <div key={key_id++} className="row ml-1">
-                                                    <p>{member.username}</p>
+                                                    <p><a onClick={() => { this.kickMember(member) }} data-toggle="modal" data-target="#kick"><i className="fas fa-minus-square" style={{ color: 'red' }}></i></a>&nbsp;&nbsp;{member.username}</p>
                                                 </div>
                                                 )
                                             }) 
@@ -283,6 +300,29 @@ class GroupEditPage extends React.Component {
                                     title="languages" 
                                     className="languages" 
                                     data={ this.props.data.languages }/>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Confirm kick popup */}
+                    <div className="modal fade" id="kick" tabIndex="-1" role="dialog" aria-labelledby="kickTitle" aria-hidden="true">
+                        <div className="modal-dialog modal-dialog-centered" role="document">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title" id="kickTitle">Kick Member</h5>
+                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="form-group">
+                                    <label htmlFor="title" className="pb-2 mb-0">Are you sure you want to kick <b>{this.state.kickMember.username}?</b></label>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" onClick={() => { this.removeMembers() }} className="btn btn-primary" data-dismiss="modal">Kick</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

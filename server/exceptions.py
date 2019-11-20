@@ -16,3 +16,15 @@ class UserNotFound(Exception):
 
 class DocumentNotFound(Exception):
     pass
+
+
+class NotProjectLeader(Exception):
+    pass
+
+
+class UserNotInvolved(Exception):
+    pass
+
+
+class CannotKickYourself(Exception):
+    pass

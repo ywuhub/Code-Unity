@@ -1,8 +1,11 @@
 from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
+    UserNotInvolved,
+    NotProjectLeader,
     AlreadyMemberOf,
     ProjectFull,
+    CannotKickYourself
 )
 from typing import List
 
@@ -150,23 +153,56 @@ class ProjectManager:
 
     def add_user_to_project(self, user_id: ObjectId, project_id: ObjectId):
         # TODO: this operation should be atomic.
+
+        # check if project exists at all
         project = self.projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
 
+        # check if user exist all all
         user = self.users.find_one({"_id": user_id})
         if user is None:
             raise UserNotFound()
 
+        # check if new user is already a member of the project group
         if user_id in project["members"]:
             raise AlreadyMemberOf()
 
+        # check if project group has full members
         if len(project["members"]) == project["max_people"]:
             raise ProjectFull()
 
+        # update database with new member data
         project["members"].append(user_id)
         project["cur_people"] = len(project["members"])
 
+        self.projects.replace_one({"_id": project_id}, project)
+
+    def kick_user_from_project(self, user_id: ObjectId, leader_id: ObjectId, project_id: ObjectId):
+        # TODO: this operation should be atomic.
+        # find the project to kick the member from
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound()
+        
+        # check if user exists and if they are even in the project        
+        user = self.users.find_one({"_id": user_id})
+        if user is None:
+            raise UserNotFound()
+        elif user["_id"] not in project["members"]:
+            raise UserNotInvolved()
+        
+        # check if the person kicking the member is the leader
+        if leader_id != project["leader"]:
+            raise NotProjectLeader()
+        elif user_id == leader_id:
+            raise CannotKickYourself()
+
+        # remove user from list
+        project["members"].remove(ObjectId(user_id))
+        project["cur_people"] = len(project["members"])
+
+        # update database with current members
         self.projects.replace_one({"_id": project_id}, project)
 
     def remove_invitation_request(self, user_id: ObjectId, project_id: ObjectId):

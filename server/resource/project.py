@@ -11,6 +11,9 @@ from server.exceptions import (
     ProjectFull,
     ProjectNotFound,
     UserNotFound,
+    UserNotInvolved,
+    NotProjectLeader,
+    CannotKickYourself
 )
 from server.managers.project_manager import ProjectManager
 from server.models.project import Project, project_fields
@@ -273,3 +276,45 @@ class ProjectLeave(Resource):
             return {"message": "cannot leave group that user is not part of"}, 400
 
         return {"status": "success"}
+
+class ProjectKick(Resource):
+    def __init__(self, project_manager: ProjectManager):
+        self.project_manager = project_manager
+    
+    @jwt_required
+    def post(self, project_id: str):
+        """
+        Kicks the selected user from the project by the group leader.
+        """
+        user = cast(User, current_user)
+        try:
+            project_id = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 422
+        
+        # fetch the member id to kick
+        parser = RequestParser()
+        parser.add_argument("user_id", required=True)
+        args = parser.parse_args(strict=True)
+        
+        # check if incoming user_id is valid
+        try:
+            kick_id = ObjectId(args["user_id"])
+        except:
+            return {"message": "user_id is not a valid ObjectId"}, 400
+       
+        # remove user from project if possible
+        try: 
+            self.project_manager.kick_user_from_project(kick_id, user._id, project_id)
+        except ProjectNotFound:
+            return {"message": "project not found"}, 404
+        except UserNotFound:
+            return {"message": "user does not exist"}, 404
+        except UserNotInvolved:
+            return {"message": "user not involved in project"}, 400
+        except NotProjectLeader:
+            return {"message": "current user is not the project leader so not kicking rights"}, 400
+        except CannotKickYourself:
+            return {"message": "cannot kick yourself"}, 400
+            
+        return {"status": "user is successfully kicked"}
