@@ -12,6 +12,7 @@ export const userService = {
     putProjectDetail,
     postPassword,
     postUsername,
+    postAvatar,
     getUserAccountDetails
 };
 
@@ -119,4 +120,15 @@ function postUsername(username) {
     return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(GetReponseCode);
 };
 
+function postAvatar(avatar) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()},
+        body: JSON.stringify({ 
+            "avatar": avatar})
+    };
+
+    return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(GetReponseCode);
+};
 
