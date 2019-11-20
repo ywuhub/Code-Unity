@@ -72,9 +72,7 @@ class UserInvite(Resource):
     def delete(self, uid: str):
         """
         Removes an invitation that was sent to a user (outgoing), or for the
-        current user to remove an invite that was sent to them (incoming). The
-        UID specified in the URL is ignored if the incoming parameter is set to
-        true, only the UID of the current user is considered.
+        current user to remove an invite that was sent to them (incoming).
 
         The endpoint should've been on a project_id and not a user_id so this is
         kinda weird, sorry. Don't really want to break existing code at this
@@ -84,14 +82,12 @@ class UserInvite(Resource):
         ```
         {
             "project_id": string,  # required
-            "incoming": boolean,  # optional, defaults to false
         }
         ```
         """
         user = cast(User, current_user)
         parser = RequestParser()
         parser.add_argument("project_id")
-        parser.add_argument("incoming", default=False)
         args = parser.parse_args(strict=True)
 
         try:
@@ -104,10 +100,7 @@ class UserInvite(Resource):
             return {"message": "project not found"}, 400
 
         try:
-            if args["incoming"]:
-                user.reject_invitation(project_id)
-            else:
-                user.delete_invitation(invited_user, project_id)
+            user.delete_invitation(invited_user, project_id)
         except PermissionError:
             return {"message": "only the project leader may delete invites"}, 401
         except DocumentNotFound:

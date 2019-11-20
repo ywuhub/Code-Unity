@@ -365,9 +365,7 @@ Expects:
 
 #### DELETE
 Removes an invitation that was sent to a user (outgoing), or for the
-current user to remove an invite that was sent to them (incoming). The
-UID specified in the URL is ignored if the incoming parameter is set to
-true, only the UID of the current user is considered.
+current user to remove an invite that was sent to them (incoming).
 
 The endpoint should've been on a project_id and not a user_id so this is
 kinda weird, sorry. Don't really want to break existing code at this
@@ -377,7 +375,6 @@ Expects:
 ```
 {
     "project_id": string,  # required
-    "incoming": boolean,  # optional, defaults to false
 }
 ```
 

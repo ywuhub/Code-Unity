@@ -4,6 +4,7 @@ from bson import ObjectId
 from flask_restful import fields
 from pymongo.database import Database
 
+
 from server.exceptions import (
     AlreadyMemberOf,
     DocumentNotFound,
@@ -313,7 +314,8 @@ class User:
         project = projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
-        if project["leader"] != self._id:
+
+        if project["leader"] != self._id and user_id != self._id:
             raise PermissionError()
 
         invitations = self.db.get_collection("invitations")
