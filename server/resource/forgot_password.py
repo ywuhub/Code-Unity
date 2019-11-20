@@ -73,9 +73,9 @@ class ForgotPassword(Resource):
                 send_msg = SendGridAPIClient('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')
                 send_msg.send(message)
             except Exception:
-                return {"message": "An error has occured! Please try again."}
+                return {"message": "An error has occured! Please try again."}, 400
         else:
-            return {"message": "Error: Email is not registered to an Code Unity account. Please try again!"}
+            return {"message": "Error: Email is not registered to an Code Unity account. Please try again!"}, 400
 
         return {"message": "An email has been sent to your email address " + email_arg['email'] + ". " +
-                           "Follow the instructions given in that email to reset your password."}
+                           "Follow the instructions given in that email to reset your password."}, 200
