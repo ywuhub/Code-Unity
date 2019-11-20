@@ -11,7 +11,7 @@ from server.exceptions import (
     AlreadyMemberOf,
     NotProjectLeader,
     ProjectFull,
-    ProjectNotFound, UserNotFound,
+    ProjectNotFound,
 )
 from server.managers.project_manager import ProjectManager
 from server.models.user import User
@@ -84,22 +84,44 @@ class ProjectRequest(Resource):
     @jwt_required
     def delete(self, project_id: str):
         """
-        Removes a join request. Will return with status code 400 if the user does
-        not have a pending request for the project.
+        Removes a join request. This can be initiated by the leader of the
+        project in question or by the user who initiated the request. Will
+        return with status code 404 if the user does not have a pending
+        request for the project.
+
+        Expects:
+        ```
+        {
+            "user_id": string,  # optional
+        }
+        ```
 
         Example:
         ```
+        # For the user who made the request to delete it
         DELETE /api/project/<str:project_id>/request ->
+        (200 OK) <-
+
+        # For the project leader to reject a user's request to join,
+        # include a JSON body to specify the user's ID.
+        DELETE /api/project/<str:project_id>/request ->
+        {
+            "user_id": string
+        }
         (200 OK) <-
         ```
         """
+        user = cast(User, current_user)
         parser = RequestParser()
         parser.add_argument("user_id")
         args = parser.parse_args(strict=True)
-        user = cast(User, current_user)
 
         try:
             project_id = ObjectId(project_id)
+        except InvalidId:
+            return {"message": "invalid project_id"}, 400
+
+        try:
             if args["user_id"] is None:
                 # User trying to delete their own request
                 user.delete_project_application(project_id)
@@ -112,7 +134,7 @@ class ProjectRequest(Resource):
         except ProjectNotFound:
             return {"message": "join request not found"}, 404
         except InvalidId:
-            return {"message": "invalid project_id"}, 400
+            return {"message": "invalid user_id"}, 400
         except NotProjectLeader:
             return {"message": "only the project leader can remove the invitation"}, 401
 

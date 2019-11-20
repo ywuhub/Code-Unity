@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Any, Dict, List
 
 from bson import ObjectId
@@ -33,8 +32,9 @@ account_fields = {
     "_id": ObjectIdMarshaller,
     "username": fields.String(default=None),
     "email": fields.String(default=None),
-    "avatar": fields.String(default=None)
+    "avatar": fields.String(default=None),
 }
+
 
 class Profile:
     _id: ObjectId
@@ -88,14 +88,7 @@ class Account:
     email: str
     avatar: str
 
-    account_fields = frozenset(
-        (
-            "_id",
-            "username",
-            "email",
-            "avatar"
-        )
-    )
+    account_fields = frozenset(("_id", "username", "email", "avatar"))
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
@@ -163,26 +156,30 @@ class User:
         """
         if account:
             # check if new username is already taken in the database
-            if 'username' in account.keys():
-                doc = self.accounts.find_one({"username": account['username']}, {"_id": 1, "username": 1})
-                
-                # if duplicate username is found return error depending on if 
+            if "username" in account.keys():
+                doc = self.accounts.find_one(
+                    {"username": account["username"]}, {"_id": 1, "username": 1}
+                )
+
+                # if duplicate username is found return error depending on if
                 # its the current user's one or other users
                 if doc:
-                    if doc['_id'] == self._id:
+                    if doc["_id"] == self._id:
                         return "Error: Cannot change to your current username!"
                     else:
                         return "Error: Username already taken!"
 
             self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
-        
+
         return "success"
 
     def update_avatar(self, avatar_url: str):
         """
         Updates the user's avatar picture
         """
-        self.accounts.update({"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True)
+        self.accounts.update(
+            {"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True
+        )
         return "successfully updated avatar"
 
     def apply_to_project(self, project_id: ObjectId, message: str):
@@ -329,6 +326,12 @@ class User:
         if n_deleted != 1:
             raise DocumentNotFound()
 
+    def reject_invitation(self, project_id: ObjectId):
+        invitations = self.db.get_collection("invitations")
+        result = invitations.delete_one({"project_id": project_id, "user_id": self._id})
+        if result.deleted_count == 0:
+            raise DocumentNotFound()
+
     def get_outgoing_invitations(self):
         pipeline = [
             {"$match": {"leader_id": self._id}},
@@ -419,7 +422,7 @@ class User:
             project["members"].remove(self._id)
         except ValueError:
             raise UserNotFound()
-    
+
         project["cur_people"] = len(project["members"])
 
         self.projects.replace_one({"_id": project_id}, project)
