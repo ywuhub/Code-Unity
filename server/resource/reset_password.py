@@ -68,4 +68,4 @@ class ResetPassword(Resource):
         else:
             return {"message" : "Error: Invalid Token. Please resend reset password request again!"}, 400
 
-        return {"message": "Password has been reset! Redirecting your to the login page in 5 seconds..."}
+        return {"message": "Password has been reset! Redirecting your to the login page in 5 seconds..."}, 200
