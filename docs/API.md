@@ -468,3 +468,30 @@ Parameters (All fields are optional) :
         "avatar": string
     }
 ```
+
+### 'api/forgot_password?email=test@example.com'
+##### GET
+Sends a message to reset user's password to a registered email address if they forgot their password.
+INPUT:
+- email: a email that is linked to a code unity account or else error will be sent back
+
+EXAMPLE:
+```
+GET api/forgot_password?email=test@example.com ->
+    (200 OK) <-
+        Message sent to registered email address if found to reset password
+```
+
+### `api/reset_password/<token_key:string>?password=new_password`
+#### PUT
+Reset the password from the link sent to the user's email which goes here
+and we verify the timed token to see if it has expired.
+INPUT:
+- token: token key with the user id embedded with a 24 hour life
+
+EXAMPLE:
+```
+PUT api/reset_password/<token_key:string>?password=new_password ->
+    (200 OK) <-
+        "message": "Password has been reset! Redirecting your to the login page in 5 seconds..."
+```
