@@ -138,15 +138,17 @@ class JoinRequestsReceived extends React.Component {
 
     declineJoinRequest(project_id, user_id, index, e) {
         console.log("TBD");
-        // let received = this.state.received;
-        // received.splice(e.target.value, 1);
-        // inboxService.remove_invitation(e.target.id, e.target.name)
-        //     .then(json => {
-        //         if (json.status === "success") {
-        //             this.setState({ received: received });
-        //         }
-        //     })
-        //     .catch(err => { console.log(err) });
+        let received = this.state.received;
+        received.splice(e.target.value, 1);
+        inboxService.decline_join_request(project_id, user_id)
+            .then(json => {
+                if (json.status === "success") {
+                    this.setState({ received: received });
+                } else {
+                    console.log(json.message);
+                }
+            })
+            .catch(err => { console.log(err) });
     }
 
     containsFilter(invitation, filter) {
