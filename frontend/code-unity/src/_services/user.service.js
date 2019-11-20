@@ -11,7 +11,8 @@ export const userService = {
     getUserProfile,
     putProjectDetail,
     postPassword,
-    postUsername
+    postUsername,
+    getUserAccountDetails
 };
 
 function getUserProfile(id) {
@@ -82,6 +83,16 @@ function putProjectDetail(project_id, title, max_people, description, course, ta
             "technologies": technologies})
     };
     return fetch(`${config.apiUrl}/api/project/${project_id}`, requestOptions).then(GetReponseCode);
+};
+
+function getUserAccountDetails() {
+    const requestOptions = {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()}
+    };
+
+    return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(handleResponse);
 };
 
 function postPassword(password) {

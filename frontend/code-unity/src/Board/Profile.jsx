@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { userService } from '@/_services';
+import { userService, authenticationService } from '@/_services';
 import '@/Style';
 import { SkillBox, AvatarPicker} from '@/WebComponents';
 
@@ -13,6 +13,8 @@ class Profile extends React.Component {
         this.state = {
             "_id": "",
             name: "",
+            username: "",
+            avatar: "",
             email: "",
             visibility: "",
             description: "",
@@ -30,6 +32,13 @@ class Profile extends React.Component {
     }
     componentDidMount() {
         console.log("========componentWillReceiveProps")
+        userService.getUserAccountDetails().then(data => this.setState(
+            { 
+                username: data.username,
+                avatar: data.avatar
+            }
+        )
+        );
         this.setState({ edit_status_visibility: false, isLoading: true})
         userService.getProfile().then(data => this.setState(
             { 
@@ -189,7 +198,7 @@ class Profile extends React.Component {
                                         </div>
                                         <div className="col-md-6 align-middle">
                                             <div> 
-                                                <p> Username: {this.state.name} </p>
+                                                <p> Username: {this.state.username} </p>
                                             </div>
                                             <div> 
                                                 <p> Email: {this.state.email} </p>
