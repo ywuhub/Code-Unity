@@ -55,6 +55,7 @@ class ProjectManager:
         self.users = db.get_collection("users")
         self.invitations = db.get_collection("invitations")
         self.requests = db.get_collection("join_requests")
+        self.favourites = db.get_collection("favourites")
 
     def get_project(self, id: ObjectId):
         pipeline = deepcopy(_list_pipeline)

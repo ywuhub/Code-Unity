@@ -4,6 +4,7 @@ from .logout import LogOut
 from .new_project import NewProject
 from .other_profile import OtherProfile
 from .profile import ProfileResource, AccountResource
+from .favourites import FavouriteProjects
 from .programming_languages import ProgrammingLanguages
 from .project import ProjectResource, ProjectJoin, ProjectLeave, ProjectKick
 from .project_list import ProjectList, SearchProjects
