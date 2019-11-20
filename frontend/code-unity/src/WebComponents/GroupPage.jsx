@@ -2,7 +2,7 @@ import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import { Route, Link, Switch } from 'react-router-dom';
 import { authenticationService, projectService } from '@/_services';
-import { QBdeleteGroup, QBleaveGroup } from '@/QuickBlox';
+import { QBdeleteGroup, QBleaveGroup, QBgetUser } from '@/QuickBlox';
 
 import '@/Style';
 

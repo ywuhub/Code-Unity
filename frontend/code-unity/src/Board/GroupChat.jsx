@@ -67,7 +67,7 @@ class GroupChat extends React.Component {
 					{(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
 					{/* left bar */}
 					{!this.state.isLoading && !this.state.noChat &&
-						<div className="col-lg-4 border-right project-chat-sidebar">
+						<div className="col-lg-4 border-right project-chat-sidebar mb-4">
 							{
 								this.state.projects.map((project, index) => {
 									const project_json = JSON.parse(project.name.replace(/"=>"/g, '": "'));

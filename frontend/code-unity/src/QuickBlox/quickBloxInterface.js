@@ -157,7 +157,7 @@ function QBgetGroupChatHistory(chat_id) {
 }
 
 function QBupdateGroupName(project_id, newName) {
-    QBgetProjectData(project_id)
+    return QBgetProjectData(project_id)
         .then(project => {
             var toUpdateParams = { name: newName };
             QB.chat.dialog.update(project.chat_id, toUpdateParams, function (err, res) {
@@ -168,8 +168,9 @@ function QBupdateGroupName(project_id, newName) {
                     QB.data.update("Project", {_id: project._id, name: project_json.name}, function(err, res){
                         if (err) {
                             console.log(err);
+                            // window.location.reload();
                         } else {
-                            window.location.reload();
+                            // window.location.reload();
                         }
                     });
                 }
@@ -201,6 +202,7 @@ function QBremoveMembers(project_id, members) {
             QB.chat.dialog.update(project.chat_id, toUpdateParams, function (err, res) {
                 if (err) {
                     console.log(err);
+                    window.location.reload();
                 } else {
                     console.log(res);
                     window.location.reload();
@@ -214,6 +216,7 @@ function QBdeleteGroup(chat_id, project_id) {
     QB.chat.dialog.delete([chat_id], { force: 1 }, function (err) {
         if (err) {
             console.log(err);
+            window.location.reload();
         } else {
             QBdeleteProjectData(chat_id, project_id);
         }
@@ -223,7 +226,8 @@ function QBdeleteGroup(chat_id, project_id) {
 function QBdeleteProjectData(chat_id, project_id) {
     QB.data.delete("Project", { chat_id: chat_id, project_id: project_id }, function (err, res) {
         if (err) {
-            throw new Error(err.toString());
+            console.log(err);
+            window.location.reload();
         } else {
             console.log("deleted qb group");
             window.location.reload();
@@ -239,6 +243,7 @@ function QBleaveGroup(project_id, user_id) {
     QB.chat.dialog.update(project_id, toUpdateParams, function (err, res) {
         if (err) {
             console.log(err);
+            window.location.reload();
         } else {
             console.log("left qb chat");
             window.location.reload();
