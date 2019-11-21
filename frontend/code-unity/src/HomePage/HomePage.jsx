@@ -79,8 +79,8 @@ class HomePage extends React.Component {
                       <li className="nav-item">
                         <a className="nav-link" href="#">
                           <span data-feather="file"></span>
-                          Friends
-                          <span className="badge badge-pill bg-light align-text-bottom">27</span>
+                          Favourites
+                          <span className="badge badge-pill bg-light align-text-bottom">this.favourite.count</span>
                         </a>
                       </li>
                       <li className="nav-item">

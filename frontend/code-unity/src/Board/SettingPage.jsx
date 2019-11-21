@@ -11,9 +11,9 @@ class SettingPage extends React.Component {
         this.putUsername = this.putUsername.bind(this);
         this.state = {
             "PasswordNotification": false,
-            "usernameNotification": false,
+            "UsernameNotification": false,
             "PasswordNotificationContent": "",
-            "usernameNotificationContent": "",
+            "UsernameNotificationContent": "",
             "updateSucceed":false,
             "updateContent":""
         }
@@ -29,7 +29,7 @@ class SettingPage extends React.Component {
         if (this.refs.password_first.value != this.refs.password_second.value) {
             this.setState({
                 "PasswordNotification": true,
-                "PasswordNotificationContent": "password does not match."
+                "PasswordNotificationContent": "Both passwords does not match. Please try again!"
             });
         } else {
             userService.postPassword(
@@ -39,7 +39,7 @@ class SettingPage extends React.Component {
                     if (status == "OK") {
                         this.setState({
                             "updateSucceed":true,
-                            "updateContent":"Password Update succeed."
+                            "updateContent":"Password has successfully updated."
                         });
                         $('#changePassword').modal('hide')
                     } else {
@@ -57,7 +57,7 @@ class SettingPage extends React.Component {
     }
 
     usernameModalReset() {
-        this.setState({"usernameNotification":false});
+        this.setState({"UsernameNotification":false});
         document.getElementById("usernameField").reset();
     }
 
@@ -71,13 +71,13 @@ class SettingPage extends React.Component {
                 if (status == "OK") {
                     this.setState({
                         "updateSucceed":true,
-                        "updateContent":"Username Update succeed."
+                        "updateContent":"Username has being successfully updated."
                     });
                     $('#changeUsername').modal('hide')
                 } else {
                     this.setState({
-                        usernameNotification:true,
-                        usernameNotificationContent:status});
+                        UsernameNotification:true,
+                        UsernameNotificationContent:status});
                 }
             }
         )
@@ -146,9 +146,9 @@ class SettingPage extends React.Component {
                                   }
                                   <div className="modal-body mb-3">
                                       <label htmlFor="exampleInputPassword1">Password</label>
-                                      <input type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" ref="password_first"/>
+                                      <input type="password" className="form-control" id="exampleInputPassword1" placeholder="Enter new password..." ref="password_first"/>
                                       <label className="mt-3" htmlFor="exampleInputPassword1">Verify Password</label>
-                                      <input type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" ref="password_second"/>
+                                      <input type="password" className="form-control" id="exampleInputPassword1" placeholder="Please confirm new password..." ref="password_second"/>
                                   </div>
                                   <div className="modal-footer">
                                       <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -169,14 +169,14 @@ class SettingPage extends React.Component {
                               </div>
                               <form onSubmit={this.putUsername} id="usernameField">
                                   {
-                                    this.state.usernameNotification&&
+                                    this.state.UsernameNotification&&
                                     <div class="alert alert-danger ml-3 mr-3 mt-2 " role="alert">
-                                        {this.state.PasswordNotificationContent}
+                                        {this.state.UsernameNotificationContent}
                                     </div>
                                   }
                                   <div className="modal-body mb-3">
                                       <label htmlFor="exampleInputPassword1">New Username</label>
-                                      <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Username" ref="edit_username"/>
+                                      <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Enter new username..." ref="edit_username"/>
                                   </div>
                                   <div className="modal-footer">
                                       <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>

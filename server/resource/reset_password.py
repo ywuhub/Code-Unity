@@ -37,7 +37,7 @@ class ResetPassword(Resource):
 
         EXAMPLE:
         ```
-        PUT api/reset_password/token-key?password=example ->
+        PUT api/reset_password/<token-key:string>?password=example ->
             (200 OK) <-
                 "message": "Password has been reset! Redirecting your to the login page in 5 seconds..."
         ```
