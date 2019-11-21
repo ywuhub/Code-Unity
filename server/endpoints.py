@@ -8,10 +8,13 @@ from server.resource import (
     Auth,
     CourseList,
     LogOut,
+    ForgotPassword,
+    ResetPassword,
     NewProject,
     OtherProfile,
     ProfileResource,
     AccountResource,
+    FavouriteProjects,
     ProgrammingLanguages,
     ProjectRequest,
     ProjectRequestList,
@@ -39,9 +42,12 @@ def register_endpoints(
     api.add_resource(UserInvite, "/user/<string:uid>/invite")
     api.add_resource(UserInviteList, "/user/invite/list")
     api.add_resource(OtherProfile, "/user/<string:uid>/profile", resource_class_args=[user_manager])
+    api.add_resource(FavouriteProjects, "/user/favourites", resource_class_args=[db])
     api.add_resource(ProgrammingLanguages, "/programming_languages", resource_class_args=[db])
     api.add_resource(Auth, "/auth", resource_class_args=[user_manager])
     api.add_resource(LogOut, "/auth/logout", resource_class_args=[user_manager])
+    api.add_resource(ForgotPassword, "/forgot_password", resource_class_args=[db])
+    api.add_resource(ResetPassword, "/reset_password/<string:token>", resource_class_args=[db])
     api.add_resource(NewProject, "/project")
     api.add_resource(ProjectResource, "/project/<string:project_id>", resource_class_args=[project_manager])
     api.add_resource(ProjectJoin, "/project/<string:project_id>/join", resource_class_args=[project_manager])

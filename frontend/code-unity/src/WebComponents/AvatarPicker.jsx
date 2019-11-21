@@ -4,12 +4,15 @@ import { handleResponse } from '@/_helpers';
 import ImagePicker from 'react-image-picker'
 import { ChromePicker, SwatchesPicker, PhotoshopPicker,CirclePicker } from 'react-color';
 import 'react-image-picker/dist/index.css'
+import { userService } from '@/_services';
+import { history } from '@/_helpers';
 
 class AvatarPicker extends React.Component {
     constructor(props) {
         super(props);
         this.featureSwitch = this.featureSwitch.bind(this);
         this.onPick = this.onPick.bind(this);
+        this.submitAvatar = this.submitAvatar.bind(this);
         this.handleColourChangeComplete = this.handleColourChangeComplete.bind(this);
         this.state = {
             "eyeList":["eyes1","eyes10","eyes2","eyes3","eyes4","eyes5","eyes6","eyes7","eyes9"],
@@ -26,6 +29,17 @@ class AvatarPicker extends React.Component {
 
    componentDidMount() {
         console.log("========componentWillReceiveProps")
+        if (this.props.avatar) {
+            const featrues_array = this.props.avatar.substr(37).split('/');
+            console.log(featrues_array)
+            this.setState({
+                eye:featrues_array[0],
+                nose:featrues_array[1],
+                mouth:featrues_array[2],
+                colour:featrues_array[3]});
+
+        }
+
         //I cannot fix the cors issues. So I'm going to hard code the avator feature types.
 
         // fetch("https://api.adorable.io/avatars/list", { method: 'GET', 
@@ -43,6 +57,18 @@ class AvatarPicker extends React.Component {
         //         });
         //     })
         console.log(this.state)
+    }
+    submitAvatar() {
+        let avatarAddress = `https://api.adorable.io/avatars/face/${this.state.eye}/${this.state.nose}/${this.state.mouth}/${this.state.colour}`;
+        userService.postAvatar(avatarAddress).then(
+            status => {
+                if (status == "OK") {
+                    $(`#${this.props._id}`).modal('hide');
+                    window.location.reload();
+
+                }
+            }
+        )
     }
     onPick(image) {
         console.log(image.value)
@@ -142,7 +168,7 @@ class AvatarPicker extends React.Component {
                           </div>
                           <div className="modal-footer mb-3">
                               <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="button" className="btn btn-primary" type="submit">Save changes</button>
+                              <button type="button" className="btn btn-primary" onClick={this.submitAvatar}>Save changes</button>
                           </div>
                         </div>
                   </div>
