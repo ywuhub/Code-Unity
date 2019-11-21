@@ -71,7 +71,12 @@ class UserInvite(Resource):
     @jwt_required
     def delete(self, uid: str):
         """
-        Removes an invitation that was sent to a user.
+        Removes an invitation that was sent to a user (outgoing), or for the
+        current user to remove an invite that was sent to them (incoming).
+
+        The endpoint should've been on a project_id and not a user_id so this is
+        kinda weird, sorry. Don't really want to break existing code at this
+        point.
 
         Expects:
         ```
@@ -82,7 +87,7 @@ class UserInvite(Resource):
         """
         user = cast(User, current_user)
         parser = RequestParser()
-        parser.add_argument("project_id", required=True)
+        parser.add_argument("project_id")
         args = parser.parse_args(strict=True)
 
         try:
@@ -91,16 +96,16 @@ class UserInvite(Resource):
             return {"message": "invalid uid"}, 422
         try:
             project_id = ObjectId(args["project_id"])
-        except InvalidId:
-            return {"message": "invalid project_id"}, 422
+        except ProjectNotFound:
+            return {"message": "project not found"}, 400
 
         try:
             user.delete_invitation(invited_user, project_id)
-        except ProjectNotFound:
-            return {"message": "project not found"}, 400
         except PermissionError:
             return {"message": "only the project leader may delete invites"}, 401
         except DocumentNotFound:
             return {"message": "invitation does not exist"}, 404
+        except InvalidId:
+            return {"message": "invalid project_id"}, 422
 
         return {"status": "success"}
