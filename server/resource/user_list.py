@@ -3,6 +3,7 @@ from flask import request
 from flask_restful import Resource
 from pymongo.database import Database
 
+
 class UserList(Resource):
     def __init__(self, db: Database):
         self.db = db
@@ -14,14 +15,15 @@ class UserList(Resource):
         INPUT:
         - user_ids: list of member ids
         OUTPUT:
-        - usernames_list: list of usernames in same order of member ids
+        - ret: list of usernames in same order of member ids and their respectives avatars
         
         ```json
         [
             {
                 "_id": string,
                 "username": string,
-                "email": string
+                "email": string,
+                "avatar": string
             }
         ]
         ```
@@ -34,12 +36,14 @@ class UserList(Resource):
                 {
                     "_id": "5daa6efd8805c462ef0d16e1",
                     "username": "testuser",
-                    "email": "test@user.com"
+                    "email": "test@user.com",
+                    "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
                 },
                 {
                     "_id": "5daa6efd5647c462ef0d16f3",
                     "username": "testuser1",
-                    "email": "test1@user.com"
+                    "email": "test1@user.com",
+                    "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
                 }
             ]
         ```
@@ -51,6 +55,7 @@ class UserList(Resource):
             {
                 "_id": string,
                 "username": string,
+                "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
             }
         ]
         ```
@@ -61,15 +66,17 @@ class UserList(Resource):
                 {
                     "_id": "5daa6efd8805c462ef0d16e1",
                     "username": "testuser",
+                    "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
                 },
                 {
                     "_id": "5daa6efd5647c462ef0d16f3",
                     "username": "testuser1",
+                    "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
                 }
             ]
         ```
-
         """
+
         # init return list
         ret = []
 
@@ -86,7 +93,8 @@ class UserList(Resource):
                 user_list.append({
                                     "_id": str(doc["_id"]), 
                                     "username": doc["username"], 
-                                    "email": doc["email"]
+                                    "email": doc["email"],
+                                    "avatar": doc["avatar"]
                                 })
 
             # remove any users with private profile from public lists
@@ -102,7 +110,8 @@ class UserList(Resource):
             for doc in self.db["users"].find({"_id": {"$in": user_ids} }):
                 ret.append({
                     "_id": str(doc["_id"]),
-                    "username": doc["username"]
+                    "username": doc["username"],
+                    "avatar": doc["avatar"]
                 })
 
         return ret

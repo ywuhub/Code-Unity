@@ -9,7 +9,11 @@ export const userService = {
     putProfile,
     getUserProject,
     getUserProfile,
-    putProjectDetail
+    putProjectDetail,
+    postPassword,
+    postUsername,
+    postAvatar,
+    getUserAccountDetails
 };
 
 function getUserProfile(id) {
@@ -82,21 +86,49 @@ function putProjectDetail(project_id, title, max_people, description, course, ta
     return fetch(`${config.apiUrl}/api/project/${project_id}`, requestOptions).then(GetReponseCode);
 };
 
-function putPassword() {
+function getUserAccountDetails() {
+    const requestOptions = {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()}
+    };
+
+    return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(handleResponse);
+};
+
+function postPassword(password) {
     const requestOptions = {
         method: 'PUT',
         headers: {'Content-Type': 'application/json',
                   'Authorization': authHeader()},
         body: JSON.stringify({ 
-            "title": title,
-            "max_people": max_people,
-            "description": description,
-            "course": course,
-            "tags": tags,
-            "languages": languages,
-            "technologies": technologies})
+            "password": password})
     };
-    return fetch(`${config.apiUrl}/api/project/${project_id}`, requestOptions).then(GetReponseCode);
+
+    return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(GetReponseCode);
 };
 
+function postUsername(username) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()},
+        body: JSON.stringify({ 
+            "username": username})
+    };
+
+    return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(GetReponseCode);
+};
+
+function postAvatar(avatar) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': authHeader()},
+        body: JSON.stringify({ 
+            "avatar": avatar})
+    };
+
+    return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(GetReponseCode);
+};
 

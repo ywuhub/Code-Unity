@@ -8,6 +8,7 @@ export const authenticationService = {
     login,
     register,
     logout,
+    forgotPassword,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue () { return currentUserSubject.value }
 };
@@ -43,6 +44,15 @@ function register(email, username, password) {
             currentUserSubject.next(user);
             return user;
         });
+}
+
+
+function forgotPassword(email) {
+    const requestOptions = {
+        method: 'GET'
+    };
+    return fetch(`${config.apiUrl}/api/forgot_password?email=${email}`, requestOptions)
+        .then(handleRegisterResponse);
 }
 
 function logout() {

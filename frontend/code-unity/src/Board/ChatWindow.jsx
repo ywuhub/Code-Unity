@@ -8,6 +8,7 @@ class ChatWindow extends React.Component {
     constructor(props) {
         super(props);
         this.curr_id = authenticationService.currentUserValue.uid;
+        this.isMounted_ = false;
         this.state = {
             messages: [],   // sender_id, message, created_at "2016-03-23T17:00:42Z"
             group_members: [],  // [{username, _id}]
@@ -16,46 +17,60 @@ class ChatWindow extends React.Component {
             chat_room: '',
             isLoading: false,
             isJoining: false,
-            kicked: false
+            alert: false,
+            alertMsg: ''
         };
     }
 
     componentDidMount() {
-        this.setState({ isLoading: true, isJoining: true });
+        this.isMounted_ = true;
         this.props.disableChatChange();
+        var curr_id = this.curr_id;
+        var chat_id = this.props.chat_id;
+        this.setState({ isLoading: true, isJoining: true });
         var qb_users = this.props.qb_user_ids;
         var setIdMap = (ids_map) => {
-            this.setState({ ids_map: ids_map });
+            if (this.isMounted_) this.setState({ ids_map: ids_map });
         }
         QB.data.list("User", { qb_id: { or: qb_users } }, function (err, result) {
             if (err) {
                 console.log(err);
             } else {
                 let ids_map = {}
-                for (let user of result.items) {
+                for (let i = 0; i < result.items.length; ++i) {
+                    let user = result.items[i];
                     ids_map[user.qb_id] = user.username;
+                    if (i === result.items.length - 1) {
+                        setIdMap(ids_map);
+                    }
                 }
-                setIdMap(ids_map);
             }
         });
-        var curr_id = this.curr_id;
-        var chat_id = this.props.chat_id;
         var setRoom = (room) => { this.setState({ chat_room: room }) }
         var setJoining = () => {
             this.props.enableChatChange();
-            this.setState({ isJoining: false });
+            if (this.isMounted_) this.setState({ isJoining: false });
         }
+        var setAlert = (msg) => { if (this.isMounted_) this.setState({ alert: true, alertMsg: msg }) }
         QB.createSession({ login: curr_id, password: curr_id }, function (err, result) {
             if (result) {
                 QB.chat.connect({ userId: result.user_id, password: curr_id }, function (err, res) {
                     if (res) {
                         QB.chat.dialog.list({ type: 2, _id: chat_id }, function (err, dialogs) {
+                            if (dialogs.items.length === 0) {
+                                setAlert('You have been kicked from this project! c:');
+                                return;
+                            }
                             const dlg = dialogs.items[0];
-                            setRoom(dlg.xmpp_room_jid);
-                            QB.chat.muc.join(dlg.xmpp_room_jid, function () {
-                                console.log("Joined dialog " + dlg._id + " xmpp " + dlg.xmpp_room_jid);
-                                setJoining();
-                            })
+                            if (dlg.xmpp_room_jid) {
+                                setRoom(dlg.xmpp_room_jid);
+                                QB.chat.muc.join(dlg.xmpp_room_jid, function () {
+                                    console.log("Joined dialog " + dlg._id + " xmpp " + dlg.xmpp_room_jid);
+                                    setJoining();
+                                })
+                            } else {
+                                setAlert('This project no longer exists! c:');
+                            }
                         })
                     }
                 })
@@ -64,23 +79,17 @@ class ChatWindow extends React.Component {
 
         userService.getProjectDetail(this.props.project_id)
             .then(json => {
-                this.setState({ group_name: json.title, group_members: json.members });
+                if (this.isMounted_) this.setState({ group_name: json.title, group_members: json.members });
             });
 
         QBgetGroupChatHistory(this.props.chat_id)
             .then(msgs => {
-                if (msgs.length === 0) this.setState({ isLoading: false });
                 let messages = [];
-                for (let i = 0; i < msgs.length; ++i) {
+                for (let i = 0; msgs && i < msgs.length; ++i) {
                     const msg = msgs[i];
-                    // QBgetUserData(msg.sender_id)
-                    //     .then(user => {
-                    //         messages.push({ sender_id: user.username, message: msg.message, created_at: msg.created_at });
-                    //         if (i == msgs.length - 1) this.setState({ messages: messages, isLoading: false });
-                    //     });
                     messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
                 }
-                this.setState({ messages: messages, isLoading: false });
+                if (this.isMounted_) this.setState({ messages: messages, isLoading: false });
             });
 
         // listener for group chat messages from all users
@@ -94,17 +103,24 @@ class ChatWindow extends React.Component {
             let messages = this.state.messages;
             messages.push({ sender_id: user_id, message: msg, created_at: dateTime });
 
-            this.setState({ messages: messages });
+            if (this.isMounted_) this.setState({ messages: messages });
+        }
+
+        QB.chat.onKickOccupant = (dialogId, userId) => {
+            console.log("onkick: " + dialogId + " " + userId);
+            if (dialogId === chat_id) {
+                setAlert('You have been kicked from this project! c:');
+            }
         }
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.chat_id !== prevProps.chat_id) {
-            this.setState({ kicked: false });
+            this.setState({ alert: false });
             this.props.disableChatChange();
-            var qb_users = this.props.qb_user_ids;
-            var setIdMap = (ids_map) => {
-                this.setState({ ids_map: ids_map });
+            let qb_users = this.props.qb_user_ids;
+            let setIdMap = (ids_map) => {
+                if (this.isMounted_) this.setState({ ids_map: ids_map });
             }
             QB.data.list("User", { qb_id: { or: qb_users } }, function (err, result) {
                 if (err) {
@@ -122,29 +138,33 @@ class ChatWindow extends React.Component {
             var chat_id = this.props.chat_id;
             var setRoom = (room) => { this.setState({ chat_room: room }) }
             var setJoining = () => {
-                this.setState({ isJoining: false });
+                if (this.isMounted_) this.setState({ isJoining: false });
                 this.props.enableChatChange();
             }
 
             this.setState({ messages: [], isLoading: true, isJoining: true });
 
             // swap group chat 
-            var setKicked = () => { this.setState({ kicked: true })}
+            var setAlert = (msg) => { if (this.isMounted_) this.setState({ alert: true, alertMsg: msg }) }
             QB.createSession({ login: curr_id, password: curr_id }, function (err, result) {
                 if (result) {
                     QB.chat.connect({ userId: result.user_id, password: curr_id }, function (err, res) {
                         if (res) {
                             QB.chat.dialog.list({ type: 2, _id: chat_id }, function (err, dialogs) {
                                 if (dialogs.items.length === 0) {
-                                    setKicked();
+                                    setAlert('You have been kicked from this project! c:');
                                     return;
                                 }
                                 const dlg = dialogs.items[0];
-                                setRoom(dlg.xmpp_room_jid);
-                                QB.chat.muc.join(dlg.xmpp_room_jid, function () {
-                                    console.log("Joined dialog " + dlg._id + " xmpp " + dlg.xmpp_room_jid);
-                                    setJoining();
-                                })
+                                if (dlg.xmpp_room_jid) {
+                                    setRoom(dlg.xmpp_room_jid);
+                                    QB.chat.muc.join(dlg.xmpp_room_jid, function () {
+                                        console.log("Joined dialog " + dlg._id + " xmpp " + dlg.xmpp_room_jid);
+                                        setJoining();
+                                    })
+                                } else {
+                                    setAlert('This project no longer exists! c:');
+                                }
                             })
                         }
                     })
@@ -158,24 +178,30 @@ class ChatWindow extends React.Component {
 
             QBgetGroupChatHistory(this.props.chat_id)
                 .then(msgs => {
-                    if (msgs.length === 0) this.setState({ isLoading: false });
                     let messages = [];
-                    for (let i = 0; i < msgs.length; ++i) {
+                    for (let i = 0; msgs && i < msgs.length; ++i) {
                         const msg = msgs[i];
                         messages.push({ sender_id: msg.sender_id, message: msg.message, created_at: msg.created_at });
                     }
-                    this.setState({ messages: messages, isLoading: false });
+                    if (this.isMounted_) this.setState({ messages: messages, isLoading: false });
                 });
+
+            QB.chat.onKickOccupant = (dialogId, userId) => {
+                console.log("onkick: " + dialogId + " " + userId);
+                if (dialogId === chat_id) {
+                    setAlert('You have been kicked from this project! c:');
+                }
+            }
         }
 
         if (!this.state.isLoading) {
-
             const chat_msgs = document.getElementById('chat-msgs');
             chat_msgs.scrollTop = chat_msgs.scrollHeight;
         }
     }
 
     componentWillUnmount() {
+        this.isMounted_ = false;
         QB.chat.disconnect();
     }
 
@@ -233,7 +259,7 @@ class ChatWindow extends React.Component {
 
         return (
             <div>
-                {this.state.kicked && <Alert />}
+                {this.state.alert && <Alert msg={this.state.alertMsg} />}
                 <div className="card border-0 shadow bg-transparent mx-auto my-auto" id="chat-window">
                     {/* group name */}
                     {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 my-3"></div>)}
@@ -255,9 +281,9 @@ class ChatWindow extends React.Component {
                                         if (msg.body) msg = msg.body
                                         return (
                                             <div key={key++} className="media px-2 py-1">
-                                                <img src="https://api.adorable.io/avatars/200/avatar.png" className="img-fluid img-circle d-block rounded-circle" width="40px" height="40px" alt="avatar" />
+                                                {/* <img src="https://api.adorable.io/avatars/200/avatar.png" className="img-fluid img-circle d-block rounded-circle" width="40px" height="40px" alt="avatar" /> */}
                                                 <div className="media-body ml-2">
-                                                    <h6>{this.getUsername(message.sender_id)} <small className="text-muted"><i>{this.cleanTime(message.created_at)}</i></small></h6>
+                                                    <h6><strong>{this.getUsername(message.sender_id)}</strong> <small className="text-muted"><i>{this.cleanTime(message.created_at)}</i></small></h6>
                                                     <p> {msg} </p>
                                                 </div>
                                             </div>
@@ -322,7 +348,7 @@ function Alert(props) {
     return (
         <div className="alert alert-danger alert-dismissible fade show">
             <button type="button" className="close" onClick={refresh} data-dismiss="alert">&times;</button>
-            <strong>Danger!</strong> You have been kicked from this project! c:
+            <strong>Notice!</strong> {props.msg}
         </div>
     )
 }

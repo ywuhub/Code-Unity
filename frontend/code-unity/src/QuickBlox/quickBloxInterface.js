@@ -110,7 +110,6 @@ function QBcreateGroup(data) {
         .then(response => { return response.json() })
         .then(json => {
             QBcreateProjectData(json._id, data.project_id, data.name);
-            return json;
         });
 }
 
@@ -297,6 +296,7 @@ function QBcreateProjectData(chat_id, project_id, name) {
         } else {
             console.log(res);
         }
+        window.location.reload();
     });
 }
 

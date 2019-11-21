@@ -158,10 +158,7 @@ class CreateGroup extends React.Component {
                                         // this.props.history.push(from);
                                         QB.createSession({ login: curr_id, password: curr_id }, (err, res) => {
                                             if (res) {
-                                                QBcreateGroup({name: title, project_id: user.project_id})
-                                                    .then(resp => {
-                                                        window.location.reload();
-                                                    });
+                                                QBcreateGroup({name: title, project_id: user.project_id});
                                             } else {
                                                 console.log(err);
                                             }

@@ -29,16 +29,20 @@ class GroupPage extends React.Component {
                                 if (this.props.isEditable) {
                                     if (result.items.length != 0) {
                                         QBdeleteGroup(result.items[0].chat_id, this.props.data.project_id);
+                                    } else {
+                                        window.location.reload();
                                     }
 
                                     // leave group
                                 } else {
-                                    QBgetUser(this.curr_id)
-                                        .then(qb_user => {
-                                            if (result.items.length != 0) {
+                                    if (result.items.length != 0) {
+                                        QBgetUser(this.curr_id)
+                                            .then(qb_user => {
                                                 QBleaveGroup(result.items[0].chat_id, qb_user.id);
-                                            }
-                                        })
+                                            })
+                                    } else {
+                                        window.location.reload();
+                                    }
                                 }
                             }
                         });
@@ -64,7 +68,7 @@ class GroupPage extends React.Component {
                         }
                         {
                             <button type="button" className="btn btn-sm btn-outline-secondary mx-1" data-toggle="modal" data-target="#leave" disabled={this.state.isSubmitting}>
-                                {(this.props.isEditable && "Delete") || "Leave"} 
+                                {(this.props.isEditable && "Delete") || "Leave"}
                                 &nbsp;Group
                             </button>
                         }

@@ -468,3 +468,130 @@ Parameters (All fields are optional) :
         "avatar": string
     }
 ```
+
+### 'api/forgot_password?email=test@example.com'
+##### GET
+Sends a message to reset user's password to a registered email address if they forgot their password.
+INPUT:
+- email: a email that is linked to a code unity account or else error will be sent back
+
+EXAMPLE:
+```
+GET api/forgot_password?email=test@example.com ->
+    (200 OK) <-
+        Message sent to registered email address if found to reset password
+```
+
+### `api/reset_password/<token_key:string>?password=new_password`
+#### PUT
+Reset the password from the link sent to the user's email which goes here
+and we verify the timed token to see if it has expired.
+INPUT:
+- token: token key with the user id embedded with a 24 hour life
+
+EXAMPLE:
+```
+PUT api/reset_password/<token_key:string>?password=new_password ->
+    (200 OK) <-
+        "message": "Password has been reset! Redirecting your to the login page in 5 seconds..."
+```
+
+### `api/favourites`
+##### GET
+Fetches the list of projects that the currently loggied user has added to their favourites
+Input:
+- user_id: string
+  description: the user id from the parameters to fetch their favourite projects
+
+EXAMPLE:
+```
+GET api/favourites ->
+    (200 OK) <-
+        {
+            "user_id": user_id \\ the member id for which this list of favourite projects belongs to
+            "favourite_projects": [
+                        { 
+                            "title": str,
+                            "leader": str,
+                            "max_people": int,
+                            "cur_people": int,
+                            "members": [],
+                            "description": str,
+                            "course": str,
+                            "technologies": [],
+                            "languages": [],
+                            "tags": []
+                        },
+            ]
+        }
+```
+
+### `api/user_list`
+##### GET
+Get a list of all usernames in the database private users are removed.
+Optional parameter: fetch a list of specific usernames from a list of memberids
+INPUT:
+- user_ids: list of member ids
+OUTPUT:
+- ret: list of usernames in same order of member ids and their respectives avatars
+
+```
+Output Structure:
+[
+    {
+        "_id": string,
+        "username": string,
+        "email": string,
+        "avatar": string
+    }
+]
+```
+
+Example:
+```
+GET ->
+(200 OK) <-
+    [
+        {
+            "_id": "5daa6efd8805c462ef0d16e1",
+            "username": "testuser",
+            "email": "test@user.com",
+            "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
+        },
+        {
+            "_id": "5daa6efd5647c462ef0d16f3",
+            "username": "testuser1",
+            "email": "test1@user.com",
+            "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
+        }
+    ]
+```
+
+If Optional Parameter Given:
+```
+    ```
+    Output Structure:
+    [
+        {
+            "_id": string,
+            "username": string,
+            "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
+        }
+    ]
+    ```
+
+GET ->
+(200 OK) <-
+    [
+        {
+            "_id": "5daa6efd8805c462ef0d16e1",
+            "username": "testuser",
+            "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
+        },
+        {
+            "_id": "5daa6efd5647c462ef0d16f3",
+            "username": "testuser1",
+            "avatar": "https://api.adorable.io/avatars/200/code_unity_default.png"
+        }
+    ]
+```

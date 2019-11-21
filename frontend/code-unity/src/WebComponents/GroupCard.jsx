@@ -5,9 +5,9 @@ import '@/Style';
 
 export const GroupCard = (props) => {
     return(
-        <div className="group-card-box">
+        <div>
             <a href={props.address} className="text-decoration-none">
-                <div className="my-3 p-3  bg-white rounded shadow-sm" key={props.keyValue}>
+                <div className="my-3 p-3  bg-white rounded shadow-sm group-card-box" key={props.keyValue}>
                     <div className="row mr-1 group-card-box-title">
                         <strong className="d-block text-gray-dark ml-4 ">{props.title}</strong>
                         {props.isAdmin&&<font color="#F1C40F">&nbsp;<i className="fas fa-crown"></i></font>
@@ -23,14 +23,21 @@ export const GroupCard = (props) => {
                     </div>
                     <div className="row group-card-row-text avatar-div-setting">
                         <span className="ml-4"> </span>
+                      {/*  {
+                            (props.userIcon || []).map((item) => {
+                                return(
+                                    <div key={badge_key++}>
+                                        <img src={item} className="avatar rounded-circle"/>
+                                    </div>
+                                    )
+                            })
+                        }*/}
+
                         <img src={UserIcon} className="avatar rounded-circle"/>
                         <img src={UserIcon} className="avatar rounded-circle"/>
                         <img src={UserIcon} className="avatar rounded-circle"/>
                     </div>
-                    <div className="row group-card-row-text ">
-                        <p className="d-block text-gray-dark ml-4 mt-2">{props.description}</p>
-                        {/*<img src={peopleIcon} className="icon-setting"/>*/}
-                    </div>
+
                 </div>
             </a>
         </div>
