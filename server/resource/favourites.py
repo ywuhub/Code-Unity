@@ -50,6 +50,13 @@ class FavouriteProjects(Resource):
         # get user_id
         user_id = args["user_id"]
 
+        # set up return json data
+        ret = {
+            "_id": "",
+            "user_id": "",
+            "favourite_projects": []
+        }
+
         # convert user_id (string) into ObjectId
         try:
             user_id = ObjectId(user_id)
@@ -68,6 +75,10 @@ class FavouriteProjects(Resource):
                 if user_favourites is None:
                     return {"message": "user does not have any favourites"}, 400  
                 else:
+                    # add return _id and user_id data
+                    ret["_id"] = str(user_favourites["_id"])
+                    ret["user_id"] = str(user_favourites["user_id"])
+
                     # update project details if needed
                     update_project_details = []
                     for project in user_favourites["favourite_projects"]:
@@ -77,11 +88,28 @@ class FavouriteProjects(Resource):
                         doc = self.projects.find_one({"_id": project_id})
                         if doc:
                             update_project_details.append(deepcopy(doc))
+
+                            # ret details
+                            ret_members = [str(member) for member in doc["members"]]
+                            ret_project = {
+                                "_id": str(doc["_id"]),
+                                "title": doc["title"],
+                                "leader": str(doc["leader"]),
+                                "max_people": doc["max_people"],
+                                "cur_people": doc["cur_people"],
+                                "members": ret_members,
+                                "description": doc["description"],
+                                "course": doc["course"],
+                                "technologies": doc["technologies"],
+                                "languages": doc["languages"],
+                                "tags": doc["tags"]
+                            }
+                            ret["favourite_projects"].append(ret_project)
                     
                     new_favourites = {"favourite_projects": update_project_details}
                     self.favourites.update({"user_id": user_id}, {"$set": new_favourites}, upsert=False)
                 
-                return dumps(user_favourites, default=str), 200    
+                return ret, 200    
         else:
             return {"message": "user id required to fetch the favourites list"}, 400
     
