@@ -12,13 +12,15 @@ class OthersProfile extends React.Component {
             details: {},
             myProjects: [],
             not_found: false,
-            isLoading: false
+            isLoading: false,
+            avatar: ''
         }
     }
 
     componentDidMount() {
         this.setState({ isLoading: true });
         const { _id } = this.props.location.state;
+        userService.getUserAccountDetails().then(data => { this.setState({ avatar: data.avatar })});
         userService.getUserProfile(_id).then(data => {
             this.setState({
                 id_: _id,
@@ -90,8 +92,8 @@ class OthersProfile extends React.Component {
                                     <div className="my-3 p-3 bg-white rounded shadow-sm">
                                         <div className="m-4">
                                             <div className="row">
-                                                <div className="col-md-6">
-                                                    <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />
+                                                <div className="col-md-6 avator-container">
+                                                    <img src={this.state.avatar} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />    
                                                 </div>
                                                 <div className="col-md-6 align-middle">
                                                     <div>

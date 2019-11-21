@@ -73,7 +73,7 @@ class UserSearch extends React.Component {
                             return (
                                 <Link to={{pathname: "/profile-" + user.username, state: { _id: user._id, username: user.username }}} className="bg-light w-100 p-2 user-search-link" key={user._id} style={{'textDecoration':'none'}} value={user.username} onClick={this.onUserSelect.bind(this)}>
                                     <div className="media" value={user.username}>
-                                        <img src="https://api.adorable.io/avatars/200/avatar.png" className="p-2 img-fluid img-circle d-block rounded-circle" value={user.username} style={{'width':'50px'}} alt="avatar" />
+                                        <img src={user.avatar} className="p-2 img-fluid img-circle d-block rounded-circle" value={user.username} style={{'width':'50px'}} alt="avatar" />
                                         <div className="media-body" value={user.username}>
                                             <div className="d-flex justify-content-start flex-column text-muted">
                                                 <b className="" value={user.username}>{user.username}</b>
