@@ -17,7 +17,8 @@ class UserSearch extends React.Component {
         this.state = {
             initialUsers: [],
             users: [],
-            isLoading: false
+            isLoading: false,
+            disabled: true
         };
     }
 
@@ -32,7 +33,7 @@ class UserSearch extends React.Component {
         fetch(`${config.apiUrl}/api/user_list`, options)
             .then(response => { return response.json(); })
             .then(users => {
-                if (this.isMounted_) this.setState({ initialUsers: users });
+                if (this.isMounted_) this.setState({ initialUsers: users, disabled: false });
             })
             .catch(err => { console.log(err); });
     }
@@ -63,7 +64,7 @@ class UserSearch extends React.Component {
         return (
             <div className="mx-3" style={{ 'width': '300px', 'position': 'relative' }}>
                 <div id="user-search-bar" className="input-group" tabIndex="0">
-                    <input type="text" id="user-search" className="form-control bg-transparent pr-5 pl-3 border-0" style={{ 'fontSize': '14px', 'color': 'white' }} placeholder="Search for users by username or email" onChange={this.handleUserInput.bind(this)} ></input>
+                    <input type="text" id="user-search" className="form-control bg-transparent pr-5 pl-3 border-0" style={{ 'fontSize': '14px', 'color': 'white' }} placeholder={(this.state.disabled && "Loading...") || "Search for users by username or email"} disabled={this.state.disabled} onChange={this.handleUserInput.bind(this)} ></input>
                     <div className="input-group-append">
                         <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
                     </div>

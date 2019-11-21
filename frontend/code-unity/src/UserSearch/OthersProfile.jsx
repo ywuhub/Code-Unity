@@ -7,6 +7,7 @@ import { authHeader } from '@/_helpers';
 class OthersProfile extends React.Component {
     constructor(props) {
         super(props);
+        this.isMounted_ = false;
         this.state = {
             _id: '',
             details: {},
@@ -19,34 +20,43 @@ class OthersProfile extends React.Component {
     }
 
     componentDidMount() {
+        this.isMounted_ = true;
         this.setState({ isLoading: true });
         const { _id } = this.props.location.state;
         const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
         fetch(`${config.apiUrl}/api/user_list?user_ids=${_id}`, options)
             .then(response => { return response.json(); })
             .then(users => {
-                if (users.length > 0) this.setState({ avatar: users[0].avatar });
+                if (this.isMounted_ && users.length > 0) this.setState({ avatar: users[0].avatar });
             })
             .catch(err => { console.log(err); });
         userService.getUserProfile(_id).then(data => {
-            this.setState({
-                id_: _id,
-                details: data,
-                isLoading: false
-            })
-        })
-            .catch(err => {
+            if (this.isMounted_) {
                 this.setState({
-                    not_found: true,
+                    id_: _id,
+                    details: data,
                     isLoading: false
                 })
+            }
+        })
+            .catch(err => {
+                if (this.isMounted_) {
+                    this.setState({
+                        not_found: true,
+                        isLoading: false
+                    })
+                }
             });
 
         const currentUser = authenticationService.currentUserValue.uid;
         userService.getUserProject(currentUser)
             .then(json => {
-                this.setState({ myProjects: json });
+                if (this.isMounted_) this.setState({ myProjects: json });
             })
+    }
+
+    componentWillUnmount() {
+        this.isMounted_ = false;
     }
 
     inviteUser(e) {
@@ -62,9 +72,9 @@ class OthersProfile extends React.Component {
             .then(response => { return response.json(); })
             .then(json => {
                 if (json.message) {
-                    this.setState({ alert: json.message });
+                    if (this.isMounted_) this.setState({ alert: json.message });
                 } else {
-                    this.setState({ alert: json.status });
+                    if (this.isMounted_) this.setState({ alert: json.status });
                 }
             })
             .catch(err => { console.log(err); })
