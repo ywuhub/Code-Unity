@@ -7,53 +7,74 @@ import { authHeader } from '@/_helpers';
 class OthersProfile extends React.Component {
     constructor(props) {
         super(props);
+        this.isMounted_ = false;
         this.state = {
             _id: '',
             details: {},
             myProjects: [],
             not_found: false,
-            isLoading: false
+            isLoading: false,
+            avatar: '',
+            alert: ''
         }
     }
 
     componentDidMount() {
+        this.isMounted_ = true;
         this.setState({ isLoading: true });
         const { _id } = this.props.location.state;
-        userService.getUserProfile(_id).then(data => {
-            this.setState({
-                id_: _id,
-                details: data,
-                isLoading: false
+        const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() } };
+        fetch(`${config.apiUrl}/api/user_list?user_ids=${_id}`, options)
+            .then(response => { return response.json(); })
+            .then(users => {
+                if (this.isMounted_ && users.length > 0) this.setState({ avatar: users[0].avatar });
             })
-        })
-            .catch(err => {
+            .catch(err => { console.log(err); });
+        userService.getUserProfile(_id).then(data => {
+            if (this.isMounted_) {
                 this.setState({
-                    not_found: true,
+                    id_: _id,
+                    details: data,
                     isLoading: false
                 })
+            }
+        })
+            .catch(err => {
+                if (this.isMounted_) {
+                    this.setState({
+                        not_found: true,
+                        isLoading: false
+                    })
+                }
             });
 
         const currentUser = authenticationService.currentUserValue.uid;
         userService.getUserProject(currentUser)
             .then(json => {
-                this.setState({ myProjects: json });
+                if (this.isMounted_) this.setState({ myProjects: json });
             })
+    }
+
+    componentWillUnmount() {
+        this.isMounted_ = false;
     }
 
     inviteUser(e) {
         const group = document.getElementById('group-name').value;
-        
+
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
             body: JSON.stringify({ project_id: group })
         };
-    
+
         fetch(`${config.apiUrl}/api/user/${this.state.id_}/invite`, options)
             .then(response => { return response.json(); })
             .then(json => {
                 if (json.message) {
-                    alert(json.message);
+                    if (this.isMounted_) this.setState({ alert: json.message });
+                } else {
+                    if (this.isMounted_) this.setState({ alert: json.status });
                 }
             })
             .catch(err => { console.log(err); })
@@ -62,6 +83,10 @@ class OthersProfile extends React.Component {
     render() {
         return (
             <div className="container-fluid">
+                {this.state.alert !== '' &&
+                    <Foo msg={this.state.alert} />
+                }
+
                 {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) ||
                     <div>
                         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -90,8 +115,8 @@ class OthersProfile extends React.Component {
                                     <div className="my-3 p-3 bg-white rounded shadow-sm">
                                         <div className="m-4">
                                             <div className="row">
-                                                <div className="col-md-6">
-                                                    <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />
+                                                <div className="col-md-6 avator-container">
+                                                    <img src={this.state.avatar} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />
                                                 </div>
                                                 <div className="col-md-6 align-middle">
                                                     <div>
@@ -144,7 +169,7 @@ class OthersProfile extends React.Component {
                             <div className="modal-body">
                                 <form>
                                     <div className="error">
-                                        
+
                                     </div>
                                     <label htmlFor="group-name" className="col-form-label">Group Name:</label>
                                     <select className="form-control mb-3" id="group-name">
@@ -166,6 +191,14 @@ class OthersProfile extends React.Component {
             </div>
         )
     }
+}
+
+function Foo(props) {
+    return (
+        <div className="alert alert-info mt-2">
+            <strong>Notice!</strong> {props.msg}
+        </div>
+    )
 }
 
 export { OthersProfile };

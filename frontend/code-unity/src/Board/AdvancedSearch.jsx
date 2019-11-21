@@ -26,6 +26,10 @@ class AdvancedSearch extends React.Component {
         }
     }
 
+    listToParamString(list, param) {
+        return list.toString().replace(/,/g, `&${param}=`);
+    }
+
     /**
      * Called when user clicks search icon
      *  parent class processes all selected tags
@@ -40,7 +44,7 @@ class AdvancedSearch extends React.Component {
         // dont fetch posts with all empty fields
         if (this.state.title !== '' || courses !== '' || languages !== '' || programming_languages !== '') {
             this.props.setLoading();
-            let url = `${config.apiUrl}/api/project/search?title=${this.state.title}&courses=${courses}&languages=${languages}&programming_languages=${programming_languages}&group_crit=${union}`;
+            let url = `${config.apiUrl}/api/project/search?title=${this.state.title}&courses=${this.listToParamString(courses, 'courses')}&languages=${this.listToParamString(languages, 'languages')}&programming_languages=${this.listToParamString(programming_languages, 'programming_languages')}&group_crit=${union}`;
             // console.log(url);
             const options = { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() }};
             fetch(url, options)
