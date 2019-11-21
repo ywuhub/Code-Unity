@@ -1,0 +1,14 @@
+.fav-icon {
+    font-size: 1.8em;
+    margin-right: 20px;
+    color: #ebc634;
+}
+
+.star:hover .hollow,
+.star .fill {
+    display: none;
+}
+
+.star:hover .fill {
+    display: inline;
+}
