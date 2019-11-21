@@ -495,3 +495,63 @@ PUT api/reset_password/<token_key:string>?password=new_password ->
     (200 OK) <-
         "message": "Password has been reset! Redirecting your to the login page in 5 seconds..."
 ```
+
+### `api/user/favourites`
+##### GET
+Fetch the list of favourited projects for the currently logged in user
+Input (url parameters):
+- user_id: string
+    description: the user id from the parameters to fetch their favourite projects
+
+EXAMPLE:
+```
+GET api/favourites ->
+    (200 OK) <-
+        {
+            "user_id": user_id \\ the member id for which this list of favourite projects belongs to
+            "favourite_projects": [ \\ list of projects and its details that is favourites of the user
+                        { 
+                            "title": str,
+                            "leader": str,
+                            "max_people": int,
+                            "cur_people": int,
+                            "members": [],
+                            "description": str,
+                            "course": str,
+                            "technologies": [],
+                            "languages": [],
+                            "tags": []
+                        },
+            ]
+        }
+```
+
+##### POST
+Add the selected project to the user's favourites list
+Input (url parameters):
+- user_id: string
+description: the user id for the project to be added to their favourites
+- project_id: string
+description: the project id to be added to the user's favourites
+
+EXAMPLE:
+POST api/favourites ->
+    (200 OK) <-
+        {
+            "message": "project added to the user's favourites"
+        }
+
+##### PUT
+Remove the selected project from the user's favourites list
+Input (url parameters):
+- user_id: string
+description: the user id for the project to be removed to their favourites
+- project_id: string
+description: the project id to be removed to the user's favourites
+
+EXAMPLE:
+PUT api/favourites ->
+    (200 OK) <-
+        {
+            "message": "project removed from the user's favourites"
+        }

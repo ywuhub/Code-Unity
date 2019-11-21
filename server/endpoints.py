@@ -42,7 +42,7 @@ def register_endpoints(
     api.add_resource(UserInvite, "/user/<string:uid>/invite")
     api.add_resource(UserInviteList, "/user/invite/list")
     api.add_resource(OtherProfile, "/user/<string:uid>/profile", resource_class_args=[user_manager])
-    api.add_resource(FavouriteProjects, "/user/favourites", resource_class_args=[project_manager])
+    api.add_resource(FavouriteProjects, "/user/favourites", resource_class_args=[db])
     api.add_resource(ProgrammingLanguages, "/programming_languages", resource_class_args=[db])
     api.add_resource(Auth, "/auth", resource_class_args=[user_manager])
     api.add_resource(LogOut, "/auth/logout", resource_class_args=[user_manager])
