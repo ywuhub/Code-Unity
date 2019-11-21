@@ -1,3 +1,5 @@
+from typing import cast
+
 from bson import ObjectId
 from bson.errors import InvalidId
 from flask_jwt_extended import current_user, jwt_required
@@ -7,6 +9,7 @@ from pymongo.errors import DuplicateKeyError
 
 from server.exceptions import AlreadyMemberOf, ProjectFull, ProjectNotFound
 from server.managers.project_manager import ProjectManager
+from server.models.user import User
 
 
 class ProjectRequest(Resource):
@@ -51,6 +54,7 @@ class ProjectRequest(Resource):
         }
         ```
         """
+        user = cast(User, current_user)
         parser = RequestParser()
         parser.add_argument("message")
         args = parser.parse_args(strict=True)
@@ -61,7 +65,7 @@ class ProjectRequest(Resource):
             return {"message": "invalid project_id"}, 400
 
         try:
-            current_user.apply_to_project(project_id, args["message"])
+            user.apply_to_project(project_id, args["message"])
         except ProjectNotFound:
             return {"message": "project not found"}, 404
         except DuplicateKeyError:

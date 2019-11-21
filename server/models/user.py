@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Any, Dict, List
 
 from bson import ObjectId
@@ -12,6 +11,7 @@ from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
 )
+from server.managers.notification_manager import NotificationManager
 from server.managers.project_manager import ProjectManager
 from server.models.project import Project
 from server.utils.json import ObjectId as ObjectIdMarshaller
@@ -33,8 +33,9 @@ account_fields = {
     "_id": ObjectIdMarshaller,
     "username": fields.String(default=None),
     "email": fields.String(default=None),
-    "avatar": fields.String(default=None)
+    "avatar": fields.String(default=None),
 }
+
 
 class Profile:
     _id: ObjectId
@@ -88,14 +89,7 @@ class Account:
     email: str
     avatar: str
 
-    account_fields = frozenset(
-        (
-            "_id",
-            "username",
-            "email",
-            "avatar"
-        )
-    )
+    account_fields = frozenset(("_id", "username", "email", "avatar"))
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
@@ -121,9 +115,10 @@ class Account:
 class User:
     _id: ObjectId
 
-    def __init__(self, id: ObjectId, db: Database):
+    def __init__(self, id: ObjectId, db: Database, nm: NotificationManager):
         self._id = id
         self.db = db
+        self.nm = nm
         self.profiles = db.get_collection("profiles")
         self.projects = db.get_collection("projects")
         self.accounts = db.get_collection("users")
@@ -163,26 +158,30 @@ class User:
         """
         if account:
             # check if new username is already taken in the database
-            if 'username' in account.keys():
-                doc = self.accounts.find_one({"username": account['username']}, {"_id": 1, "username": 1})
-                
-                # if duplicate username is found return error depending on if 
+            if "username" in account.keys():
+                doc = self.accounts.find_one(
+                    {"username": account["username"]}, {"_id": 1, "username": 1}
+                )
+
+                # if duplicate username is found return error depending on if
                 # its the current user's one or other users
                 if doc:
-                    if doc['_id'] == self._id:
+                    if doc["_id"] == self._id:
                         return {"error": "cannot change to your current username"}
                     else:
                         return {"error": "username already taken!"}
 
             self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
-        
+
         return {"status": "success"}
 
     def update_avatar(self, avatar_url: str):
         """
         Updates the user's avatar picture
         """
-        self.accounts.update({"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True)
+        self.accounts.update(
+            {"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True
+        )
         return "successfully updated avatar"
 
     def apply_to_project(self, project_id: ObjectId, message: str):
@@ -205,6 +204,12 @@ class User:
         # in the collection.
         requests = self.db.get_collection("join_requests")
         requests.insert_one(doc)
+
+        # successfully sent request, notify leader
+        doc = self.accounts.find_one({"_id": self._id})
+        self.nm.notify_request_to_join(
+            project.leader, self._id, doc["username"], project.title, project_id
+        )
 
     def delete_project_application(self, project_id: ObjectId):
         requests = self.db.get_collection("join_requests")
@@ -309,6 +314,9 @@ class User:
         invitations.insert_one(
             {"project_id": project_id, "user_id": user_id, "leader_id": self._id}
         )
+
+        # invitation successful, notify the invited user
+        self.nm.notify_received_invite(user_id, project["title"], project_id)
 
     def delete_invitation(self, user_id: ObjectId, project_id: ObjectId):
         # Check if the user has permissions to delete invitations
@@ -419,10 +427,15 @@ class User:
             project["members"].remove(self._id)
         except ValueError:
             raise UserNotFound()
-    
+
         project["cur_people"] = len(project["members"])
 
         self.projects.replace_one({"_id": project_id}, project)
+
+        doc = self.accounts.find_one({"_id": self._id})
+        self.nm.notify_user_left_project(
+            self._id, doc["username"], project["title"], project_id, project["members"]
+        )
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'
