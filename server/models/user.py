@@ -1,9 +1,9 @@
-from copy import deepcopy
 from typing import Any, Dict, List
 
 from bson import ObjectId
 from flask_restful import fields
 from pymongo.database import Database
+
 
 from server.exceptions import (
     AlreadyMemberOf,
@@ -33,8 +33,9 @@ account_fields = {
     "_id": ObjectIdMarshaller,
     "username": fields.String(default=None),
     "email": fields.String(default=None),
-    "avatar": fields.String(default=None)
+    "avatar": fields.String(default=None),
 }
+
 
 class Profile:
     _id: ObjectId
@@ -88,14 +89,7 @@ class Account:
     email: str
     avatar: str
 
-    account_fields = frozenset(
-        (
-            "_id",
-            "username",
-            "email",
-            "avatar"
-        )
-    )
+    account_fields = frozenset(("_id", "username", "email", "avatar"))
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
@@ -163,10 +157,12 @@ class User:
         """
         if account:
             # check if new username is already taken in the database
-            if 'username' in account.keys():
-                doc = self.accounts.find_one({"username": account['username']}, {"_id": 1, "username": 1})
-                
-                # if duplicate username is found return error depending on if 
+            if "username" in account.keys():
+                doc = self.accounts.find_one(
+                    {"username": account["username"]}, {"_id": 1, "username": 1}
+                )
+
+                # if duplicate username is found return error depending on if
                 # its the current user's one or other users
                 if doc:
                     if doc['_id'] == self._id:
@@ -182,7 +178,9 @@ class User:
         """
         Updates the user's avatar picture
         """
-        self.accounts.update({"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True)
+        self.accounts.update(
+            {"_id": self._id}, {"$set": {"avatar": avatar_url}}, upsert=True
+        )
         return "successfully updated avatar"
 
     def apply_to_project(self, project_id: ObjectId, message: str):
@@ -316,7 +314,8 @@ class User:
         project = projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
-        if project["leader"] != self._id:
+
+        if project["leader"] != self._id and user_id != self._id:
             raise PermissionError()
 
         invitations = self.db.get_collection("invitations")
@@ -327,6 +326,12 @@ class User:
         # If the delete_one operation didn't delete anything, the invitation
         # didn't exist in the first place.
         if n_deleted != 1:
+            raise DocumentNotFound()
+
+    def reject_invitation(self, project_id: ObjectId):
+        invitations = self.db.get_collection("invitations")
+        result = invitations.delete_one({"project_id": project_id, "user_id": self._id})
+        if result.deleted_count == 0:
             raise DocumentNotFound()
 
     def get_outgoing_invitations(self):
@@ -419,7 +424,7 @@ class User:
             project["members"].remove(self._id)
         except ValueError:
             raise UserNotFound()
-    
+
         project["cur_people"] = len(project["members"])
 
         self.projects.replace_one({"_id": project_id}, project)

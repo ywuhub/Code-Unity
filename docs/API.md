@@ -293,14 +293,31 @@ POST /api/project/<str:project_id>/request ->
 ```
 
 #### DELETE
-Removes a join request. Will return with status code 400 if the user does
-not have a pending request for the project.
+Removes a join request. This can be initiated by the leader of the
+project in question or by the user who initiated the request. Will
+return with status code 404 if the user does not have a pending
+request for the project.
+
+Expects:
+```
+{
+    "user_id": string,  # optional
+}
+```
 
 Example:
 ```
+# For the user who made the request to delete it
 DELETE /api/project/<str:project_id>/request ->
 (200 OK) <-
-```
+
+# For the project leader to reject a user's request to join,
+# include a JSON body to specify the user's ID.
+DELETE /api/project/<str:project_id>/request ->
+{
+    "user_id": string
+}
+(200 OK) <-
 
 ### `/api/project/requests`
 #### GET
@@ -347,7 +364,12 @@ Expects:
 ```
 
 #### DELETE
-Removes an invitation that was sent to a user.
+Removes an invitation that was sent to a user (outgoing), or for the
+current user to remove an invite that was sent to them (incoming).
+
+The endpoint should've been on a project_id and not a user_id so this is
+kinda weird, sorry. Don't really want to break existing code at this
+point.
 
 Expects:
 ```

@@ -13,6 +13,7 @@ export const inboxService = {
     accept_join_invitation,
     remove_join_request_sent,
     accept_join_request,
+    decline_join_request,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
@@ -82,5 +83,16 @@ function accept_join_request(project_id, user_id) {
     };
 
     return fetch(`${config.apiUrl}/api/project/${project_id}/join`, options)
+        .then(response => { return response.json(); });
+}
+
+function decline_join_request(project_id, user_id) {
+    const options = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        body: JSON.stringify({ user_id: user_id })
+    };
+
+    return fetch(`${config.apiUrl}/api/project/${project_id}/request`, options)
         .then(response => { return response.json(); });
 }
