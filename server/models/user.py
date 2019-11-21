@@ -170,13 +170,13 @@ class User:
                 # its the current user's one or other users
                 if doc:
                     if doc['_id'] == self._id:
-                        return "Error: Cannot change to your current username!"
+                        return {"error": "cannot change to your current username"}
                     else:
-                        return "Error: Username already taken!"
+                        return {"error": "username already taken!"}
 
             self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
         
-        return "success"
+        return {"status": "success"}
 
     def update_avatar(self, avatar_url: str):
         """

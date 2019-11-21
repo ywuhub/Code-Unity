@@ -202,15 +202,18 @@ class Profile extends React.Component {
                                         </div>
                                         <div className="col-md-6 align-middle">
                                             <div> 
-                                                <p> Username: {this.state.username} </p>
+                                                <p> <b>Name:</b> {this.state.name} </p>
                                             </div>
                                             <div> 
-                                                <p> Email: {this.state.email} </p>
+                                                <p> <b>Username:</b> USERNAME </p>
+                                            </div>
+                                            <div> 
+                                                <p> <b>Email:</b> {this.state.email} </p>
                                             </div>
                                             <div>
                                             {
                                                 <p>
-                                                Github Portfolio: <a href={'https:\\' + this.state.github} target="_blank"> {this.state.github} </a>
+                                                <b>Github Portfolio:</b> <a href={'https:\\' + this.state.github} target="_blank"> {this.state.github} </a>
                                                 </p>
                                             }
                                             </div>

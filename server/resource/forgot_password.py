@@ -26,7 +26,7 @@ class ForgotPassword(Resource):
 
         EXAMPLE:
         ```
-        GET ?email=test@example.com ->
+        GET api/forgot_password?email=test@example.com ->
             (200 OK) <-
                 Message sent to registered email address if found to reset password
         ```

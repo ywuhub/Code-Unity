@@ -118,6 +118,11 @@ class AccountResource(Resource):
         parser.add_argument("avatar", store_missing=False)
         account_dict = parser.parse_args(strict=True)
 
+        # check if username is not a blank string
+        if 'username' in account_dict.keys():
+            if account_dict["username"] == "":
+                return {"message": "Username cannot be blank"}, 400
+        
         # encode password or update avatar
         if 'password' in account_dict.keys():
             account_dict["password"] = ph.hash(account_dict["password"])
@@ -128,4 +133,7 @@ class AccountResource(Resource):
         # update account information
         result = cast(User, current_user).update_account(account_dict)
         
-        return {"message": result}
+        if 'error' in result.keys():
+            return {"message": result["error"]}, 400
+        elif 'status' in result.keys():
+            return {"message": result["status"]}, 200
