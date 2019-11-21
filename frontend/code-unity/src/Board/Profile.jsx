@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { userService } from '@/_services';
+import { userService, authenticationService } from '@/_services';
 import '@/Style';
 import { SkillBox, AvatarPicker} from '@/WebComponents';
 
@@ -13,6 +13,8 @@ class Profile extends React.Component {
         this.state = {
             "_id": "",
             name: "",
+            username: "",
+            avatar: "",
             email: "",
             visibility: "",
             description: "",
@@ -30,6 +32,13 @@ class Profile extends React.Component {
     }
     componentDidMount() {
         console.log("========componentWillReceiveProps")
+        userService.getUserAccountDetails().then(data => this.setState(
+            { 
+                username: data.username,
+                avatar: data.avatar
+            }
+        )
+        );
         this.setState({ edit_status_visibility: false, isLoading: true})
         userService.getProfile().then(data => this.setState(
             { 
@@ -181,7 +190,11 @@ class Profile extends React.Component {
                                 <div className="m-4">
                                     <div className="row">
                                         <div className="col-md-6 avator-container">
-                                            <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
+                                            {this.state.avatar ?
+                                                <img src={this.state.avatar} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
+                                                :
+                                                <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
+                                            }
                                             <button className="btn"
                                                     data-toggle="modal" 
                                                     data-target="#avatarPicker"
@@ -314,7 +327,7 @@ class Profile extends React.Component {
                                 </form>
                             </div>
                         </div>
-                        <AvatarPicker _id="avatarPicker"/>
+                        <AvatarPicker _id="avatarPicker" avatar={this.state.avatar}/>
                     </div>
                 }
             </div>

@@ -23,9 +23,13 @@
   height:50px;
 }
 .group-card-box {
+  height:auto;
 }
 .group-card-box-title {
   color:black;
+  /*text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;*/
 }
 .group-card-box a{
   text-decoration: none!important;
