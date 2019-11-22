@@ -310,7 +310,7 @@ Expected Output:
 
 ## <u>Other User Profiles</u>
 
-### `api/user/profile`
+### `api/user/<string:uid>/profile`
 
 #### GET Request
 Login required. Returns a profile for the user specified. Will return reduced information if the profile specified is marked as private.
