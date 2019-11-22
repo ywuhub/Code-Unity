@@ -86,13 +86,13 @@ class GroupPage extends React.Component {
             }
         }
         let favourited = false;
-        console.log(this.state.favourites)
         for (var f in this.state.favourites) {
             if (this.state.favourites[f].project_id == this.state.details.project_id) {
                 favourited = true;
                 break;
             }
         }
+        const group_full = (this.state.details.cur_people === this.state.details.max_people);
         return (
             <div className="container-fluid">
                 {this.state.submitted && <div><br></br><div className="alert alert-success" role="alert">
@@ -115,7 +115,7 @@ class GroupPage extends React.Component {
                                                 <i className="far fa-star fav-icon fill"></i>
                                             </i>}
                                             {applied && <button type="button" className="btn btn-sm btn-outline-secondary">Join Request Pending</button>}
-                                            {(!this.state.submitted && !is_member && !applied) && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
+                                            {(!this.state.submitted && !is_member && !applied && !group_full) && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
                                         </div>
                                     </div>
                                 </div>

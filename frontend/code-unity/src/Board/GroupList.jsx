@@ -264,6 +264,7 @@ class GroupList extends React.Component {
    */
   render() {
     let post_key = 0;
+    console.log(this.state.posts);
     return (
       <div id="page-start">
 
