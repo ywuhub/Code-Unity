@@ -3,7 +3,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 
 import { userService, authenticationService } from '@/_services';
 import { Dashboard, GroupList, GroupChat, Profile,
-         MyGroup, GroupPage, JoinRequests, SettingPage } from '@/Board';
+         MyGroup, GroupPage, JoinRequests, SettingPage, Favourites } from '@/Board';
 import { CreateGroup } from '@/CreateGroup';
 import { OthersProfile } from '@/UserSearch';
 import { Inbox } from '@/Inbox';
@@ -77,10 +77,9 @@ class HomePage extends React.Component {
                         </a>
                       </li>
                       <li className="nav-item">
-                        <a className="nav-link" href="#">
+                        <a className="nav-link" href="/favourites">
                           <span data-feather="file"></span>
                           Favourites
-                          <span className="badge badge-pill bg-light align-text-bottom">this.favourite.count</span>
                         </a>
                       </li>
                       <li className="nav-item">
@@ -141,6 +140,7 @@ class HomePage extends React.Component {
                 <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <Switch>
                     <Route path="/grouplist" component={GroupList} />
+                    <Route path="/favourites" component={Favourites} />
                     <Route exact path="/" render={() => (
                         <Dashboard _id={this.state.currentUserId}/>
                       )} />

@@ -88,7 +88,7 @@ class GroupPage extends React.Component {
         let favourited = false;
         console.log(this.state.favourites)
         for (var f in this.state.favourites) {
-            if (this.state.favourites[f]._id == this.state.details.project_id) {
+            if (this.state.favourites[f].project_id == this.state.details.project_id) {
                 favourited = true;
                 break;
             }
@@ -106,11 +106,11 @@ class GroupPage extends React.Component {
                                     <h4 className="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
-                                            {(!favourited) && <i title="Favourite" onClick={(name) => { this.addFav() }} className="star">
+                                            {(!favourited) && <i title="Favourite" onClick={() => { this.addFav() }} className="star">
                                                 <i className="far fa-star fav-icon hollow"></i>
                                                 <i className="fas fa-star fav-icon fill"></i>
                                             </i>}
-                                            {(favourited) && <i title="Unfavourite" onClick={(name) => { this.removeFav() }} className="star">
+                                            {(favourited) && <i title="Unfavourite" onClick={() => { this.removeFav() }} className="star">
                                                 <i className="fas fa-star fav-icon hollow"></i>
                                                 <i className="far fa-star fav-icon fill"></i>
                                             </i>}

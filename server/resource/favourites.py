@@ -92,7 +92,7 @@ class FavouriteProjects(Resource):
                             # ret details
                             ret_members = [str(member) for member in doc["members"]]
                             ret_project = {
-                                "_id": str(doc["_id"]),
+                                "project_id": str(doc["_id"]),
                                 "title": doc["title"],
                                 "leader": str(doc["leader"]),
                                 "max_people": doc["max_people"],
