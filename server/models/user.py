@@ -4,6 +4,7 @@ from bson import ObjectId
 from flask_restful import fields
 from pymongo.database import Database
 
+
 from server.exceptions import (
     AlreadyMemberOf,
     DocumentNotFound,
@@ -324,7 +325,8 @@ class User:
         project = projects.find_one({"_id": project_id})
         if project is None:
             raise ProjectNotFound()
-        if project["leader"] != self._id:
+
+        if project["leader"] != self._id and user_id != self._id:
             raise PermissionError()
 
         invitations = self.db.get_collection("invitations")
@@ -335,6 +337,12 @@ class User:
         # If the delete_one operation didn't delete anything, the invitation
         # didn't exist in the first place.
         if n_deleted != 1:
+            raise DocumentNotFound()
+
+    def reject_invitation(self, project_id: ObjectId):
+        invitations = self.db.get_collection("invitations")
+        result = invitations.delete_one({"project_id": project_id, "user_id": self._id})
+        if result.deleted_count == 0:
             raise DocumentNotFound()
 
     def get_outgoing_invitations(self):

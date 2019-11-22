@@ -6,3 +6,4 @@ export * from './UserSearch.css';
 export * from './GroupList.css';
 export * from './GroupEditPage.css';
 export * from './SettingPage.css';
+export * from './GroupPage.css';

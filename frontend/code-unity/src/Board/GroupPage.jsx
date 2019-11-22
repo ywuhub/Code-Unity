@@ -4,7 +4,7 @@ import { Form } from 'formik';
 import '@/Style';
 import { SkillBox } from '@/WebComponents';
 import { userService, authenticationService } from '@/_services';
-import { projectService } from '../_services';
+import { projectService, favouriteService } from '../_services';
 
 class GroupPage extends React.Component {
     constructor(props) {
@@ -15,6 +15,7 @@ class GroupPage extends React.Component {
             details: {},
             description: '',
             requests: {},
+            favourites: {},
             submitted: false,
             isLoading: true
         }
@@ -36,6 +37,12 @@ class GroupPage extends React.Component {
                 requests: requests
             })
         })
+
+        favouriteService.get_favourite(authenticationService.currentUserValue.uid).then(favs => {
+            this.setState({
+                favourites: favs.favourite_projects
+            })
+        })
     }
 
     handleChange(event) {
@@ -45,6 +52,20 @@ class GroupPage extends React.Component {
     handleSubmit() {
         projectService.join_group(this.state._id, this.state.description);
         this.setState({ submitted: true });
+    }
+
+    addFav() {
+        favouriteService.add_favourite(authenticationService.currentUserValue.uid, this.state._id).then(() => {
+            window.alert("Added to favourites!");
+            window.location.reload();
+        });
+    }
+
+    removeFav() {
+        favouriteService.remove_favourite(authenticationService.currentUserValue.uid, this.state._id).then(() => {
+            window.alert("Removed from favourites!");
+            window.location.reload();
+        });
     }
 
     render() {
@@ -64,7 +85,14 @@ class GroupPage extends React.Component {
                 break;
             }
         }
-        console.log(this.state.requests);
+        let favourited = false;
+        console.log(this.state.favourites)
+        for (var f in this.state.favourites) {
+            if (this.state.favourites[f]._id == this.state.details.project_id) {
+                favourited = true;
+                break;
+            }
+        }
         return (
             <div className="container-fluid">
                 {this.state.submitted && <div><br></br><div className="alert alert-success" role="alert">
@@ -78,6 +106,14 @@ class GroupPage extends React.Component {
                                     <h4 className="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
+                                            {(!favourited) && <i title="Favourite" onClick={(name) => { this.addFav() }} className="star">
+                                                <i className="far fa-star fav-icon hollow"></i>
+                                                <i className="fas fa-star fav-icon fill"></i>
+                                            </i>}
+                                            {(favourited) && <i title="Unfavourite" onClick={(name) => { this.removeFav() }} className="star">
+                                                <i className="fas fa-star fav-icon hollow"></i>
+                                                <i className="far fa-star fav-icon fill"></i>
+                                            </i>}
                                             {applied && <button type="button" className="btn btn-sm btn-outline-secondary">Join Request Pending</button>}
                                             {(!this.state.submitted && !is_member && !applied) && <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#joinForm">Join Group</button>}
                                         </div>

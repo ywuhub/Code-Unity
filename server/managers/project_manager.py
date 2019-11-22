@@ -1,5 +1,13 @@
 from copy import deepcopy
-from typing import List
+from server.exceptions import (
+    ProjectNotFound,
+    UserNotFound,
+    UserNotInvolved,
+    NotProjectLeader,
+    AlreadyMemberOf,
+    ProjectFull,
+    CannotKickYourself,
+)
 
 from bson import ObjectId
 from flask import Flask
@@ -230,6 +238,22 @@ class ProjectManager:
         """
         self.invitations.delete_one({"user_id": user_id, "project_id": project_id})
         self.requests.delete_one({"user_id": user_id, "project_id": project_id})
+
+    def remove_project_application(
+        self, user: ObjectId, project_id: ObjectId, target_user: ObjectId
+    ):
+        # Check if the user is owner of the project
+        project = self.projects.find_one({"_id": project_id})
+        if project is None:
+            raise ProjectNotFound
+        if project["leader"] != user:
+            raise NotProjectLeader
+
+        result = self.requests.delete_one(
+            {"project_id": project_id, "user_id": target_user}
+        )
+        if result.deleted_count == 0:
+            raise ProjectNotFound
 
     def is_request_exist(self, user_id: ObjectId, project_id: ObjectId) -> bool:
         n = self.requests.count_documents(
