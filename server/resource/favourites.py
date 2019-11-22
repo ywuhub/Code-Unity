@@ -255,4 +255,4 @@ class FavouriteProjects(Resource):
                     updated_list = {"favourite_projects": new_favourite_list}
                     self.favourites.update({"user_id": user_id}, {"$set": updated_list}, upsert=False)
             
-            return {"status": "project has be removed from favourites successfully"}, 200
+            return {"status": "project has been removed from favourites successfully"}, 200

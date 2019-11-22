@@ -134,7 +134,7 @@ class ProjectResource(Resource):
             # check if new max_people is greater than the current amount of members
             if 'max_people' in project_details.keys():
                 if (project_details['max_people'] < project["cur_people"]):
-                    return {"message": "new maximum number of members value is less than current amount of members"}
+                    return {"message": "new maximum number of members value is less than current amount of members"}, 400
 
             # update details in project mamanger
             self.project_manager.update_project(project, project_details)

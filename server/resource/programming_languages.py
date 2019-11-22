@@ -10,7 +10,7 @@ class ProgrammingLanguages(Resource):
 
     def get(self):
         """
-        Retruns a list of all valid programming languages.
+        Returns a list of all valid programming languages.
 
         Example:
         ```
