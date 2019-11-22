@@ -1219,3 +1219,43 @@ POST ->
     "status": "success"
 }
 ```
+
+## <u>Fetch List Of User Invitations</u>
+
+### `api/user/invite/list`
+
+#### GET Request
+Allows a user to list the invites that they've sent out or the invites
+that other people have sent them if the incoming parameter is set to true.
+
+Expected Input:
+```
+NONE
+```
+
+Expected Output:
+```
+# Gets invitations that the user has sent out
+GET ->
+(200 OK) <-
+[
+    {
+        "project_id": string,
+        "project_title": string,
+        "user_id": string,
+        "user_name": "testuser"  # username of the user invited
+    }
+]
+
+# Gets invitations that the user has received from others
+GET ?incoming=true ->
+(200 OK) <- 
+[
+    {
+        "project_id": string,
+        "project_title": string,
+        "user_id": string,
+        "user_name": "testuser"  # username of the user who invited the current user
+    }
+]
+```
