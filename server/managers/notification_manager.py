@@ -12,7 +12,10 @@ class NotificationManager:
         self.db = db.get_collection("notifications")
 
     def list_notifications(self, user: ObjectId):
-        self.db.find({"user": user})
+        ret = []
+        for doc in self.db.find({"user": user}, projection={"user": 0}):
+            ret.append(doc)
+        return ret
 
     def dismiss_notification(self, user: ObjectId, nid: ObjectId):
         res = self.db.delete_one({"_id": nid, "user": user})

@@ -432,6 +432,7 @@ class User:
             project_manager.delete_project(project_id)
 
         try:
+            old_members = list(project["members"])
             project["members"].remove(self._id)
         except ValueError:
             raise UserNotFound()
@@ -442,7 +443,7 @@ class User:
 
         doc = self.accounts.find_one({"_id": self._id})
         self.nm.notify_user_left_project(
-            self._id, doc["username"], project["title"], project_id, project["members"]
+            self._id, doc["username"], project["title"], project_id, old_members
         )
 
     def __str__(self):

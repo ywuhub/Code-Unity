@@ -1,5 +1,8 @@
+import json
 from typing import cast
+from flask import make_response
 
+from bson import ObjectId, json_util
 from bson.errors import InvalidId
 from flask_jwt_extended import current_user, jwt_required
 from flask_restful import Resource
@@ -8,7 +11,6 @@ from flask_restful.reqparse import RequestParser
 from server.exceptions import DocumentNotFound
 from server.managers.notification_manager import NotificationManager
 from server.models.user import User
-from server.utils.json import ObjectId
 
 
 class NotificationResource(Resource):
@@ -21,7 +23,15 @@ class NotificationResource(Resource):
         Gets a list of all notifications for the current logged in user.
         """
         cur_user = cast(User, current_user)
-        self.nm.list_notifications(cur_user._id)
+
+        # Manually creating a response to bypass flask-restful
+        res = make_response(
+            json.dumps(
+                self.nm.list_notifications(cur_user._id), default=json_util.default
+            )
+        )
+        res.headers["content-type"] = "application/json"
+        return res
 
     @jwt_required
     def delete(self):
