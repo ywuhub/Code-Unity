@@ -56,14 +56,12 @@ class GroupPage extends React.Component {
 
     addFav() {
         favouriteService.add_favourite(authenticationService.currentUserValue.uid, this.state._id).then(() => {
-            window.alert("Added to favourites!");
             window.location.reload();
         });
     }
 
     removeFav() {
         favouriteService.remove_favourite(authenticationService.currentUserValue.uid, this.state._id).then(() => {
-            window.alert("Removed from favourites!");
             window.location.reload();
         });
     }
@@ -106,11 +104,11 @@ class GroupPage extends React.Component {
                                     <h4 className="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
-                                            {(!favourited) && <i title="Favourite" onClick={() => { this.addFav() }} className="star">
+                                            {(!favourited) && <i title="Favourite" data-toggle="modal" data-target="#fav" className="star">
                                                 <i className="far fa-star fav-icon hollow"></i>
                                                 <i className="fas fa-star fav-icon fill"></i>
                                             </i>}
-                                            {(favourited) && <i title="Unfavourite" onClick={() => { this.removeFav() }} className="star">
+                                            {(favourited) && <i title="Unfavourite" data-toggle="modal" data-target="#unFav" className="star">
                                                 <i className="fas fa-star fav-icon hollow"></i>
                                                 <i className="far fa-star fav-icon fill"></i>
                                             </i>}
@@ -203,7 +201,29 @@ class GroupPage extends React.Component {
                             </div>
                         </div>
                     </div>
-                </div> {/* Create group modal end */}
+                </div> 
+                {/* Favourite alert */}
+                <div className="modal fade" id="fav" tabIndex="-1" role="dialog" aria-labelledby="favTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <label htmlFor="title" className="pb-2 mb-0">Added to your favourites!</label><br></br>
+                                <button type="button" onClick={() => { this.addFav() }} className="btn btn-dark btn-sm float-right" data-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* Favourite alert */}
+                <div className="modal fade" id="unFav" tabIndex="-1" role="dialog" aria-labelledby="unFavTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <label htmlFor="title" className="pb-2 mb-0">Removed from your favourites!</label><br></br>
+                                <button type="button" onClick={() => { this.removeFav() }} className="btn btn-dark btn-sm float-right" data-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
