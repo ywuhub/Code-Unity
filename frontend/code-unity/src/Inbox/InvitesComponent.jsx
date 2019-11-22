@@ -23,6 +23,10 @@ class InviteSentComponent extends React.Component {
             .catch(err => { console.log(err); })
     }
 
+    componentWillUnmount() {
+        this.isMounted_ = false;
+    }
+
     removeInvitation(project_id, user_id, index, e) {
         let sent = this.state.initialSent;
         sent.splice(index, 1);
@@ -49,7 +53,6 @@ class InviteSentComponent extends React.Component {
 
     filter(e) {
         const input = e.target.value.toLowerCase();
-
         if (/^(\s+|)$/.test(input)) {
             this.setState({ sent: this.state.initialSent });
 
@@ -119,6 +122,10 @@ class InviteReceivedComponent extends React.Component {
             .catch(err => { console.log(err); });
     }
 
+    componentWillUnmount() {
+        this.isMounted_ = false;
+    }
+
     acceptInvitation(project_id, index, e) {
         let received = this.state.initialReceived;
         received.splice(index, 1);
@@ -161,7 +168,7 @@ class InviteReceivedComponent extends React.Component {
         const input = e.target.value.toLowerCase();
 
         if (/^(\s+|)$/.test(input)) {
-            this.setState({ sent: this.state.initialReceived });
+            this.setState({ received: this.state.initialReceived });
 
         } else {
             let invitations = this.state.initialReceived.filter((invitation) => {

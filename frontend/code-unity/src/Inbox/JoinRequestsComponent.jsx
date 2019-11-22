@@ -23,6 +23,10 @@ class JoinRequestsSent extends React.Component {
             .catch(err => { console.log(err); })
     }
 
+    componentWillUnmount() {
+        this.isMounted_ = false;
+    }
+
     removeJoinRequestSent(project_id, index, e) {
         let sent = this.state.initialSent;
         sent.splice(index, 1);
@@ -137,9 +141,8 @@ class JoinRequestsReceived extends React.Component {
     }
 
     declineJoinRequest(project_id, user_id, index, e) {
-        console.log("TBD");
         let received = this.state.received;
-        received.splice(e.target.value, 1);
+        received.splice(index, 1);
         inboxService.decline_join_request(project_id, user_id)
             .then(json => {
                 if (json.status === "success") {

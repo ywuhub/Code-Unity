@@ -2,6 +2,7 @@ import React from 'react';
 
 import { InviteSentComponent, InviteReceivedComponent } from './InvitesComponent';
 import { JoinRequestsSent, JoinRequestsReceived } from './JoinRequestsComponent';
+import {  NotificationComponent } from './NotificationComponent';
 
 class Inbox extends React.Component {
     constructor(props) {
@@ -15,7 +16,10 @@ class Inbox extends React.Component {
                     <h4 className="border-bottom pb-2">Inbox</h4>
                     <ul className="nav nav-tabs nav-justified mt-3" role="tablist">
                         <li className="nav-item">
-                            <a className="nav-link active" data-toggle="tab" href="#invites-sent">Invites Sent</a>
+                            <a className="nav-link active" data-toggle="tab" href="#group-notifications">Group Notifications</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" data-toggle="tab" href="#invites-sent">Invites Sent</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" data-toggle="tab" href="#invites-received">Invites Received</a>
@@ -26,14 +30,14 @@ class Inbox extends React.Component {
                         <li className="nav-item">
                             <a className="nav-link" data-toggle="tab" href="#requests-received">Join Requests Received</a>
                         </li>
-                        <li className="nav-item">
-                            <a className="nav-link" data-toggle="tab" href="#group-notifications">Group Notifications</a>
-                        </li>
                     </ul>
                 </div>
                 <div className="p-3 bg-white rounded shadow-sm">
                     <div className="tab-content">
-                        <div id="invites-sent" className="container-fluid tab-pane active"><br />
+                        <div id="group-notifications" className="container-fluid tab-pane active"><br />
+                            <NotificationComponent />
+                        </div>
+                        <div id="invites-sent" className="container-fluid tab-pane fade"><br />
                             <InviteSentComponent />
                         </div>
                         <div id="invites-received" className="container-fluid tab-pane fade"><br />
@@ -44,8 +48,6 @@ class Inbox extends React.Component {
                         </div>
                         <div id="requests-received" className="container-fluid tab-pane fade"><br />
                             <JoinRequestsReceived />
-                        </div>
-                        <div id="group-notifications" className="container-fluid tab-pane fade"><br />
                         </div>
                     </div>
                 </div>
