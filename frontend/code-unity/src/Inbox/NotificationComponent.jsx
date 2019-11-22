@@ -1,6 +1,6 @@
 import React from 'react';
 import { inboxService } from '@/_services';
-import { Route, Link, Switch } from 'react-router-dom';
+import { JoinRequest, Invite, UserJoin, UserLeave, UserKicked, ProjectDeleted } from './NotificationDetails';
 
 class NotificationComponent extends React.Component {
     constructor(props) {
@@ -28,12 +28,12 @@ class NotificationComponent extends React.Component {
         this.isMounted_ = false;
     }
 
-    // change  just do each key hard code
-    containsFilter(invitation, filter) {
+    containsFilter(notification, filter) {
         let contains = false;
-        for (let key of Object.keys(invitation)) {
-            if (typeof invitation[key] === 'string') contains = (invitation[key].toLowerCase().indexOf(filter) !== -1);
-            else contains = (Array.from(invitation[key]).toString().toLowerCase().indexOf(filter) !== -1);
+        for (let key of Object.keys(notification)) {
+            if (typeof notification[key] === 'string') contains = (notification[key].toLowerCase().indexOf(filter) !== -1);
+            else if (notification[key].username) contains = (notification[key].username.toLowerCase().indexOf(filter) !== -1);
+            // else contains = (Array.from(notification[key]).toString().toLowerCase().indexOf(filter) !== -1);
             if (contains) break;
         }
         return contains;
@@ -47,10 +47,10 @@ class NotificationComponent extends React.Component {
             this.setState({ notifications: this.state.initialNotifications });
 
         } else {
-            let invitations = this.state.initialNotifications.filter((invitation) => {
-                return this.containsFilter(invitation, input);
+            let notifications = this.state.initialNotifications.filter((notification) => {
+                return this.containsFilter(notification, input);
             })
-            this.setState({ notifications: invitations });
+            this.setState({ notifications: notifications });
         }
     }
 
@@ -64,17 +64,27 @@ class NotificationComponent extends React.Component {
             });
     }
 
+    dismiss_all(e) {
+        inboxService.dismiss_all_notifications()
+            .then(json => {
+                if (this.isMounted_) this.setState({ initialNotifications: [], notifications: [] });
+            });
+    }
+
     render() {
         let key = 0;
         return (
             <div>
-                <div className="d-flex justify-content-center border-bottom">
+                <div className="d-flex justify-content-center ">
                     <div className="input-group bg-light border-bottom shadow-sm rounded-pill mb-4 w-75">
                         <input type="text" id="search-bar" className="form-control bg-transparent rounded-pill p-4 pr-5 border-0" placeholder="Search" onChange={this.filter.bind(this)}></input>
                         <div className="input-group-append">
                             <div className="input-group-text bg-transparent border-0 ml-n5"><b className="fa fa-search bg-transparent"></b></div>
-                        </div>
+                        </div> 
                     </div>
+                </div>
+                <div className="d-flex justify-content-end border-bottom">
+                    <button className="btn btn-sm btn-outline-secondary" onClick={this.dismiss_all.bind(this)}>Clear All Notifications</button>      
                 </div>
                 {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 mt-3"></div>) ||
                     this.state.notifications.map((notification, index) => {
@@ -96,131 +106,5 @@ class NotificationComponent extends React.Component {
         )
     }
 }
-
-function ProjectDeleted(props) {
-    const title = props.notification.project_title;
-    return (
-        <div className="d-flex justify-content-between w-100">
-            <div className="d-inline-flex">
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                <div className="flex-column">
-                    <div>Project <strong>{title}</strong> has been deleted</div>
-                    <div><span className="badge badge-primary p-2 mt-2">{props.notification.type}</span></div>
-                </div>
-            </div>
-            <button className="d-flex align-content-end btn" onClick={props.dismiss}><i className="fas fa-times"></i></button>
-        </div>
-    )
-}
-
-function UserKicked(props) {
-    const notification = props.notification;
-    const kicked_user = notification.kicked_user;
-    const title = notification.project_title;
-    const project_id = notification.project_id.$oid;
-    return (
-        <div className="d-flex justify-content-between w-100">
-            <div className="d-inline-flex">
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                <div className="flex-column">
-                    <div>
-                        <strong><Link to={{ pathname: "/profile-" + kicked_user.username, state: { _id: kicked_user.id.$oid, username: kicked_user.username } }} id={kicked_user.id.$oid} style={{ 'textDecoration': 'none' }}>{kicked_user.username}</Link></strong>
-                        &nbsp;has been kicked from project <strong><Link to={{ pathname: "/group-" + project_id, state: { _id: project_id } }} style={{ 'textDecoration': 'none' }}> {title} </Link></strong>
-                    </div>
-                    <div><span className="badge badge-primary p-2 mt-2">{notification.type}</span></div>
-                </div>
-            </div>
-            <button className="d-flex align-content-end btn" onClick={props.dismiss}><i className="fas fa-times"></i></button>
-        </div>
-    )
-}
-
-function UserLeave(props) {
-    const notification = props.notification;
-    const left_user = notification.left_user;
-    const title = notification.project_title;
-    const project_id = notification.project_id.$oid;
-    return (
-        <div className="d-flex justify-content-between w-100">
-            <div className="d-inline-flex">
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                <div className="flex-column">
-                    <div>
-                        <strong><Link to={{ pathname: "/profile-" + left_user.username, state: { _id: left_user.id.$oid, username: left_user.username } }} id={left_user.id.$oid} style={{ 'textDecoration': 'none' }}>{left_user.username}</Link></strong>
-                        &nbsp;has left project <strong><Link to={{ pathname: "/group-" + project_id, state: { _id: project_id } }} style={{ 'textDecoration': 'none' }}> {title} </Link></strong>
-                    </div>
-                    <div><span className="badge badge-primary p-2 mt-2">{notification.type}</span></div>
-                </div>
-            </div>
-            <button className="d-flex align-content-end btn" onClick={props.dismiss}><i className="fas fa-times"></i></button>
-        </div>
-    )
-}
-
-function UserJoin(props) {
-    const notification = props.notification;
-    const joined_user = notification.joined_user;
-    const title = notification.project_title;
-    const project_id = notification.project_id.$oid;
-    return (
-        <div className="d-flex justify-content-between w-100">
-            <div className="d-inline-flex">
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                <div className="flex-column">
-                    <div>
-                        <strong><Link to={{ pathname: "/profile-" + joined_user.username, state: { _id: joined_user.id.$oid, username: joined_user.username } }} id={joined_user.id.$oid} style={{ 'textDecoration': 'none' }}>{joined_user.username}</Link></strong>
-                        &nbsp;has joined project <strong><Link to={{ pathname: "/group-" + project_id, state: { _id: project_id } }} style={{ 'textDecoration': 'none' }}> {title} </Link></strong>
-                    </div>
-                    <div><span className="badge badge-primary p-2 mt-2">{notification.type}</span></div>
-                </div>
-            </div>
-            <button className="d-flex align-content-end btn" onClick={props.dismiss}><i className="fas fa-times"></i></button>
-        </div>
-    )
-}
-
-function JoinRequest(props) {
-    const notification = props.notification;
-    const requester = notification.requester;
-    const title = notification.project_title;
-    const project_id = notification.project_id.$oid;
-    return (
-        <div className="d-flex justify-content-between w-100">
-            <div className="d-inline-flex">
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                <div className="flex-column">
-                    <div>
-                        <strong><Link to={{ pathname: "/profile-" + requester.username, state: { _id: requester.id.$oid, username: requester.username } }} id={requester.id.$oid} style={{ 'textDecoration': 'none' }}>{requester.username}</Link></strong>
-                        &nbsp;has requested to join project <strong><Link to={{ pathname: "/group-" + project_id, state: { _id: project_id } }} style={{ 'textDecoration': 'none' }}> {title} </Link></strong>
-                    </div>
-                    <div><span className="badge badge-primary p-2 mt-2">{notification.type}</span></div>
-                </div>
-            </div>
-            <button className="d-flex align-content-end btn" onClick={props.dismiss}><i className="fas fa-times"></i></button>
-        </div>
-    )
-}
-
-function Invite(props) {
-    const notification = props.notification;
-    const title = notification.project_title;
-    const project_id = notification.project_id.$oid;
-    return (
-        <div className="d-flex justify-content-between w-100">
-            <div className="d-inline-flex">
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                <div className="flex-column">
-                    <div>
-                        You have been invited to project <strong><Link to={{ pathname: "/group-" + project_id, state: { _id: project_id } }} style={{ 'textDecoration': 'none' }}> {title} </Link></strong>
-                    </div>
-                    <div><span className="badge badge-primary p-2 mt-2">{notification.type}</span></div>
-                </div>
-            </div>
-            <button className="d-flex align-content-end btn" onClick={props.dismiss}><i className="fas fa-times"></i></button>
-        </div>
-    )
-}
-
-
 
 export { NotificationComponent };
