@@ -116,6 +116,8 @@ class MyGroup extends React.Component {
                                                         current_number={item.cur_people}
                                                         max_number={item.max_people}
                                                         description={item.description}
+                                                        leader={item.leader}
+                                                        members={item.members}
                                                         />
                                         </div>
                                         )

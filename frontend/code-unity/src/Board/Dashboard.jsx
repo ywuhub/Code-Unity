@@ -53,7 +53,9 @@ class Dashboard extends React.Component {
                                                 address={"/mygroup/"+item.project_id}
                                                 current_number={item.cur_people}
                                                 max_number={item.max_people}
-                                                description={item.description}/>
+                                                description={item.description}
+                                                leader={item.leader}
+                                                members={item.members}/>
                                 </div>
                             )
                         })

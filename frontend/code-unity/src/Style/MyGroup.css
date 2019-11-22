@@ -27,6 +27,7 @@
 }
 .group-card-box-title {
   color:black;
+  min-height:50px;
   /*text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;*/
@@ -60,6 +61,9 @@
 .group-card-row-text p{
   font-size: 13px;
   color: black;
+}
+.group-card-admin-icon{
+  font-size: 13px;
 }
 .group-page-member-setting p{
 	display: inline-flex;
