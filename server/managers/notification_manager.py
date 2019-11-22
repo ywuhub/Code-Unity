@@ -15,6 +15,7 @@ class NotificationManager:
         ret = []
         for doc in self.db.find({"user": user}, projection={"user": 0}):
             ret.append(doc)
+        ret.sort(reverse=True, key=lambda x: x["datetime"])
         return ret
 
     def dismiss_notification(self, user: ObjectId, nid: ObjectId):
