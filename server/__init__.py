@@ -20,7 +20,7 @@ notification_manager = NotificationManager(db)
 user_manager = UserManager(app, db, jwt, notification_manager)
 project_manager = ProjectManager(app, db, notification_manager)
 
-api = register_endpoints(app, db, user_manager, project_manager)
+api = register_endpoints(app, db, user_manager, project_manager, notification_manager)
 
 app.config.from_mapping(
     SECRET_KEY=b"\xb6\x07\x03a[(\xaaj\x13'\xc8X\xd5%}\x9f",
