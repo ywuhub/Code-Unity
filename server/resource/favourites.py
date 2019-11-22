@@ -90,7 +90,12 @@ class FavouriteProjects(Resource):
                             update_project_details.append(deepcopy(doc))
 
                             # ret details
-                            ret_members = [str(member) for member in doc["members"]]
+                            ret_members = []
+                            for member_id in doc["members"]:
+                                mem = self.users.find_one({"_id": member_id})
+                                mem_dict = {"_id": str(member_id), "username": mem["username"]}
+                                ret_members.append(mem_dict)
+
                             ret_project = {
                                 "_id": str(doc["_id"]),
                                 "title": doc["title"],
