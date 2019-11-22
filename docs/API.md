@@ -935,7 +935,7 @@ requests to the projects that they own.
 
 Expected Input:
 ```
-NONE
+None
 ```
 
 Expected Output:
@@ -1230,7 +1230,7 @@ that other people have sent them if the incoming parameter is set to true.
 
 Expected Input:
 ```
-NONE
+None
 ```
 
 Expected Output:
