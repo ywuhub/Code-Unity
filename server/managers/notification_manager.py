@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from pymongo.database import Database
@@ -30,6 +31,7 @@ class NotificationManager:
         self.db.insert_one(
             {
                 "user": user,
+                "datetime": datetime.now(),
                 "type": "invite",
                 "project_title": project_title,
                 "project_id": project_id,
@@ -50,6 +52,7 @@ class NotificationManager:
         self.db.insert_one(
             {
                 "user": leader,
+                "datetime": datetime.now(),
                 "type": "request",
                 "project_title": project_title,
                 "project_id": project_id,
@@ -68,10 +71,13 @@ class NotificationManager:
         """
         user joined project
         """
+        cur_time = datetime.now()
+
         self.db.insert_many(
             [
                 {
                     "user": member,
+                    "datetime": cur_time,
                     "type": "join",
                     "project_title": project_title,
                     "project_id": project_id,
@@ -92,10 +98,13 @@ class NotificationManager:
         """
         user left project
         """
+        cur_time = datetime.now()
+
         self.db.insert_many(
             [
                 {
                     "user": member,
+                    "datetime": cur_time,
                     "type": "leave",
                     "project_title": project_title,
                     "project_id": project_id,
@@ -116,10 +125,13 @@ class NotificationManager:
         """
         user kicked from project
         """
+        cur_time = datetime.now()
+
         self.db.insert_many(
             [
                 {
                     "user": member,
+                    "datetime": cur_time,
                     "type": "kick",
                     "project_title": project_title,
                     "project_id": project_id,
@@ -133,10 +145,13 @@ class NotificationManager:
         """
         project deleted
         """
+        cur_time = datetime.now()
+
         self.db.insert_many(
             [
                 {
                     "user": member,
+                    "datetime": cur_time,
                     "type": "project_delete",
                     "project_title": project_title,
                 }
