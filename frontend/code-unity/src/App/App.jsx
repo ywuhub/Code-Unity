@@ -57,7 +57,7 @@ class App extends React.Component {
                                         <div className="dropdown-menu dropdown-menu-right" aria-labelledby="user">
                                             <a className="dropdown-item" href="/profile">Profile</a>
                                             <a className="dropdown-item" href="/inbox">Messages</a>
-                                            <a className="dropdown-item" href="#">My Favourites</a>
+                                            <Link to={{ pathname: "/favourites" }} className="dropdown-item" style={{ textDecoration: 'none' }}> My Favourites </Link>
 
                                             <div className="dropdown-divider"></div>
                                             <a className="dropdown-item" href="#">Applications</a>

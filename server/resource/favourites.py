@@ -97,7 +97,7 @@ class FavouriteProjects(Resource):
                                 ret_members.append(mem_dict)
 
                             ret_project = {
-                                "_id": str(doc["_id"]),
+                                "project_id": str(doc["_id"]),
                                 "title": doc["title"],
                                 "leader": str(doc["leader"]),
                                 "max_people": doc["max_people"],
