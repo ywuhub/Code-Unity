@@ -665,6 +665,61 @@ Expected Output:
 
 ## <u>Joining A Project</u>
 
+### `api/project/list`
+
+#### GET Request
+Returns a list of the current user's involved projects or
+every project's title and their project_id.
+
+Expected Input:
+```
+None
+```
+
+Expected Output:
+```
+GET ->
+(200 OK) <-
+    [
+        {
+            "project_id": "5dac029b8b819e584ff36f8d",
+            "title": "Code Unity",
+            "leader": {
+                "_id": "5dabfe830ddd57902efd2fa3",
+                "username": "john"
+            },
+            "cur_people": 1,
+            "members": [
+                {
+                    "_id": "5daa6efd8805c462ef0d16e1",
+                    "username": "testuser"
+                },
+                {
+                    "_id": "5dabfe830ddd57902efd2fa3",
+                    "username": "john"
+                }
+            ],
+            "description": "Nice.",
+            "course": "4920",
+            "tags": [
+                "wam booster",
+                "free hd",
+            ],
+            "languages": [
+                "chinese",
+                "english"
+            ],
+            "technologies": [
+                "python",
+                "mongoDB",
+                "react"
+            ]
+        }
+    ]
+```
+
+## <u>Joining A Project</u>
+
 ### `api/project/<string:project_id>/join`
 
 #### POST Request
