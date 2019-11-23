@@ -5,7 +5,7 @@ import { history } from '@/_helpers';
 import { authenticationService } from '@/_services';
 import { PrivateRoute } from '@/_components';
 import { HomePage } from '@/HomePage';
-import { LoginPage, Register, ForgotPassword } from '@/LoginPage';
+import { LoginPage, Register, ForgotPassword,ResetPasswordPage } from '@/LoginPage';
 import { UserSearch } from '@/UserSearch';
 import '@/Style';
 
@@ -77,6 +77,9 @@ class App extends React.Component {
                             <Route exact path="/login" component={LoginPage} />
                             <Route exact path="/register" component={Register} />
                             <Route exact path="/forgotPassword" component={ForgotPassword} />
+                            <Route path="/reset/:token" render={(props) => (
+                                <ResetPasswordPage {...props} />)
+                            } />
                             <PrivateRoute path="/" component={HomePage} />
                         </Switch>
 

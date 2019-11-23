@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import config from 'config';
-import { authHeader, handleResponse, handleRegisterResponse } from '@/_helpers';
+import { authHeader, handleResponse, handleRegisterResponse, GetReponseCode } from '@/_helpers';
 
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
 
@@ -9,6 +9,7 @@ export const authenticationService = {
     register,
     logout,
     forgotPassword,
+    resetPassword,
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue () { return currentUserSubject.value }
 };
@@ -60,3 +61,14 @@ function logout() {
     localStorage.removeItem('currentUser');
     currentUserSubject.next(null);
 }
+
+function resetPassword(token, password) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+            "password": password})
+    };
+    return fetch(`${config.apiUrl}/api/reset_password/${token}`, requestOptions).then(GetReponseCode);
+};
+
