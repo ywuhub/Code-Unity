@@ -42,7 +42,7 @@ class ForgotPassword(Resource):
         if doc:
             # generate token with 24 hour expiry for resetting password
             token = generate_token(str(doc['_id']))
-            token_url = "http://127.0.0.1:4000/reset/" + token
+            token_url = "http://127.0.0.1:8080/reset/" + token
 
             # create message to send 
             content = r"""
