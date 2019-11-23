@@ -69,6 +69,12 @@ class ResetPasswordPage extends React.Component {
                                         {this.state.PasswordNotificationContent}
                                     </div>
                                   }
+                                  {
+                                    this.state.updateSucceed&&
+                                    <div className="alert alert-success mt-2 " role="alert">
+                                        {this.state.updateContent}
+                                    </div>
+                                  }
                                   <div className="mb-3">
                                       <label htmlFor="exampleInputPassword1">Password</label>
                                       <input type="password" className="form-control" id="exampleInputPassword1" placeholder="Enter new password..." ref="password_first"/>
