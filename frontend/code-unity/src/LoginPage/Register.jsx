@@ -43,6 +43,7 @@ class Register extends React.Component {
                                             QBinitChatUser(user.uid, username);
 
                                             const { from } = this.props.location.state || { from: { pathname: "/" } };
+                                            this.props.history.push('/');
                                         },
                                         error => {
                                             setSubmitting(false);
