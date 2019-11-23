@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { authenticationService } from '@/_services';
+import { QBinitChatUser } from '@/QuickBlox';
 
 class Register extends React.Component {
     constructor(props) {
@@ -36,6 +37,8 @@ class Register extends React.Component {
                                 authenticationService.register(email, username, password)
                                     .then(
                                         user => {
+                                            QBinitChatUser(user.uid, username);
+
                                             const { from } = this.props.location.state || { from: { pathname: "/" } };
                                             this.props.history.push(from);
                                         },

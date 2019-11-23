@@ -22,6 +22,7 @@ class Profile extends React.Component {
             programming_languages: [],
             languages:[],
             github: "",
+            avatar: 'https://api.adorable.io/avatars/200/avatar.png',
             edit_status:"",
             edit_status_class:"",
             edit_status_visibility: false,
@@ -51,6 +52,7 @@ class Profile extends React.Component {
                 programming_languages: data.programming_languages,
                 languages: data.languages,
                 github: data.github,
+                avatar: (data.avatar || 'https://api.adorable.io/avatars/200/avatar.png' ),
                 isLoading: false
             }
         ));
@@ -190,11 +192,7 @@ class Profile extends React.Component {
                                 <div className="m-4">
                                     <div className="row">
                                         <div className="col-md-6 avator-container">
-                                            {this.state.avatar ?
-                                                <img src={this.state.avatar} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
-                                                :
-                                                <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
-                                            }
+                                            <img src={(this.state.avatar || "https://api.adorable.io/avatars/200/avatar.png")} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
                                             <button className="btn"
                                                     data-toggle="modal" 
                                                     data-target="#avatarPicker"
