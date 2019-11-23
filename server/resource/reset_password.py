@@ -18,6 +18,7 @@ def verify_token(user_token: str):
     # i.e. {'_id': user_id}.tokenkey
     # decoding gives: payload = {'_id': user_id} [tokenkey removed]
     try:
+        user_token = user_token.replace("*", ".")
         payload = s.loads(user_token)
     except:
         return {"message" : "Reset Password Token has expired or is invalid. Please resend reset password request again!"}

@@ -42,6 +42,7 @@ class ForgotPassword(Resource):
         if doc:
             # generate token with 24 hour expiry for resetting password
             token = generate_token(str(doc['_id']))
+            token = token.replace(".", "*")
             token_url = "http://127.0.0.1:8080/reset/" + token
 
             # create message to send 
@@ -52,7 +53,7 @@ class ForgotPassword(Resource):
                             To access your account, you will now need to follow the instructions below:
                         </p>
                         <ol>
-                            <li>Click on the following link to go to the password reset page. Link: {user_token}</li>
+                            <li>Click on the following link to go to the password reset page. Link: <a href={user_token}>Reset Password</a></li>
                             <li>NOTE: The link above will expire in 24 hours from now so make sure you reset within the next 24 hours.</li>
                             <li>On the page fill in your new password and click on 'Save Changes'.</li>
                             <li>Wait 5 seconds for you to be redirected back to the login page to use new password.</li>
