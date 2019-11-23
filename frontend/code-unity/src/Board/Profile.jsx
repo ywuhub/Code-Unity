@@ -41,7 +41,7 @@ class Profile extends React.Component {
         )
         );
         this.setState({ edit_status_visibility: false, isLoading: true})
-        userService.getProfile().then(data => this.setState(
+        userService.getProfile().then(data => {this.setState(
             { 
                 "_id": data._id,
                 name: data.name,
@@ -52,10 +52,9 @@ class Profile extends React.Component {
                 programming_languages: data.programming_languages,
                 languages: data.languages,
                 github: data.github,
-                avatar: (data.avatar || 'https://api.adorable.io/avatars/200/avatar.png' ),
                 isLoading: false
             }
-        ));
+        )});
 
     }
 

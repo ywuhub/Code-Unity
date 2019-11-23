@@ -48,8 +48,8 @@ class Dashboard extends React.Component {
                     {(this.state.isloading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) ||
                         (this.state.projectData || []).map((item) => {
                             return(
-                                <div key={key++} className="col-3">
-                                    <GroupCard title={item.title}
+                                <div key={item.project_id} className="col-3">
+                                    <GroupCard  title={item.title}
                                                 address={"/mygroup/"+item.project_id}
                                                 current_number={item.cur_people}
                                                 max_number={item.max_people}
