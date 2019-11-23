@@ -26,7 +26,6 @@ class GroupCard extends React.Component {
         );
     }
     render() {
-        var avatar_key = this.props.keyValue+1;
         return(
             <div>
                 <a href={this.props.address} className="text-decoration-none">
@@ -48,10 +47,10 @@ class GroupCard extends React.Component {
                         </div>
                         <div className="row group-card-row-text avatar-div-setting">
                             <span className="ml-4"> </span>
-                            {this.state.userData&&
+                            {this.state.userData &&
                                 (this.state.userData || []).map((item) => {
                                     return(
-                                        <div key={avatar_key++}>
+                                        <div key={item._id}>
                                             <img src={item.avatar} className="avatar rounded-circle"/>
                                         </div>
                                         )

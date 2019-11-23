@@ -68,7 +68,7 @@ class ProjectList(Resource):
 class SearchProjects(Resource):
     """
     Fetches the projects according to the search filter
-    Parameter:
+    Parameters:
     - title: string (title of the group project)
     - courses: list (list of courses)
     - languages: list (languages spoken by group)

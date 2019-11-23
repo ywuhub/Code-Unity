@@ -5,7 +5,6 @@ import { App } from './App';
 
 // setup fake backend
 
-
 render(
     <App />,
     document.getElementById('app')

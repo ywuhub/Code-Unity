@@ -1,12 +1,13 @@
 import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import '@/Style';
-import { userService, projectService } from '@/_services';
-
+import { userService, projectService, authenticationService } from '@/_services';
+import { QBupdateGroupName, QBremoveMembers, QBgetUser } from '@/QuickBlox';
 
 class GroupEditPage extends React.Component {
     constructor(props) {
         super(props);
+        this.curr_id = authenticationService.currentUserValue.uid;
         this.removeTag = this.removeTag.bind(this);
         this.addTag = this.addTag.bind(this);
         this.putProjectDetails = this.putProjectDetails.bind(this);
@@ -28,7 +29,8 @@ class GroupEditPage extends React.Component {
             edit_status_visibility: false,
             edit_status_class: "",
             edit_status: "",
-            kickMember: ""
+            kickMember: "",
+            isSubmitting: false
         };
 
     }
@@ -118,11 +120,21 @@ class GroupEditPage extends React.Component {
                 this.state.technologies,
             ).then(
                 status => {
-                    this.setState({ edit_status_visibility: true})
+                    this.setState({ edit_status_visibility: true, isSubmitting: true })
+                    var project_id = this.state.project_id;
+                    var newName = this.refs.edit_title.value;
+                    var setSubmitting = () => { this.setState({ isSubmitting: false }) }
                     if (status == "OK") {
                         this.setState({
                             edit_status_class:"alert alert-success",
                             edit_status:"Profile has been updated."});
+                            
+                        QB.createSession({ login: this.curr_id, password: this.curr_id }, function (err, result) {
+                            if (result) {
+                                QBupdateGroupName(project_id, {name: newName, project_id: project_id})
+                                    .then(resp => { setSubmitting() });
+                            }
+                        });
 
                     } else {
                         this.setState({
@@ -153,10 +165,22 @@ class GroupEditPage extends React.Component {
     }
 
     removeMembers() {
+        this.setState({ isSubmitting: true });
+        var project_id = this.state.project_id;
+        var member_id = this.state.kickMember._id;
         projectService.kick_member(this.state.project_id, this.state.kickMember._id)
             .then(json => {
                 console.log(json);
-                window.location.reload();
+                QB.createSession({ login: this.curr_id, password: this.curr_id }, function (err, result) {
+                    if (result) {
+                        let member = [];
+                        QBgetUser(member_id)
+                            .then(user => {
+                                member.push(user.id);
+                                QBremoveMembers(project_id, member);
+                            })
+                    }
+                });
             })
             .catch(err => console.log(err));
     }
@@ -206,11 +230,15 @@ class GroupEditPage extends React.Component {
                         <h1 className="h4 ml-2">My Group</h1>
      
                         <div className="col-lg-9 btn-toolbar  justify-content-end">
-                            <a className="btn btn-secondary btn-sm mr-2 nav-item" href="/mygroup">
+                            {this.state.isSubmitting &&
+                                <div className="mr-3"><img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /></div>
+                            }
+                            <a className="btn btn-secondary btn-sm mr-2 nav-item" href={!this.state.isSubmitting && "/mygroup"}>
                              Cancel 
                              </a>
                             <button type="submit" 
                             className="btn btn-primary btn-sm"
+                            disabled={this.state.isSubmitting}
                             > Save Changes </button>
                         </div>
                     </div>

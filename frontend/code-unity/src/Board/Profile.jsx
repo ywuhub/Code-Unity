@@ -22,6 +22,7 @@ class Profile extends React.Component {
             programming_languages: [],
             languages:[],
             github: "",
+            avatar: 'https://api.adorable.io/avatars/200/avatar.png',
             edit_status:"",
             edit_status_class:"",
             edit_status_visibility: false,
@@ -40,7 +41,7 @@ class Profile extends React.Component {
         )
         );
         this.setState({ edit_status_visibility: false, isLoading: true})
-        userService.getProfile().then(data => this.setState(
+        userService.getProfile().then(data => {this.setState(
             { 
                 "_id": data._id,
                 name: data.name,
@@ -53,7 +54,7 @@ class Profile extends React.Component {
                 github: data.github,
                 isLoading: false
             }
-        ));
+        )});
 
     }
 
@@ -190,11 +191,7 @@ class Profile extends React.Component {
                                 <div className="m-4">
                                     <div className="row">
                                         <div className="col-md-6 avator-container">
-                                            {this.state.avatar ?
-                                                <img src={this.state.avatar} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
-                                                :
-                                                <img src="https://api.adorable.io/avatars/200/avatar.png" className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
-                                            }
+                                            <img src={(this.state.avatar || "https://api.adorable.io/avatars/200/avatar.png")} className="mx-auto img-fluid img-circle d-block rounded-circle" alt="avatar" />                                        
                                             <button className="btn"
                                                     data-toggle="modal" 
                                                     data-target="#avatarPicker"
