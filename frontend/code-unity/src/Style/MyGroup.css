@@ -89,3 +89,34 @@
 	background-color: #F5F5F5;
 }
 
+.avatar-with-name {
+  margin-left:2px;
+  height:auto;
+  width:auto;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 50px;
+  background-color:rgba(245, 245, 245, 0.7);
+  text-decoration: none!important;
+  border-color: rgba(233, 233, 233, 1);
+
+}
+.avatar-with-name img{
+  display:flex;
+  margin-left: -1px;
+  height:35px;
+  width:35px;
+  align-items:center;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(170, 170, 170, 1);
+  text-decoration: none!important;
+  }
+.avatar-with-name span{
+  display:flex;
+  text-decoration: none!important;
+  color: black;
+  align-items:center;
+  margin-left: 2px;
+  margin-right: 5px;
+}

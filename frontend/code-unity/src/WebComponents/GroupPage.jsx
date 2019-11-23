@@ -1,7 +1,7 @@
 import React from 'react';
 import { SkillBox } from '@/WebComponents';
 import { Route, Link, Switch } from 'react-router-dom';
-import { authenticationService, projectService } from '@/_services';
+import { authenticationService, projectService,userService } from '@/_services';
 
 import '@/Style';
 
@@ -9,7 +9,39 @@ class GroupPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            leaderData :"",
+            memberData :[]
+        }
     }
+    componentDidMount() {
+        var allMembers = [this.props.data.leader._id];
+
+        for (var i = 0; i < this.props.data.members.length; i++) {
+            if (this.props.data.leader._id != this.props.data.members[i]._id) {
+                allMembers.push(this.props.data.members[i]._id);
+            }
+        }
+        console.log(allMembers)
+            userService.getUserAvatars(allMembers).then(data => {
+                var leaderData = "";
+                var memberData = [];
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i]._id == this.props.data.leader._id) {
+                        leaderData = data[i];
+                    } else {
+                        memberData.push(data[i])
+                    }
+                }
+                this.setState({ 
+                    leaderData: leaderData,
+                    memberData: memberData });
+                console.log(leaderData)
+                console.log(memberData)
+            }
+        );
+    }
+
     leaveProject(e) {
         projectService.leave_group(this.props.data.project_id)
             .then(json => {
@@ -22,8 +54,14 @@ class GroupPage extends React.Component {
     render() {
         let key_id = this.props.key_id_outer;
         let leader = this.props.data.leader;
-        let members = this.props.data.members;
+        let members = this.props.data.memberData;
         const curr_id = authenticationService.currentUserValue.uid;
+        const AvatarWithName = (props) => (
+            <div className="row avatar-with-name">
+              <img src={props.avatar} className="avatar rounded-circle"/>
+              <span className="justify-content-center ml-2 mr-2"> {props.Name}</span>
+            </div>
+            );
         return (
                 <div>
                     <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -49,29 +87,46 @@ class GroupPage extends React.Component {
                     <div className="row mt-4 border-bottom border-grey">
                         <div className="col-9">
                             <div className="row">
-                                <p>Leader:&nbsp;</p>
+                                <p style={{ 'display':'flex', 'alignItems':'center'}}>Leader:&nbsp;</p>
                                 <p>
-                                    {(curr_id === leader._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{leader.username}</Link>) ||
-                                        <Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} id={leader._id} style={{ 'textDecoration': 'none' }}>{leader.username}</Link>
+                                    {(curr_id === leader._id && 
+                                        <Link to='/profile' style={{ 'textDecoration': 'none' }}>
+                                            <AvatarWithName Name={leader.username} avatar={this.state.leaderData.avatar}/>
+                                        </Link>) ||
+                                        <Link to={{ pathname: "/profile-" + leader.username, state: { _id: leader._id, username: leader.username } }} 
+                                            id={leader._id} 
+                                            style={{ 'textDecoration': 'none' }}>
+                                            <AvatarWithName Name={leader.username} avatar={this.state.leaderData.avatar}/>
+                                        </Link>
                                     }
+
                                 </p>
                             </div>
                             <div className="row">
-                                <p>Members:&nbsp;</p>
-                                <p>
-                                    {
-                                        members.filter((member) => { return member.username !== this.props.data.leader.username }).map((member, index) => {
-                                            return (
-                                                <span key={member._id}>
-                                                    {(curr_id === member._id && <Link to='/profile' style={{ 'textDecoration': 'none' }}>{member.username}</Link>) ||
-                                                        <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} id={member._id} style={{ 'textDecoration': 'none' }}>{member.username}</Link>
-                                                    }
-                                                    {index !== members.length - 2 && <span>,&nbsp;</span>}
-                                                </span>
-                                            )
-                                        })
-                                    }
-                                </p>
+                                <p className="justify-content-center mt-2">Members:&nbsp;</p>
+                                {this.state.memberData &&
+                                    this.state.memberData.filter((member) => { return member.username !== this.props.data.leader.username }).map((member, index) => {
+                                        return (
+                                            <div key={member._id} style={{ 'display':'flex', 'alignItems':'center'}}>
+                                                {(curr_id === member._id && 
+                                                    <Link to='/profile' style={{ 'textDecoration': 'none' }}>
+                                                        <AvatarWithName 
+                                                            Name={member.username} 
+                                                            avatar={member.avatar}/>
+                                                    </Link>) ||
+                                                    <Link to={{ pathname: "/profile-" + member.username, state: { _id: member._id, username: member.username } }} 
+                                                          id={member._id} 
+                                                          style={{ 'textDecoration': 'none' }}>
+                                                        <AvatarWithName 
+                                                            Name={member.username}
+                                                            avatar={member.avatar}/>
+                                                    </Link>
+                                                }
+                                                {index !== this.state.memberData.length - 2 && <span>&nbsp;</span>}
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
                         </div>
                         <div className="col-3 group-page-member-setting text-left">

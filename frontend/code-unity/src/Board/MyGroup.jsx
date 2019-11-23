@@ -109,7 +109,7 @@ class MyGroup extends React.Component {
                             (this.state.projectData || []).map((item, index) => {
                                 return(
                                         <div key={item.project_id} value={item.project_id} onClick={this.changeCurrentProject.bind(this,index)}>
-                                           <GroupCard   key={key_id++}
+                                           <GroupCard   keyValue={key_id++}
                                                         isAdmin={this.props._id == item.leader._id ? true:false}
                                                         href="javascript:void(0)"
                                                         title={item.title}
