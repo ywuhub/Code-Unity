@@ -9,6 +9,9 @@ import { projectService } from '../_services';
 class ResetPasswordPage extends React.Component {
     constructor(props) {
         super(props);
+        if (authenticationService.currentUserValue) {
+            this.props.history.push('/');
+        }
         this.putPassword = this.putPassword.bind(this);
         this.state = {
             token: "",

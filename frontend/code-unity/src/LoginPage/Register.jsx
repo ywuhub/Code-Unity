@@ -8,6 +8,9 @@ import { QBinitChatUser } from '@/QuickBlox';
 class Register extends React.Component {
     constructor(props) {
         super(props);
+        if (authenticationService.currentUserValue) {
+            this.props.history.push('/');
+        }
     }
 
     change(e) {
@@ -40,7 +43,6 @@ class Register extends React.Component {
                                             QBinitChatUser(user.uid, username);
 
                                             const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                            this.props.history.push(from);
                                         },
                                         error => {
                                             setSubmitting(false);
