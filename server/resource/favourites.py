@@ -90,6 +90,7 @@ class FavouriteProjects(Resource):
                             update_project_details.append(deepcopy(doc))
 
                             # ret details
+                            # fetch the username for each user id
                             ret_members = []
                             for member_id in doc["members"]:
                                 mem = self.users.find_one({"_id": member_id})
@@ -99,6 +100,7 @@ class FavouriteProjects(Resource):
                             leader = self.users.find_one({"_id": doc["leader"]})
                             ret_leader = {"_id": str(doc["leader"]), "username": leader["username"]}
 
+                            # json format for each project
                             ret_project = {
                                 "project_id": str(doc["_id"]),
                                 "title": doc["title"],
@@ -114,6 +116,7 @@ class FavouriteProjects(Resource):
                             }
                             ret["favourite_projects"].append(ret_project)
                     
+                    # update the favourites list for this user and send back the updated details
                     new_favourites = {"favourite_projects": update_project_details}
                     self.favourites.update({"user_id": user_id}, {"$set": new_favourites}, upsert=False)
                 

@@ -26,6 +26,7 @@ class ProgrammingLanguages(Resource):
             ]
         ```
         """
+        # fetch all the programming languages from the database to the frontend
         if len(_cache) == 0:
             for doc in self.db["prog_langs"].find({}):
                 _cache.append(doc["name"])

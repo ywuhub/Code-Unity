@@ -57,6 +57,7 @@ class Auth(Resource):
             }
         ```
         """
+        # fetch post parameters
         post_parser = reqparse.RequestParser(bundle_errors=True)
         post_parser.add_argument(
             "username", type=str, required=True, help="Username required"
@@ -66,9 +67,11 @@ class Auth(Resource):
         )
         args = post_parser.parse_args(strict=True)
 
+        # assign account information parameters to variables
         username = args["username"]
         pwd = args["password"]
 
+        # attempt to login user through the user manager interface
         try:
             uid, token = self.user_manager.log_in_user(username, pwd)
         except (VerificationError, ValueError):
@@ -132,6 +135,7 @@ class Auth(Resource):
             }
         ```
         """
+        # fetch the put parameters
         put_parser = reqparse.RequestParser(bundle_errors=True)
         put_parser.add_argument(
             "username", type=str, required=True, help="Username required"
@@ -142,10 +146,12 @@ class Auth(Resource):
         put_parser.add_argument("email", type=str, required=True, help="Email required")
         args = put_parser.parse_args(strict=True)
 
+        # assign the account details to variables
         username = args["username"]
         email = args["email"]
         password = args["password"]
 
+        # attempt to register user using the given account details
         try:
             uid, token = self.user_manager.register_user(username, email, password)
             return {"uid": uid, "token": token}

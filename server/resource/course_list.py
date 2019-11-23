@@ -36,6 +36,7 @@ class CourseList(Resource):
             ]
         ```
         """
+        # fetch the COMP courses from the database
         if len(_cache) == 0:
             for doc in self.db["comp_courses"].find({}).sort("code", 1):
                 _cache.append({"code": doc["code"], "name": doc["name"]})
