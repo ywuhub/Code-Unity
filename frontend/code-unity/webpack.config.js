@@ -2,65 +2,65 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-    mode: 'development',
-    resolve: {
-        extensions: ['.js', '.jsx']
-    },
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                loader: 'babel-loader'
-            },
-            {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
-            },
-            {
-                test: /\.(jpg|png|svg)$/,
-                loader: 'file-loader',
-                options: {
-                  name: '[path][name].[hash].[ext]',
-                },
-            }
-        ]
-    },
-    resolve: {
-        extensions: ['.js', '.jsx'],
-        alias: {
-            '@': path.resolve(__dirname, 'src/'),
-        }
-    },
-    devServer: {
-        historyApiFallback: true,
-        proxy: {
-            '/api': {
-                target: {
-                    host: "127.0.0.1",
-                    protocol: 'http:',
-                    port: 4000
-                },
-                    pathRewrite: {
-                    '^/api': ''
-                }
-            },
+  mode: 'development',
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader'
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(jpg|png|svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[path][name].[hash].[ext]',
         },
-        headers: {
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
-            "Access-Control-Allow-Origin": "*"
-        },
-    },
-    plugins: [new HtmlWebpackPlugin({
-        template: './src/index.html'
-    })],
-    output: {
-        publicPath: '/'
-    },
-    externals: {
-        // global app config object
-        config: JSON.stringify({
-            apiUrl: ''
-        })
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+    alias: {
+      '@': path.resolve(__dirname, 'src/'),
     }
+  },
+  devServer: {
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: {
+          host: "127.0.0.1",
+          protocol: 'http:',
+          port: 4000
+        },
+        pathRewrite: {
+          '^/api': ''
+        }
+      },
+    },
+    headers: {
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
+      "Access-Control-Allow-Origin": "*"
+    },
+  },
+  plugins: [new HtmlWebpackPlugin({
+    template: './src/index.html'
+  })],
+  output: {
+    publicPath: '/'
+  },
+  externals: {
+    // global app config object
+    config: JSON.stringify({
+      apiUrl: 'localhost:4000'
+    })
+  }
 }
