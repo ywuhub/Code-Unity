@@ -90,7 +90,7 @@ class OthersProfile extends React.Component {
                 {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) ||
                     <div>
                         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 className="h4">{this.state.details.username} Profile</h1>
+                            <h1 className="h4">{this.state.details.username}'s Profile</h1>
 
                             <div className="btn-group">
                                 <button className="btn btn-primary border rounded" data-toggle="modal" data-target="#exampleModalCenter" disabled={this.state.myProjects.length <= 0}>

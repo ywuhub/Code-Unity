@@ -141,11 +141,11 @@ class GroupPage extends React.Component {
                                     </div>
                                     <div className="col-3 group-page-member-setting text-left">
                                         <div className="row">
-                                            <p className="d-block text-gray-dark"> Member number:</p>
+                                            <p className="d-block text-gray-dark"> Member number:</p>&nbsp;
                                             <p className="d-block text-gray-dark">{this.state.details.cur_people}</p>
                                         </div>
                                         <div className="row">
-                                            <p className="d-block text-gray-dark">max: </p>
+                                            <p className="d-block text-gray-dark">max: </p>&nbsp;
                                             <p className="d-block text-gray-dark">{this.state.details.max_people}</p>
                                         </div>
                                     </div>
@@ -160,7 +160,7 @@ class GroupPage extends React.Component {
                                 {this.state.details.course &&
                                     <div className="row mt-3 border-bottom border-grey">
                                         <div className="col-12 row">
-                                            <p>Courses:</p>
+                                            <p>Course:</p>&nbsp;
                                             <p>{this.state.details.course}</p>
                                         </div>
                                     </div>
