@@ -42,11 +42,7 @@ class Register extends React.Component {
                                         user => {
                                             QB.createSession(function(err, result) {
                                                 if (result) {
-                                                    QBinitChatUser(user.uid, username)
-                                                        .then(resp => {
-                                                            const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                                            this.props.history.push('/');
-                                                        })
+                                                    QBinitChatUser(user.uid, username);
                                                 }
                                             });
                                             this.props.history.push('/');
