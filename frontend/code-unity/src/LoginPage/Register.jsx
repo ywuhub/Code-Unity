@@ -49,6 +49,7 @@ class Register extends React.Component {
                                                         })
                                                 }
                                             });
+                                            this.props.history.push('/');
                                         },
                                         error => {
                                             setSubmitting(false);
