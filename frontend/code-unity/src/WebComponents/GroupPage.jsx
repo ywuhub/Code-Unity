@@ -11,6 +11,7 @@ class GroupPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.fetchData = this.fetchData.bind(this);
         this.state = {
             leaderData :"",
             memberData :[],
@@ -19,6 +20,9 @@ class GroupPage extends React.Component {
         this.curr_id = authenticationService.currentUserValue.uid;
     }
     componentDidMount() {
+        this.fetchData();
+    }
+    fetchData() {
         var allMembers = [this.props.data.leader._id];
 
         for (var i = 0; i < this.props.data.members.length; i++) {
@@ -27,26 +31,29 @@ class GroupPage extends React.Component {
             }
         }
         console.log(allMembers)
-            userService.getUserAvatars(allMembers).then(data => {
-                var leaderData = "";
-                var memberData = [];
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]._id == this.props.data.leader._id) {
-                        leaderData = data[i];
-                    } else {
-                        memberData.push(data[i])
-                    }
+        userService.getUserAvatars(allMembers).then(data => {
+            var leaderData = "";
+            var memberData = [];
+            for (var i = 0; i < data.length; i++) {
+                if (data[i]._id == this.props.data.leader._id) {
+                    leaderData = data[i];
+                } else {
+                    memberData.push(data[i])
                 }
-                this.setState({ 
-                    leaderData: leaderData,
-                    memberData: memberData });
-                console.log(leaderData)
-                console.log(memberData)
             }
-        );
+            this.setState({ 
+                leaderData: leaderData,
+                memberData: memberData });
+            console.log(leaderData)
+            console.log(memberData)
+        });
     }
 
-
+    componentDidUpdate(prevProps) {
+      if (this.props.data !== prevProps.data) {
+        this.fetchData();
+      }
+    }
     leaveProject(e) {
         this.setState({ isSubmitting: true });
         projectService.leave_group(this.props.data.project_id)
