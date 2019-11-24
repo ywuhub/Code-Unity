@@ -98,7 +98,7 @@ class AvatarPicker extends React.Component {
                   <div className="modal-dialog modal-lg avatar-modal-dialog" role="document">
                         <div className="modal-content avatar-modal-content">
                           <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLongTitle">Choose my Avatar</h5>
+                            <h5 className="modal-title" id="exampleModalLongTitle">Choose Personal Avatar</h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                             </button>
@@ -118,15 +118,15 @@ class AvatarPicker extends React.Component {
                                     <div className="row d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center ml-3 mr-3 mt-2 pb-2 mb-3 border-bottom">
                                         <div className="form-check form-check-inline">
                                           <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="eye" onClick={this.featureSwitch}/>
-                                          <label className="form-check-label" htmlFor="inlineRadio1">eye</label>
+                                          <label className="form-check-label" htmlFor="inlineRadio1">Eye</label>
                                         </div>
                                         <div className="form-check form-check-inline">
                                           <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="nose" onClick={this.featureSwitch}/>
-                                          <label className="form-check-label" htmlFor="inlineRadio2">nose</label>
+                                          <label className="form-check-label" htmlFor="inlineRadio2">Nose</label>
                                         </div>
                                         <div className="form-check form-check-inline">
                                           <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="mouth" onClick={this.featureSwitch}/>
-                                          <label className="form-check-label" htmlFor="inlineRadio3">mouth</label>
+                                          <label className="form-check-label" htmlFor="inlineRadio3">Mouth</label>
                                         </div>
                                     </div>
                                     <div className="avatar-scollbar container">

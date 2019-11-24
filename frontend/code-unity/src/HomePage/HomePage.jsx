@@ -97,7 +97,7 @@ class HomePage extends React.Component {
                     </ul>
 
                     <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                      <span>Group infos</span>
+                      <span>Group Management</span>
                       <a className="d-flex align-items-center text-muted" href="#">
                         <span data-feather="plus-circle"></span>
                       </a>

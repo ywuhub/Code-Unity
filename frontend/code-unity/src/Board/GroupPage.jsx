@@ -166,9 +166,9 @@ class GroupPage extends React.Component {
                                     </div>
                                 }
                                 <div className="row container-fluid pt-3 pl-0">
-                                    <SkillBox keyValue={key_id++} title="technologies" data={( this.state.details.technologies)} />
-                                    <SkillBox keyValue={key_id++} title="languages" data={( this.state.details.languages)} />
-                                    <SkillBox keyValue={key_id++} title="tags" data={( this.state.details.tags)} />
+                                    <SkillBox keyValue={key_id++} title="Programming Languages" data={( this.state.details.technologies)} />
+                                    <SkillBox keyValue={key_id++} title="Languages" data={( this.state.details.languages)} />
+                                    <SkillBox keyValue={key_id++} title="Tags" data={( this.state.details.tags)} />
                                 </div>
                             </div>
                         </div>
