@@ -78,6 +78,7 @@ class Dashboard extends React.Component {
                         })
                     }
                     </div>
+                    {!this.state.isloading && !this.state.projectData.length && <div><br></br><center>You are not currently in any groups.</center></div>}
                     <small className="d-block text-right mt-3 border-top">
                         <br></br>
                         <div className="btn-toolbar mb-2 mb-md-0">
@@ -105,6 +106,7 @@ class Dashboard extends React.Component {
                                 </div>
                             );
                         })}
+                    {!this.state.notificationLoading && !this.state.notifications.length && <div className="border-bottom"><br></br><center>You have no new notifications.</center><br></br></div>}
                     <small className="d-block text-right mt-3">
                         <a href="/inbox">All Notifications</a>
                     </small>

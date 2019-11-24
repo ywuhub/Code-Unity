@@ -82,6 +82,12 @@ class MyGroup extends React.Component {
         let current_project=this.state.projectData[0];
     	return(
             <div className="container-fluid">
+                {!this.state.isLoading && !this.state.projectData.length && <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 className="h4">My Groups</h1>
+                </div>}
+                {!this.state.isLoading && !this.state.projectData.length &&
+                    <div><center>You are not currently in any groups.</center></div>
+                }
 				<div className="row mt-1">
 					<div className="col-sm-9 pl-1">
                         {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
