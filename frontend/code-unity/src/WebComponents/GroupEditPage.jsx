@@ -127,7 +127,7 @@ class GroupEditPage extends React.Component {
                     if (status == "OK") {
                         this.setState({
                             edit_status_class:"alert alert-success",
-                            edit_status:"Profile has been updated."});
+                            edit_status:"Project group details has been updated."});
                             
                         QB.createSession({ login: this.curr_id, password: this.curr_id }, function (err, result) {
                             if (result) {
