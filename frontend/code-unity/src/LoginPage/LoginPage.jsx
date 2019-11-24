@@ -20,11 +20,9 @@ class LoginPage extends React.Component {
                 <div className="container">
                     <div className="row">
                         <div className="col-md-6 offset-md-3">
-                            <div className="alert alert-info">
-                                Username: testuser<br />
-                                Password: test
-                                </div>
-                            <h2>Login</h2>
+                            <center><u><h2>Code Unity - Group Project Finder</h2></u></center>
+                            <br></br>
+                            <h3>Login</h3>
                             <Formik
                                 initialValues={{
                                     username: '',
