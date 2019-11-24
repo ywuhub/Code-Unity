@@ -94,12 +94,6 @@ class HomePage extends React.Component {
                           My Profile
                         </a>
                       </li>
-                      <li className="nav-item">
-                        <a className="nav-link" href="/mygroup">
-                          <span data-feather="shopping-cart"></span>
-                          My Groups
-                        </a>
-                      </li>
                     </ul>
 
                     <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
@@ -110,6 +104,12 @@ class HomePage extends React.Component {
                     </h6>
                     <ul className="nav flex-column mb-2">
                       <li className="nav-item">
+                        <a className="nav-link" href="/mygroup">
+                          <span data-feather="shopping-cart"></span>
+                          My Groups
+                        </a>
+                      </li>
+                      <li className="nav-item">
                         <a className="nav-link" href="/groupList">
                           <span></span>
                         Group List
@@ -119,18 +119,6 @@ class HomePage extends React.Component {
                         <a className="nav-link" href="/CreateGroup">
                           <span data-feather="file-text"></span>
                         Create a Group
-                        </a>
-                      </li>
-                      <li className="nav-item">
-                        <a className="nav-link" href="/JoinRequests">
-                          <span data-feather="file-text"></span>
-                          Join Requests
-                        </a>
-                      </li>
-                      <li className="nav-item">
-                        <a className="nav-link" href="#">
-                          <span data-feather="file-text"></span>
-                          Coming Soon...
                         </a>
                       </li>
                     </ul>
