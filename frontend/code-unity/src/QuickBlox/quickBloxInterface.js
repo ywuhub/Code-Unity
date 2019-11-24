@@ -46,7 +46,9 @@ function QBinitChatUser(user_id, username) {
     return fetch('https://api.quickblox.com/users.json', options)
         .then(response => { return response.json() })
         .then(json => {
-            QBcreateUserData(json.user.id, user_id, username);
+            QB.login({login: user_id, password: user_id}, function(err, result) {
+                QBcreateUserData(json.user.id, user_id, username);
+            });
             return json;
         });
 }

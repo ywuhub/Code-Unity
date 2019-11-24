@@ -40,10 +40,15 @@ class Register extends React.Component {
                                 authenticationService.register(email, username, password)
                                     .then(
                                         user => {
-                                            QBinitChatUser(user.uid, username);
-
-                                            const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                            this.props.history.push('/');
+                                            QB.createSession(function(err, result) {
+                                                if (result) {
+                                                    QBinitChatUser(user.uid, username)
+                                                        .then(resp => {
+                                                            const { from } = this.props.location.state || { from: { pathname: "/" } };
+                                                            this.props.history.push('/');
+                                                        })
+                                                }
+                                            });
                                         },
                                         error => {
                                             setSubmitting(false);
