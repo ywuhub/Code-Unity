@@ -29,12 +29,14 @@ for csv_file in csv_files:
                 username = row[0]
                 password = ph.hash(row[1])
                 email = row[2]
+                avatar = row[3]
 
                 # document to insert into collection
                 doc = {
                     header[0]: username,
                     header[1]: password,
-                    header[2]: email
+                    header[2]: email,
+                    header[3]: avatar
                 }
         
                 # insert into database
@@ -47,7 +49,7 @@ for csv_file in csv_files:
         if csv_file == 'test_data/profiles.csv':
             for row in reader:
                 # fetch the column values for each row
-                name = row[0]
+                name = row[0].strip()
                 email = row[1]
                 visibility = row[2]
                 description = row[3]

@@ -202,7 +202,7 @@ class Profile extends React.Component {
                                                 <p> <b>Name:</b> {this.state.name} </p>
                                             </div>
                                             <div> 
-                                                <p> <b>Username:</b>{this.state.username}</p>
+                                                <p> <b>Username:</b> {this.state.username}</p>
                                             </div>
                                             <div> 
                                                 <p> <b>Email:</b> {this.state.email} </p>
