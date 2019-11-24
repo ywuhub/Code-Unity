@@ -13,6 +13,7 @@ from flask_jwt_extended import (
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
 
+from server.managers.notification_manager import NotificationManager
 from server.models.user import User
 
 ph = PasswordHasher(time_cost=1, memory_cost=51200, parallelism=2)
@@ -43,17 +44,20 @@ class ValueExistsError(Exception):
 
 
 class UserManager:
-    def __init__(self, app: Flask, db: Database, jwt: JWTManager):
+    def __init__(
+        self, app: Flask, db: Database, jwt: JWTManager, nm: NotificationManager
+    ):
         self.users = db.get_collection("users")
         self.profiles = db.get_collection("profiles")
         # In memory store of revoked tokens. WARNING: will allow logged out users to
         # log back in if app is restarted.
         self.revoked_tokens: Set[str] = set()
+        self.nm = nm
 
         # Overrides the default function of jwt.current_user to return a User object.
         @jwt.user_loader_callback_loader
         def user_loader_callback(id: str):
-            return User(ObjectId(id), db)
+            return User(ObjectId(id), db, nm)
 
         # Check for revoked tokens.
         @jwt.token_in_blacklist_loader
@@ -87,13 +91,15 @@ class UserManager:
         # a duplicate username/email key.
         try:
             # add user to 'users' database
-            default_avatar = "https://api.adorable.io/avatars/200/code_unity_default.png"
+            default_avatar = (
+                "https://api.adorable.io/avatars/200/code_unity_default.png"
+            )
             _id = self.users.insert_one(
                 {
-                    "username": username, 
-                    "password": pwd_hash, 
-                    "email": email, 
-                    "avatar": default_avatar
+                    "username": username,
+                    "password": pwd_hash,
+                    "email": email,
+                    "avatar": default_avatar,
                 }
             )
             # initiate blank profile for newly registered user

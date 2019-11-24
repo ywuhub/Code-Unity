@@ -8,15 +8,19 @@ from server.database import init_db
 from server.endpoints import register_endpoints
 from server.managers.project_manager import ProjectManager
 from server.managers.user_manager import UserManager
+from server.managers.notification_manager import NotificationManager
 
 # create and configure the app
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 db = init_db()
-user_manager = UserManager(app, db, jwt)
-project_manager = ProjectManager(app, db)
-api = register_endpoints(app, db, user_manager, project_manager)
+
+notification_manager = NotificationManager(db)
+user_manager = UserManager(app, db, jwt, notification_manager)
+project_manager = ProjectManager(app, db, notification_manager)
+
+api = register_endpoints(app, db, user_manager, project_manager, notification_manager)
 
 app.config.from_mapping(
     SECRET_KEY=b"\xb6\x07\x03a[(\xaaj\x13'\xc8X\xd5%}\x9f",

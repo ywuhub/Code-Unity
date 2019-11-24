@@ -1,3 +1,4 @@
+from copy import deepcopy
 from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
@@ -11,8 +12,17 @@ from server.exceptions import (
 from bson import ObjectId
 from flask import Flask
 from pymongo.database import Database
-from copy import deepcopy
 
+from server.exceptions import (
+    AlreadyMemberOf,
+    CannotKickYourself,
+    NotProjectLeader,
+    ProjectFull,
+    ProjectNotFound,
+    UserNotFound,
+    UserNotInvolved,
+)
+from server.managers.notification_manager import NotificationManager
 from server.models.project import Project
 
 # Common pipeline for listing projects. Joins userids with the Users table while
@@ -48,8 +58,10 @@ _list_pipeline = [
 
 
 class ProjectManager:
-    def __init__(self, app: Flask, db: Database):
+    def __init__(self, app: Flask, db: Database, nm: NotificationManager):
         self.app = app
+        self.nm = nm
+
         self.projects = db.get_collection("projects")
         self.users = db.get_collection("users")
         self.invitations = db.get_collection("invitations")
@@ -146,7 +158,9 @@ class ProjectManager:
         """
         self.invitations.delete_many({"project_id": project_id})
         self.requests.delete_many({"project_id": project_id})
-        self.projects.delete_one({"_id": project_id})
+        project = self.projects.find_one_and_delete({"_id": project_id})
+
+        self.nm.notify_project_deleted(project["title"], project["members"])
 
     def update_project(self, project: Project, updated_details: dict):
         self.projects.update(
@@ -180,6 +194,10 @@ class ProjectManager:
 
         self.projects.replace_one({"_id": project_id}, project)
 
+        self.nm.notify_user_joined_project(
+            user_id, user["username"], project["title"], project_id, project["members"]
+        )
+
     def kick_user_from_project(
         self, user_id: ObjectId, leader_id: ObjectId, project_id: ObjectId
     ):
@@ -203,11 +221,16 @@ class ProjectManager:
             raise CannotKickYourself()
 
         # remove user from list
+        old_members = list(project["members"])
         project["members"].remove(ObjectId(user_id))
         project["cur_people"] = len(project["members"])
 
         # update database with current members
         self.projects.replace_one({"_id": project_id}, project)
+
+        self.nm.notify_user_kicked(
+            user_id, user["username"], project["title"], project_id, old_members
+        )
 
     def remove_invitation_request(self, user_id: ObjectId, project_id: ObjectId):
         """

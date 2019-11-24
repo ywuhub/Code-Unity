@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
-import { projectService } from '@/_services';
+import { projectService, inboxService } from '@/_services';
 
 class JoinRequests extends React.Component {
     constructor(props) {
@@ -27,9 +27,29 @@ class JoinRequests extends React.Component {
     }
 
     handleAccept(key, project_id, user_id) {
-        projectService.accept_request(project_id, user_id, "request");
-        this.state.projectRequests.splice(key, 1);
-        this.setState({});
+        inboxService.accept_join_request(project_id, user_id)
+            .then(json => {
+                if (json.status === "success") {
+                    if (this.isMounted_) {
+                        window.location.reload();
+                    }
+                } else {
+                    console.log(json.message);
+                }
+            })
+            .catch(err => { console.log(err); });
+    }
+
+    handleDecline(project_id, user_id, e) {
+        inboxService.decline_join_request(project_id, user_id)
+            .then(json => {
+                if (json.status === "success") {
+                    window.location.reload();
+                } else {
+                    console.log(json.message);
+                }
+            })
+            .catch(err => { console.log(err) });
     }
 
     render() {
@@ -53,7 +73,7 @@ class JoinRequests extends React.Component {
                             </small>
                             &nbsp;&nbsp;
                             <small className="d-block text-right mt-3 ">
-                                <a className="btn btn-sm btn-outline-secondary" href="#">Decline</a>
+                                <button className="btn btn-sm btn-outline-secondary" onClick={this.handleDecline.bind(this, request.project_id, request.user_id)}>Decline</button>
                             </small>
                         </div>;
                     })}                        

@@ -59,6 +59,7 @@ class ProjectRequest(Resource):
         }
         ```
         """
+        user = cast(User, current_user)
         parser = RequestParser()
         parser.add_argument("message")
         args = parser.parse_args(strict=True)
@@ -69,7 +70,7 @@ class ProjectRequest(Resource):
             return {"message": "invalid project_id"}, 400
 
         try:
-            current_user.apply_to_project(project_id, args["message"])
+            user.apply_to_project(project_id, args["message"])
         except ProjectNotFound:
             return {"message": "project not found"}, 404
         except DuplicateKeyError:

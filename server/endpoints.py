@@ -1,3 +1,4 @@
+from server.managers.notification_manager import NotificationManager
 from flask import Flask
 from flask_restful import Api
 from pymongo.database import Database
@@ -27,11 +28,16 @@ from server.resource import (
     UserInvite,
     UserInviteList,
     UserList,
+    NotificationResource
 )
 
 
 def register_endpoints(
-    app: Flask, db: Database, user_manager: UserManager, project_manager: ProjectManager
+    app: Flask,
+    db: Database,
+    user_manager: UserManager,
+    project_manager: ProjectManager,
+    notification_manager: NotificationManager,
 ):
     api = Api(app)
 
@@ -59,5 +65,6 @@ def register_endpoints(
     api.add_resource(SearchProjects, "/project/search", resource_class_args=[project_manager])
     api.add_resource(CourseList, "/course_list", resource_class_args=[db])
     api.add_resource(UserList, "/user_list", resource_class_args=[db])
+    api.add_resource(NotificationResource, "/notify", resource_class_args=[notification_manager])
 
     return api

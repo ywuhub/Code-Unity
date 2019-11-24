@@ -12,6 +12,7 @@ from server.exceptions import (
     ProjectNotFound,
     UserNotFound,
 )
+from server.managers.notification_manager import NotificationManager
 from server.managers.project_manager import ProjectManager
 from server.models.project import Project
 from server.utils.json import ObjectId as ObjectIdMarshaller
@@ -115,9 +116,10 @@ class Account:
 class User:
     _id: ObjectId
 
-    def __init__(self, id: ObjectId, db: Database):
+    def __init__(self, id: ObjectId, db: Database, nm: NotificationManager):
         self._id = id
         self.db = db
+        self.nm = nm
         self.profiles = db.get_collection("profiles")
         self.projects = db.get_collection("projects")
         self.accounts = db.get_collection("users")
@@ -165,13 +167,13 @@ class User:
                 # if duplicate username is found return error depending on if
                 # its the current user's one or other users
                 if doc:
-                    if doc['_id'] == self._id:
+                    if doc["_id"] == self._id:
                         return {"error": "cannot change to your current username"}
                     else:
                         return {"error": "username already taken!"}
 
             self.accounts.update({"_id": self._id}, {"$set": account}, upsert=False)
-        
+
         return {"status": "success"}
 
     def update_avatar(self, avatar_url: str):
@@ -203,6 +205,12 @@ class User:
         # in the collection.
         requests = self.db.get_collection("join_requests")
         requests.insert_one(doc)
+
+        # successfully sent request, notify leader
+        doc = self.accounts.find_one({"_id": self._id})
+        self.nm.notify_request_to_join(
+            project.leader, self._id, doc["username"], project.title, project_id
+        )
 
     def delete_project_application(self, project_id: ObjectId):
         requests = self.db.get_collection("join_requests")
@@ -307,6 +315,9 @@ class User:
         invitations.insert_one(
             {"project_id": project_id, "user_id": user_id, "leader_id": self._id}
         )
+
+        # invitation successful, notify the invited user
+        self.nm.notify_received_invite(user_id, project["title"], project_id)
 
     def delete_invitation(self, user_id: ObjectId, project_id: ObjectId):
         # Check if the user has permissions to delete invitations
@@ -421,6 +432,7 @@ class User:
             project_manager.delete_project(project_id)
 
         try:
+            old_members = list(project["members"])
             project["members"].remove(self._id)
         except ValueError:
             raise UserNotFound()
@@ -428,6 +440,11 @@ class User:
         project["cur_people"] = len(project["members"])
 
         self.projects.replace_one({"_id": project_id}, project)
+
+        doc = self.accounts.find_one({"_id": self._id})
+        self.nm.notify_user_left_project(
+            self._id, doc["username"], project["title"], project_id, old_members
+        )
 
     def __str__(self):
         return f'<server.models.user("{str(self._id)}")>'

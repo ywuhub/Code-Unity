@@ -4,16 +4,19 @@ import { Route, Link, Switch } from 'react-router-dom';
 import { CreateGroup } from '@/CreateGroup';
 import { Notification } from '@/WebComponents';
 import { GroupCard } from '@/WebComponents';
-import { userService } from '@/_services';
+import { userService, inboxService } from '@/_services';
+import { JoinRequest, Invite, UserJoin, UserLeave, UserKicked, ProjectDeleted } from '@/Inbox'
 
 class Dashboard extends React.Component {
-	constructor(props) {
+    constructor(props) {
         super(props);
         this.isMounted_ = false;
         this.state = {
-            "_id":"??",
+            "_id": "??",
             isloading: true,
-            projectData:[]
+            projectData: [],
+            notifications: [],
+            notificationLoading: true
             // isEditing: false
         };
     }
@@ -21,23 +24,37 @@ class Dashboard extends React.Component {
     componentWillUnmount() {
         this.isMounted_ = false;
     }
+
     componentDidMount() {
         this.isMounted_ = true;
         console.log("========componentWillReceiveProps")
         if (this.props._id) {
             userService.getUserProject(this.props._id).then(data => {
                 if (this.isMounted_) {
-                    this.setState({ 
+                    this.setState({
                         isloading: false,
                         projectData: data
                     });
                 }
             })
+
+            inboxService.get_all_notifications()
+                .then(notifications => {
+                    this.setState({ notifications: notifications, notificationLoading: false });
+                })
         }
     }
-    addNotification() {
 
+    dismiss(id, index, e) {
+        let notifications = this.state.notifications;
+        notifications.splice(index, 1);
+        inboxService.dismiss_notification(id)
+            .then(json => {
+                console.log(json);
+                if (this.isMounted_) this.setState({ notifications: notifications });
+            });
     }
+
     render() {
         let key = 0;
         return (
@@ -72,33 +89,28 @@ class Dashboard extends React.Component {
                 </div>
                 <div className="my-3 p-3 bg-white rounded shadow-sm">
                     <h6 className="border-bottom border-gray pb-2 mb-0">Notifications</h6>
-                    <div className="media text-muted pt-3">
-                        <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
-                        <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                            <strong className="d-block text-gray-dark">Server: Group Message</strong>
-                            You have successfully joined group "Hacking project".
-                      </p>
-                    </div>
-                    <div className="media text-muted pt-3">
-                        <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#e83e8c"></rect><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text></svg>
-                        <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                            <strong className="d-block text-gray-dark">From: Jessica</strong>
-                            Do you want to have dinner with me?
-                      </p>
-                    </div>
-                    <div className="media text-muted pt-3">
-                        <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#6f42c1"></rect><text x="50%" y="50%" fill="#6f42c1" dy=".3em">32x32</text></svg>
-                        <p className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                            <strong className="d-block text-gray-dark">Server: Group Invitation</strong>
-                            Allen invites you to join group "web development"
-                      </p>
-                    </div>
+                    {(this.state.notificationLoading && <div className="d-flex spinner-border text-dark mx-auto p-3 mt-3"></div>) ||
+                        this.state.notifications.slice(0, 3).map((notification, index) => {
+                            const id = notification._id.$oid;
+                            return (
+                                <div key={key++} className="d-flex media text-muted border-bottom border-top border-gray">
+                                    <div className="d-flex media-body align-items-center small justify-content-between my-3">
+                                        {notification.type === 'request' && <JoinRequest notification={notification} dismiss={this.dismiss.bind(this, id, index)} index={index} />}
+                                        {notification.type === 'invite' && <Invite notification={notification} dismiss={this.dismiss.bind(this, id, index)} index={index} />}
+                                        {notification.type === 'join' && <UserJoin notification={notification} dismiss={this.dismiss.bind(this, id, index)} index={index} />}
+                                        {notification.type === 'leave' && <UserLeave notification={notification} dismiss={this.dismiss.bind(this, id, index)} index={index} />}
+                                        {notification.type === 'kick' && <UserKicked notification={notification} dismiss={this.dismiss.bind(this, id, index)} index={index} />}
+                                        {notification.type === 'project_delete' && <ProjectDeleted notification={notification} dismiss={this.dismiss.bind(this, id, index)} index={index} />}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     <small className="d-block text-right mt-3">
-                        <a href="#">All Notifications</a>
+                        <a href="/inbox">All Notifications</a>
                     </small>
                 </div>
                 <Switch>
-                    <Route path="/CreateGroup" component={ CreateGroup } />
+                    <Route path="/CreateGroup" component={CreateGroup} />
                 </Switch>
             </div>
         );

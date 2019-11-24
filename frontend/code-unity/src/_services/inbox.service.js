@@ -5,6 +5,9 @@ import { authHeader, handleResponse } from '@/_helpers';
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
 
 export const inboxService = {
+    get_all_notifications,
+    dismiss_all_notifications,
+    dismiss_notification,
     get_invites_sent,
     get_invites_received,
     get_join_requests_sent,
@@ -17,6 +20,34 @@ export const inboxService = {
     currentUser: currentUserSubject.asObservable(),
     get currentUserValue() { return currentUserSubject.value }
 };
+
+function get_all_notifications() {
+    const options = { method: 'GET', headers: { 'Authorization': authHeader() } };
+    return fetch(`${config.apiUrl}/api/notify`, options)
+            .then(response => { return response.json() });
+}
+
+function dismiss_notification(notification_id) {
+    const options = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        body: JSON.stringify({ notification: notification_id })
+    };
+
+    return fetch(`${config.apiUrl}/api/notify`, options)
+        .then(response => { return response.json(); });
+}
+
+function dismiss_all_notifications() {
+    const options = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader() },
+        body: JSON.stringify({ notification: 'all' })
+    };
+
+    return fetch(`${config.apiUrl}/api/notify`, options)
+        .then(response => { return response.json(); });
+}
 
 function get_invites_sent() {
     const projects_options = { method: 'GET', headers: { 'Authorization': authHeader() } };

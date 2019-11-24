@@ -7,7 +7,7 @@ import { authHeader } from '@/_helpers';
 
 import '@/Style';
 
-const POSTS_PER_PAGE = 1;
+const POSTS_PER_PAGE = 5;
 
 /**
  * Search bar that filters and shows group postings
@@ -265,7 +265,6 @@ class GroupList extends React.Component {
    */
   render() {
     let post_key = 0;
-    console.log(this.state.posts);
     return (
       <div id="page-start">
 
