@@ -2,6 +2,9 @@ import React from 'react';
 import '@/Style';
 import { SkillBox } from '@/WebComponents';
 import { userService } from '@/_services';
+import { authenticationService } from '@/_services';
+
+import { updateUser } from '@/QuickBlox';
 
 
 class SettingPage extends React.Component {
@@ -69,6 +72,15 @@ class SettingPage extends React.Component {
         ).then(
             status => {
                 if (status == "OK") {
+                    var curr_id = authenticationService.currentUserValue.uid;
+                    var newName = this.refs.edit_username.value;
+                    QB.createSession({ login: curr_id, password: curr_id }, (err, res) => {
+                        if (res) {
+                            updateUser(curr_id, newName);
+                        } else {
+                            console.log(err);
+                        }
+                    });
                     this.setState({
                         "updateSucceed":true,
                         "updateContent":"Username has being successfully updated."

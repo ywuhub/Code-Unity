@@ -83,6 +83,39 @@ function QBgetUserData(qb_id) {
         });
 }
 
+function updateUser(cu_id, newName) {
+    const options = {
+        'method': 'GET',
+        'headers': {
+            'QB-Token': QB.service.getSession().token
+        }
+    }
+    return fetch(`https://api.quickblox.com/data/User.json?cu_id=${cu_id}`, options)
+        .then(response => { return response.json() })
+        .then(json => {
+            return json.items[0];
+        })
+        .then(user => {
+            QB.data.update("User", {_id: user._id, username: newName}, function(err, res){
+                if (err) {
+                    console.log(err);
+                }
+            });
+            const user_options = {
+                'method': 'PUT',
+                'headers': {
+                    'Content-Type': 'application/json',
+                    "QuickBlox-REST-API-Version": "0.1.0",
+                    'QB-Token': QB.service.getSession().token
+                },
+                'body': JSON.stringify({ user: {full_name: newName} })
+            }
+            fetch(`https://api.quickblox.com/users/${user.qb_id}.json`, user_options)
+                .then(resp => { return resp.json() })
+                .then(json => {console.log(json)});
+        });
+}
+
 function QBgetProjectData(project_id) {
     const options = {
         'method': 'GET',
@@ -298,8 +331,7 @@ function QBcreateProjectData(chat_id, project_id, name) {
         } else {
             console.log(res);
         }
-        window.location.reload();
     });
 }
 
-export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBaddMembers, QBremoveMembers, QBgetUser, QBgetUserData, QBupdateGroupName, QBgetProjectData };
+export { QBcreateSession, QBinitChatUser, QBgetGroupChats, QBgetGroupChatHistory, QBcreateGroup, QBsendMessage, QBdeleteGroup, QBleaveGroup, QBaddMembers, QBremoveMembers, QBgetUser, QBgetUserData, QBupdateGroupName, QBgetProjectData, updateUser };
