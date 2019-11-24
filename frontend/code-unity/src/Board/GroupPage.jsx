@@ -17,12 +17,13 @@ class GroupPage extends React.Component {
             requests: {},
             favourites: {},
             submitted: false,
-            isLoading: true
+            isLoading: true,
+            loadFav: false
         }
     }
 
     componentDidMount() {
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, loadFav: true });
         const { _id } = this.props.location.state;
         userService.getProjectDetail(_id).then(data => {
             this.setState({
@@ -40,7 +41,8 @@ class GroupPage extends React.Component {
 
         favouriteService.get_favourite(authenticationService.currentUserValue.uid).then(favs => {
             this.setState({
-                favourites: favs.favourite_projects
+                favourites: favs.favourite_projects,
+                loadFav: false
             })
         })
     }
@@ -104,11 +106,11 @@ class GroupPage extends React.Component {
                                     <h4 className="h1">{this.state.details.title}</h4>
                                     <div className="btn-toolbar mb-2 mb-md-0">
                                         <div className="btn-group mr-2">
-                                            {(!favourited) && <i title="Favourite" data-toggle="modal" data-target="#fav" className="star">
+                                            {(!favourited) && !this.state.loadFav && <i title="Favourite" data-toggle="modal" data-target="#fav" className="star">
                                                 <i className="far fa-star fav-icon hollow"></i>
                                                 <i className="fas fa-star fav-icon fill"></i>
                                             </i>}
-                                            {(favourited) && <i title="Unfavourite" data-toggle="modal" data-target="#unFav" className="star">
+                                            {(favourited) && !this.state.loadFav && <i title="Unfavourite" data-toggle="modal" data-target="#unFav" className="star">
                                                 <i className="fas fa-star fav-icon hollow"></i>
                                                 <i className="far fa-star fav-icon fill"></i>
                                             </i>}
