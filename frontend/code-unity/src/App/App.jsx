@@ -18,16 +18,19 @@ class App extends React.Component {
         this.state = {
             currentUser: null,
             username: "",
-            avatar: ""
+            avatar: "",
+            isLoading: false
         };
     }
 
     componentDidMount() {
+        this.setState({ isLoading: true });
         authenticationService.currentUser.subscribe(x => this.setState({ currentUser: x }));
         userService.getUserAccountDetails().then(data => this.setState(
             {
                 username: data.username,
-                avatar: data.avatar
+                avatar: data.avatar,
+                isLoading: false
             }
         ));
     }
@@ -62,7 +65,8 @@ class App extends React.Component {
                                 <li className="nav-item">
                                     <div className="dropdown">
                                         <button className="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-                                        <img src={this.state.avatar} className="nav-pic"></img>{this.state.username}
+                                        {!this.state.isLoading && <img src={this.state.avatar} className="nav-pic" onError={i => i.target.style.display = 'none'}></img>}
+                                        {!this.state.isLoading && <text>{this.state.username}</text>}
                                         </button>
                                         <div className="dropdown-menu dropdown-menu-right" aria-labelledby="user">
                                             <a className="dropdown-item" href="/profile">Profile</a>

@@ -4,6 +4,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 import { CreateGroup } from '@/CreateGroup';
 import { Notification } from '@/WebComponents';
 import { GroupCard } from '@/WebComponents';
+import { MyGroup } from '@/Board';
 import { userService, inboxService } from '@/_services';
 import { JoinRequest, Invite, UserJoin, UserLeave, UserKicked, ProjectDeleted } from '@/Inbox'
 
@@ -57,13 +58,14 @@ class Dashboard extends React.Component {
 
     render() {
         let key = 0;
+        let num_cards = 8; // Number of groups to display
         return (
             <div>
                 <div className="my-3 p-3 bg-white rounded shadow-sm">
                     <h6 className="border-bottom border-gray pb-2 mb-0">Groups</h6>
                     <div className="row">
                     {(this.state.isloading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>) ||
-                        (this.state.projectData || []).map((item) => {
+                        (this.state.projectData.slice(0, num_cards) || []).map((item) => {
                             return(
                                 <div key={item.project_id} className="col-3">
                                     <GroupCard  title={item.title}
@@ -79,12 +81,11 @@ class Dashboard extends React.Component {
                     }
                     </div>
                     {!this.state.isloading && !this.state.projectData.length && <div><br></br><center>You are not currently in any groups.</center></div>}
-                    <small className="d-block text-right mt-3 border-top">
+                    <small className="d-block text-right mt-3 border-top homepg-btns">
                         <br></br>
-                        <div className="btn-toolbar mb-2 mb-md-0">
-                            <div className="btn-group mr-2">
-                                <a className="btn btn-sm btn-outline-secondary" href="/CreateGroup">Create New Group</a>
-                            </div>
+                        <div className="btn-toolbar mb-2 mb-md-0 homepg-btns" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span><a className="btn btn-sm btn-outline-secondary" href="/CreateGroup">Create New Group</a></span>
+                            <span><a className="btn btn-sm btn-outline-secondary" href="/mygroup">View All Groups</a></span>
                         </div>
                     </small>
                 </div>
@@ -113,6 +114,7 @@ class Dashboard extends React.Component {
                 </div>
                 <Switch>
                     <Route path="/CreateGroup" component={CreateGroup} />
+                    <Route path="/mygroup" component={MyGroup} />
                 </Switch>
             </div>
         );
