@@ -154,8 +154,6 @@ class CreateGroup extends React.Component {
                                     user => {
                                         const curr_id = authenticationService.currentUserValue.uid;
 
-                                        // const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                        // this.props.history.push(from);
                                         QB.createSession({ login: curr_id, password: curr_id }, (err, res) => {
                                             if (res) {
                                                 QBcreateGroup({name: title, project_id: user.project_id});
@@ -163,6 +161,7 @@ class CreateGroup extends React.Component {
                                                 console.log(err);
                                             }
                                         });
+                                        this.props.history.push("/mygroup");
                                     },
                                     error => {
                                         setSubmitting(false);
