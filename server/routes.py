@@ -7,7 +7,14 @@ from server import app
 
 
 @app.route("/")
+@app.route("/CreateGroup")
+@app.route("/favourites")
+@app.route("/groupchat")
+@app.route("/groupList")
+@app.route("/inbox")
 @app.route("/login")
+@app.route("/mygroup")
+@app.route("/profile")
 def index():
     return send_file("static/index.html")
 
