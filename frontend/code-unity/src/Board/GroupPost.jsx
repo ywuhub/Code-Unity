@@ -48,7 +48,7 @@ function GroupPost(props) {
                 <div className="d-flex flex-column">
                     <ShowMembers post={post} />
                     <span><i className="fas fa-book-reader"></i> &nbsp;<b>Course:</b> {post['course']}</span>
-                    <span><i className="fas fa-language"></i> <b>Language:</b> {post['languages'] && Array.from(post['languages']).join(', ')}</span>
+                    <span><i className="fas fa-language"></i> <b>Languages:</b> {post['languages'] && Array.from(post['languages']).join(', ')}</span>
                     <span>
                         <i className="fas fa-tags"></i> <b>Tags: </b>
                         {post['tags'] &&

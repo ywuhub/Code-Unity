@@ -167,11 +167,11 @@ class GroupPage extends React.Component {
                         </div>
                         <div className="col-3 group-page-member-setting text-left">
                             <div className="row">
-                                <p className="d-block text-gray-dark"> Member number:</p>&nbsp;
+                                <p className="d-block text-gray-dark"> Total Members:</p>&nbsp;
                                 <p className="d-block text-gray-dark">{this.props.data.cur_people}</p>
                             </div>
                             <div className="row">
-                                <p className="d-block text-gray-dark">max: </p>&nbsp;
+                                <p className="d-block text-gray-dark">Max Members: </p>&nbsp;
                                 <p className="d-block text-gray-dark">{this.props.data.max_people}</p>
                             </div>
                         </div>
@@ -193,8 +193,8 @@ class GroupPage extends React.Component {
                     }
                     <div className="row container pt-3 pl-0">
                         <SkillBox keyValue={key_id++} title="Programming languages" data={this.props.data.technologies} />
-                        <SkillBox keyValue={key_id++} title="languages" data={this.props.data.languages} />
-                        <SkillBox keyValue={key_id++} title="tags" data={this.props.data.tags} />
+                        <SkillBox keyValue={key_id++} title="Languages" data={this.props.data.languages} />
+                        <SkillBox keyValue={key_id++} title="Tags" data={this.props.data.tags} />
                     </div>
                 </div>
 
