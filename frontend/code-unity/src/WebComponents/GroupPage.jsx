@@ -168,11 +168,9 @@ class GroupPage extends React.Component {
                         <div className="col-3 group-page-member-setting text-left">
                             <div className="row">
                                 <p className="d-block text-gray-dark"> Total Members:</p>&nbsp;
-                                <p className="d-block text-gray-dark">{this.props.data.cur_people}</p>
-                            </div>
-                            <div className="row">
-                                <p className="d-block text-gray-dark">Max Members: </p>&nbsp;
-                                <p className="d-block text-gray-dark">{this.props.data.max_people}</p>
+                                <p className="d-block text-gray-dark">{this.props.data.cur_people}</p>&nbsp;
+                                <p className="d-block text-gray-dark">(Max:</p>&nbsp;
+                                <p className="d-block text-gray-dark">{this.props.data.max_people})</p>
                             </div>
                         </div>
                     </div>
