@@ -33,25 +33,25 @@ class ResetPasswordPage extends React.Component {
             authenticationService.resetPassword(
                 this.props.match.params.token,
                 this.refs.password_first.value,
-            ).then(
-                status => {
-                    console.log(status)
-                    if (status == "OK") {
-                        this.setState({
-                            "updateSucceed":true,
-                            "updateContent":"Password has been reset! Redirecting your to the login page in 5 seconds..."
-                        });
-                        setTimeout(() => {
-                          this.props.history.push('/')
-                        }, 5000);
-                        $('#changePassword').modal('hide')
-                    } else {
-                        this.setState({
-                            PasswordNotification:true,
-                            PasswordNotificationContent:status});
-                    }
-                }
-            )
+            ).then((response) => {
+                if(!response.ok) throw new Error(response.status);
+                else return response.json();
+              })
+              .then((data) => {
+                    this.setState({
+                        "updateSucceed":true,
+                        "updateContent":data.message
+                    });
+                    setTimeout(() => {
+                        this.props.history.push('/')
+                    }, 5000);
+                    $('#changePassword').modal('hide')
+              })
+              .catch((error) => {
+                    this.setState({
+                        PasswordNotification:true,
+                        PasswordNotificationContent:status});
+              });
         }
     }
 

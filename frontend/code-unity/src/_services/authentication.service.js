@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import config from 'config';
-import { authHeader, handleResponse, handleRegisterResponse, GetReponseCode } from '@/_helpers';
+import { authHeader, handleResponse, handleRegisterResponse } from '@/_helpers';
 
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
 
@@ -69,6 +69,6 @@ function resetPassword(token, password) {
         body: JSON.stringify({ 
             "password": password})
     };
-    return fetch(`${config.apiUrl}/api/reset_password/${token}`, requestOptions).then(GetReponseCode);
+    return fetch(`${config.apiUrl}/api/reset_password/${token}`, requestOptions);
 };
 
