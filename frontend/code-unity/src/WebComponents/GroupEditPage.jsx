@@ -278,11 +278,11 @@ class GroupEditPage extends React.Component {
                                 </div>
                                 <div className="col-3 group-page-member-setting text-left">
                                     <div className="row">
-                                        <p className="d-block text-gray-dark"> Member number:</p>
+                                        <p className="d-block text-gray-dark"> Total Members:</p>
                                         <p className="d-block text-gray-dark">{this.props.data.cur_people}</p>
                                     </div>
                                     <div className="row">
-                                        <p className="d-block text-gray-dark">max: </p>
+                                        <p className="d-block text-gray-dark">Max Members: </p>
                                         <input 
                                             className="form-control form-control-lg border-1 max-number-setting border-dashed"  
                                             type="number" 

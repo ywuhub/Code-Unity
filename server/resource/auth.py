@@ -75,7 +75,7 @@ class Auth(Resource):
         try:
             uid, token = self.user_manager.log_in_user(username, pwd)
         except (VerificationError, ValueError):
-            return {"message": "incorrect username or password"}, 401
+            return {"message": "Incorrect username or password"}, 401
 
         return {"uid": uid, "token": token}
 
