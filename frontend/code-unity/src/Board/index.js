@@ -6,3 +6,4 @@ export * from './MyGroup';
 export * from './GroupPage';
 export * from './JoinRequests';
 export * from './SettingPage';
+export * from './Favourites';

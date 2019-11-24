@@ -1,12 +1,13 @@
 import React from 'react';
 import AdvancedSearch from './AdvancedSearch';
 import GroupPost from './GroupPost';
+import {CreateGroup} from '@/CreateGroup';
 import config from 'config';
 import { authHeader } from '@/_helpers';
 
 import '@/Style';
 
-const POSTS_PER_PAGE = 1;
+const POSTS_PER_PAGE = 5;
 
 /**
  * Search bar that filters and shows group postings
@@ -270,11 +271,6 @@ class GroupList extends React.Component {
         {/* page header */}
         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 className="h4">Groups</h1>
-          <div className="btn-toolbar mb-2 mb-md-0">
-            <div className="btn-group mr-2">
-              <button type="button" className="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter">Create New Group</button>
-            </div>
-          </div>
         </div> {/* page header end */}
 
         <div className="row">
@@ -351,36 +347,6 @@ class GroupList extends React.Component {
 
         <br />
 
-        {/* Create group modal */}
-        <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalCenterTitle">Create New Group</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <form>
-                  <label htmlFor="message-text" className="col-form-label">Group Name:</label>
-                  <div className="input-group input-group-sm mb-3">
-                    <input type="text" className="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="message-text" className="col-form-label">Description:</label>
-                    <textarea className="form-control" id="message-text"></textarea>
-                  </div>
-                </form>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
-        </div> {/* Create group modal end */}
-        
       </div>
     );
   }

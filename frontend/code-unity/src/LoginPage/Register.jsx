@@ -3,10 +3,14 @@ import { Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { authenticationService } from '@/_services';
+import { QBinitChatUser } from '@/QuickBlox';
 
 class Register extends React.Component {
     constructor(props) {
         super(props);
+        if (authenticationService.currentUserValue) {
+            this.props.history.push('/');
+        }
     }
 
     change(e) {
@@ -36,8 +40,10 @@ class Register extends React.Component {
                                 authenticationService.register(email, username, password)
                                     .then(
                                         user => {
+                                            QBinitChatUser(user.uid, username);
+
                                             const { from } = this.props.location.state || { from: { pathname: "/" } };
-                                            this.props.history.push(from);
+                                            this.props.history.push('/');
                                         },
                                         error => {
                                             setSubmitting(false);
@@ -92,7 +98,7 @@ class Register extends React.Component {
                         />
                     </div>
                 </div>
-            </div >
+            </div>
 
         )
     }

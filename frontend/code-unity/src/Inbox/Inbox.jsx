@@ -13,7 +13,10 @@ class Inbox extends React.Component {
         return (
             <div className="container-fluid">
                 <div className="d-flex flex-column pt-3 pb-2 ">
-                    <h4 className="border-bottom pb-2">Inbox</h4>
+                    <div className="d-flex flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h1 className="h4">Inbox</h1>
+                    </div>
+
                     <ul className="nav nav-tabs nav-justified mt-3" role="tablist">
                         <li className="nav-item">
                             <a className="nav-link active" data-toggle="tab" href="#group-notifications">Group Notifications</a>

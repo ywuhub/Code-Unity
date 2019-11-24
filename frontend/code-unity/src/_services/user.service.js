@@ -13,7 +13,8 @@ export const userService = {
     postPassword,
     postUsername,
     postAvatar,
-    getUserAccountDetails
+    getUserAccountDetails,
+    getUserAvatars
 };
 
 function getUserProfile(id) {
@@ -132,3 +133,12 @@ function postAvatar(avatar) {
     return fetch(`${config.apiUrl}/api/user/account`, requestOptions).then(GetReponseCode);
 };
 
+function getUserAvatars(users) {
+    const requestOptions = { method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': authHeader()} };
+
+    var urlAddress = `${config.apiUrl}/api/user_list?user_ids=${users[0]}`;
+    for (var i = 1; i < users.length; i++) {
+        urlAddress = urlAddress + "&user_ids=" + users[i];
+    }
+    return fetch(urlAddress, requestOptions).then(handleResponse);
+}

@@ -1,0 +1,10 @@
+.nav-pic {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    overflow: hidden;
+    background-color: white;
+    margin-right: 10px;
+    border: 2px solid #ddd;
+}

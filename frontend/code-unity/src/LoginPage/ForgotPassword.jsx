@@ -7,6 +7,9 @@ import { authenticationService } from '@/_services';
 class ForgotPassword extends React.Component {
     constructor(props) {
         super(props);
+        if (authenticationService.currentUserValue) {
+            this.props.history.push('/');
+        }
         this.state = {
             success: false,
             successData: ""
