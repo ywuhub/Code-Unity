@@ -260,8 +260,7 @@ class GroupEditPage extends React.Component {
                             <div className="row mt-4 border-bottom border-grey">
                                 <div className="col-9">
                                     <div className="row">
-                                        <p>Leader: </p>
-                                        <p>{this.props.data.leader.username}</p>
+                                        <p>Leader: {this.props.data.leader.username}</p>
                                     </div>
                                     <div className="row">
                                         <p>Member: </p>

@@ -60,7 +60,7 @@ for csv_file in csv_files:
 
                 # format csv list into python lists and remove any whitespaces
                 interests = interests.split(',')
-                interests = [interest.strip() for interest in interests]
+                interests = [interest.strip().title() for interest in interests]
                 
                 programming_languages = programming_languages.split(',')
                 programming_languages = [prog_lang.strip() for prog_lang in programming_languages]

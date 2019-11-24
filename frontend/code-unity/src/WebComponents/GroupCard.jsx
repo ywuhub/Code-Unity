@@ -39,10 +39,7 @@ class GroupCard extends React.Component {
                         </div>
                         <div className="row group-card-member-text mt-1 mb-1">
                             <span className="ml-4"> </span>
-                            <p className="d-block text-gray-dark">{this.props.current_number}</p>
-                            <p className="d-block text-gray-dark  ml-2"> Members</p>
-                            <p className="d-block text-gray-dark ml-5">max: </p>
-                            <p className="d-block text-gray-dark ml-2">{this.props.max_number}</p>
+                            <p className="d-block text-gray-dark"> Current Members: {this.props.current_number} (Max: {this.props.max_number})</p>
                             {/*<img src={peopleIcon} className="icon-setting"/>*/}
                         </div>
                         <div className="row group-card-row-text avatar-div-setting">
