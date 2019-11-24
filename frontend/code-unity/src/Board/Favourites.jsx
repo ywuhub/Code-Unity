@@ -21,13 +21,17 @@ class Favourites extends React.Component {
 
     componentDidMount() {
         this.isMounted_ = true;
-        this.state.isLoading = true;
+        this.setState({ isLoading: true });
         favouriteService.get_favourite(authenticationService.currentUserValue.uid).then(favs => {
             this.setState({
                 isLoading: false,
                 favourites: favs.favourite_projects
             })
-        })
+        }).catch(err => {
+            console.log(err);
+            this.setState({ isLoading: false });
+        });
+
     }
 
     render() {
@@ -37,11 +41,11 @@ class Favourites extends React.Component {
             <div>
                 <div className="my-3 p-3 bg-white rounded shadow-sm">
                     <h4 className="border-bottom border-gray pb-2 mb-0">Favourites</h4>
-                    {this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>}
                     {(!this.state.favourites.length && !this.state.isLoading) && <div><br></br><center>Favourite groups to see them here.</center></div>}
+                    {(this.state.isLoading && <div className="d-flex spinner-border text-dark mx-auto mt-5 p-3"></div>)}
                     <div>
                         {this.state.favourites.map((fav) => {
-                            return <div key={key++}><GroupPost post={fav}/></div>;
+                            return <div key={key++}><GroupPost post={fav} /></div>;
                         })}
                     </div>
                 </div>
