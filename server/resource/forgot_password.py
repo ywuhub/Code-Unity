@@ -71,7 +71,7 @@ class ForgotPassword(Resource):
             
             # send message through sendgrid api
             try: 
-                send_msg = SendGridAPIClient('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')
+                send_msg = SendGridAPIClient('') # api key omitted for security reasons
                 send_msg.send(message)
             except Exception:
                 return {"message": "An error has occured! Please try again."}, 400
